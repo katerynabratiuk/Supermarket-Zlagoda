@@ -1,27 +1,64 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
 public class Employee {
 
+    @NotNull
     private String id;
+
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String name;
+
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String surname;
+
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String patronymic;
+
+    @NotNull
+    @NotBlank
     private String role;
+
+    @NotNull
+    @Positive
     private BigDecimal salary;
+
+    @NotNull
+    @Past
     private LocalDate dateOfBirth;
+
+    @NotNull
+    @PastOrPresent
     private LocalDate dateOfStart;
+
+    @NotNull
+    @Pattern(regexp = "(\\+)?[0-9]{10}")
     private String phoneNumber;
+
+    @NotNull
+    @Size(min=2, max=50)
+    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     private String city;
+
+    @NotNull
+    @Size(min=2, max=50)
+    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     private String street;
+
+    @NotNull
+    @Size(min = 5, max = 5)
+    @Pattern(regexp = "[0-9]]")
+    @NotBlank
     private String zipCode;
 
-    public Employee(){
-
-    }
+    public Employee(){};
 
     public static class Builder implements BuilderInterface<Employee> {
 

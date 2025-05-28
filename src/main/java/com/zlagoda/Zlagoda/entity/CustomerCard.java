@@ -1,15 +1,41 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.*;
+
 public class CustomerCard {
 
+    @NotNull
     private String cardNumber;
+
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String surname;
+
+    @NotNull
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String name;
+
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     private String patronymic;
+
+    @NotNull
+    @Pattern(regexp = "(\\+)?[0-9]{10}")
     private String phoneNumber;
+
+    @Size(min=2, max=50)
+    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     private String city;
+
+    @Size(min=2, max=50)
+    @NotBlank
     private String street;
+
+    @Size(min = 5, max = 5)
+    @NotBlank
     private String zip_code;
+
+    @Positive
+    @Max(10)
     private Integer percent;
 
     public CustomerCard() {
@@ -165,5 +191,13 @@ public class CustomerCard {
 
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
+    }
+
+    public String getZip_code() {
+        return zip_code;
+    }
+
+    public void setZip_code(String zip_code) {
+        this.zip_code = zip_code;
     }
 }

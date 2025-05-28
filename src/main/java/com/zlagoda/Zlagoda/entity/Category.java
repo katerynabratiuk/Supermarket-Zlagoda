@@ -1,8 +1,15 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class Category{
 
+    @NotNull
     private Integer number;
+
+    @NotNull
+    @Size(min=3, max=50)
     private String name;
 
     public Category() {

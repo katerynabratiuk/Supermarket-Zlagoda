@@ -1,17 +1,26 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 
 public class Sale {
 
+    @NotNull
     private StoreProduct storeProduct;
+
+    @NotNull
     private Receipt receipt;
+
+    @Positive()
+    @Min(1)
     private Integer productNum;
+
+    @DecimalMin(value="0", inclusive = false)
     private BigDecimal selling_price;
 
     public Sale() {
     }
-
     public static class Builder implements BuilderInterface<Sale> {
 
         private final Sale sale;
@@ -84,5 +93,15 @@ public class Sale {
 
     public void setSelling_price(BigDecimal selling_price) {
         this.selling_price = selling_price;
+    }
+
+    @Override
+    public String toString() {
+        return "Sale{" +
+                "storeProduct=" + storeProduct +
+                ", receipt=" + receipt +
+                ", productNum=" + productNum +
+                ", selling_price=" + selling_price +
+                '}';
     }
 }

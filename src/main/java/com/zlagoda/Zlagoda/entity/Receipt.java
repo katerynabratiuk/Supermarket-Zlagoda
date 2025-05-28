@@ -1,22 +1,40 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Receipt {
 
+    @NotNull
+    @NotBlank
     private String checkNumber;
+
+    @NotNull
     private Employee employee;
+
     private CustomerCard card;
+
+    @NotNull
+    @PastOrPresent
     private LocalDate printDate;
+
+    @NotNull
+    @Positive
+    @DecimalMin(value = "0", inclusive = false)
     private BigDecimal sumTotal;
+
+    @NotNull
+    @Positive
     private BigDecimal vat;
+
+    @NotNull
+    @Size(min = 1)
     private ArrayList<StoreProduct> products = new ArrayList<>();
 
-    public Receipt() {
-
-    }
+    public Receipt() {}
 
     public static class Builder implements BuilderInterface<Receipt> {
 

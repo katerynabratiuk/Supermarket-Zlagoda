@@ -1,14 +1,28 @@
 package com.zlagoda.Zlagoda.entity;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
 public class StoreProduct {
 
+    @NotNull
     private String UPC;
+
     private String UPC_prom;
+
+    @NotNull
     private Product product;
+
+    @DecimalMin(value="0", inclusive = false)
     private BigDecimal sellingPrice;
+
+    @Min(1)
     private Integer productsNumber;
+
+    @NotNull
     private boolean isPromotional;
 
     public StoreProduct() {
@@ -116,4 +130,15 @@ public class StoreProduct {
         isPromotional = promotional;
     }
 
+    @Override
+    public String toString() {
+        return "StoreProduct{" +
+                "UPC='" + UPC + '\'' +
+                ", UPC_prom='" + UPC_prom + '\'' +
+                ", product=" + product +
+                ", sellingPrice=" + sellingPrice +
+                ", productsNumber=" + productsNumber +
+                ", isPromotional=" + isPromotional +
+                '}';
+    }
 }

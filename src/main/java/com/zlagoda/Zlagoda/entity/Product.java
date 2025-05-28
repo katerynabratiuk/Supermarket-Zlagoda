@@ -1,10 +1,23 @@
 package com.zlagoda.Zlagoda.entity;
 
-public class Product {
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
+public class Product {
+    @NotNull
     private Integer id;
+
+    @NotNull
+    @NotBlank
     private String name;
+
+    @NotNull
+    @Valid
     private Category category;
+
+    @NotNull
+    @NotBlank
     private String characteristics;
 
 
@@ -82,5 +95,15 @@ public class Product {
 
     public void setCharacteristics(String characteristics) {
         this.characteristics = characteristics;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category=" + category +
+                ", characteristics='" + characteristics + '\'' +
+                '}';
     }
 }
