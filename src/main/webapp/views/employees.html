@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/employees.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Employees - Zlagoda</title>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
+
+      <main>
+        <div class="employees-header">
+          <h2>Employees</h2>
+
+          <div class="actions-container">
+            <form class="search-form" action="/search" method="get">
+              <label for="search">Search:</label>
+              <input
+                type="search"
+                id="search"
+                name="search"
+                placeholder="Search"
+              />
+              <button type="submit">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+            </form>
+            <div class="buttons-container" v-if="isManager">
+              <button type="button "class="add-new-btn" @click="goToAddEmployee">
+                Add New
+              </button>
+              <button type="button" class="filter-btn">Filter</button>
+              <button type="button" class="sort-btn">Sort</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="contents">
+          <div class="table-section" v-if="!isLoading">
+            <table>
+              <thead class="table-headers">
+                <tr class="table-row">
+                  <th class="id">ID</th>
+                  <th class="name">Full Name</th>
+                  <th class="role">Role</th>
+                  <th class="date-of-start">Date of Start</th>
+                  <th class="phone-number">Phone Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="table-row"
+                  v-for="item in displayedItems('employees')(employees)"
+                  :key="item.id_employee"
+                >
+                  <td class="id">{{ item.id_employee }}</td>
+                  <td class="name">
+                    <a :href="'employee-page.html?id=' + item.id_employee">
+                      {{ item.empl_surname }} {{ item.empl_name }}
+                      <span v-if="item.empl_patronymic">
+                        {{ item.empl_patronymic }}</span
+                      ></a
+                    >
+                  </td>
+                  <td class="role">{{ item.empl_role }}</td>
+                  <td class="date-of-start">{{ item.date_of_start }}</td>
+                  <td class="phone-number">{{ item.phone_number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div
+          class="button-container"
+          v-if="!isLoading && hasMoreItems('employees')(employees)"
+        >
+          <button class="show-more-btn" @click="showMoreItems('employees')">
+            Show More
+          </button>
+        </div>
+      </main>
+
+      <custom-footer v-if="!isLoading"></custom-footer>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

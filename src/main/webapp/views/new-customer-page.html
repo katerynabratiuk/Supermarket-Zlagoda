@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/customer-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Customer Page</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
+
+      <main v-if="!isLoading">
+        <div class="customer-header">
+          <h2>New Customer</h2>
+        </div>
+
+        <section class="contents">
+          <form action="" class="edit-form" @submit.prevent="addNewCustomer">
+            <div class="customer-details-upper">
+              <div
+                class="customer-details-upper-wrapper"
+                style="display: block"
+              >
+                <div class="form-field">
+                  <label for="cust_surname">Surname:</label>
+                  <input
+                    type="text"
+                    id="cust_surname"
+                    v-model="newCustomer.cust_surname"
+                    class="edit-input"
+                    required
+                  />
+
+                  <label for="cust_name">Name:</label>
+                  <input
+                    type="text"
+                    id="cust_name"
+                    v-model="newCustomer.cust_name"
+                    class="edit-input"
+                    required
+                  />
+
+                  <label for="cust_patronymic">Patronymic:</label>
+                  <input
+                    type="text"
+                    id="cust_patronymic"
+                    v-model="newCustomer.cust_patronymic"
+                    class="edit-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <hr />
+
+            <div class="customer-details-lower">
+              <div class="customer-percent form-field">
+                <h4 for="salary">Percent:</h4>
+                <input
+                  type="number"
+                  id="salary"
+                  step="1"
+                  min="0"
+                  v-model.number="newEmployee.percent"
+                  class="edit-input"
+                  required
+                />
+              </div>
+              <div class="customer-phone-number form-field">
+                <h4 for="phone_number">Phone number:</h4>
+                <input
+                  type="tel"
+                  id="phone_number"
+                  v-model="newCustomer.phone_number"
+                  class="edit-input"
+                  required
+                />
+              </div>
+
+              <div class="customer-address form-field">
+                <h4>Address:</h4>
+                <label for="city">City:</label>
+                <input
+                  type="text"
+                  id="city"
+                  v-model="newCustomer.city"
+                  class="edit-input"
+                />
+
+                <label for="street">Street:</label>
+                <input
+                  type="text"
+                  id="street"
+                  v-model="newCustomer.street"
+                  class="edit-input"
+                />
+
+                <label for="zip_code">Zip Code:</label>
+                <input
+                  type="text"
+                  id="zip_code"
+                  v-model="newCustomer.zip_code"
+                  class="edit-input"
+                />
+              </div>
+            </div>
+
+            <div class="buttons-section" v-if="isManager">
+              <button class="save-btn" type="sumbit">Add Customer</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading"></custom-footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>

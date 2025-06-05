@@ -1,0 +1,66 @@
+.check-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+dt {
+  margin-bottom: 10px;
+}
+
+dd {
+  margin: 0;
+}
+
+table td,
+table th {
+  border-bottom: none;
+}
+
+.table-wrapper {
+  display: grid;
+  width: 70%;
+}
+
+.customer, .cashier, .product {
+  text-decoration: underline;
+}
+
+.table-section thead,
+.table-section tbody,
+.table-section,
+.table-section tr,
+.check-sum-and-vat,
+.check-sum-and-vat-list {
+  display: contents;
+}
+
+.check-sum,
+.check-vat {
+  grid-column: 4;
+  padding-left: 10px;
+}
+
+.check-sum-value,
+.check-vat-value {
+  grid-column: 5;
+  justify-self: start;
+  padding-left: 10px;
+}
+
+.check-sum,
+.check-sum-value {
+  margin-top: 40px;
+}
+
+.check-vat,
+.check-vat-value {
+  font-size: 0.7em;
+}

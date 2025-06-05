@@ -1,0 +1,31 @@
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.search-form {
+    background-color: #B0C4B1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.table-section th,
+.table-section td {
+    width: 25%;
+}
+
+.name a {
+    text-decoration: underline;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}

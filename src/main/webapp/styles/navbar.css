@@ -1,0 +1,80 @@
+@font-face {
+    font-family: 'Jacquard';
+    src: url('../fonts/Jacquard_24/Jacquard24-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+header {
+    background-color: #4A5759;
+    color: #FFFFFF; 
+    display: flex;
+    flex-direction: column;
+}
+
+.logo img {
+    height: 30px;
+    width: 30px;
+}
+
+.top-nav {
+    margin: 0 60px;
+}
+
+.nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+}
+
+.nav-top h1 {
+    font-family: 'Jacquard';
+    font-weight: normal;
+    font-size: 2em;
+    margin: 0;
+}
+
+.nav-pages-bar {
+    display: flex;
+    background-color: #B0C4B1;
+    height: 50px;
+    margin: 0;
+}
+
+.nav-pages-bar ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-pages-bar ul li {
+    height: 100%;
+    display: flex;
+}
+
+.nav-pages-bar ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.nav-pages-bar ul li.active {
+    background-color: #fff7f4;
+}
+
+.login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}

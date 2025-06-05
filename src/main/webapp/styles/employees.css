@@ -1,0 +1,40 @@
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.search-form {
+    background-color: #B0C4B1;
+    display: flex;
+    justify-content: flex-start;
+}
+
+table .id {
+    width: 10%;
+}
+
+table .name {
+    width: 30%;
+}
+
+table .role,
+table .date-of-start,
+table .phone-number {
+    width: 20%;
+}
+
+.name a {
+    text-decoration: underline;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}

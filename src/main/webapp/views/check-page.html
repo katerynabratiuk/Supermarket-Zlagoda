@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/check-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title v-if="currentCheck">Check {{ currentCheck.check_number }}</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
+
+      <main v-if="!isLoading && currentCheck">
+        <section class="check-details">
+          <div class="check-header">
+            <h2>Check {{ currentCheck.check_number }}</h2>
+            <button class="edit-btn">Edit</button>
+          </div>
+
+          <section class="contents">
+            <div class="check-details-upper">
+              <div class="check-main-info">
+                <dl class="check-main-info-list">
+                  <dt>Print date:</dt>
+                  <dd>{{ currentCheck.print_date }}</dd>
+
+                  <dt>Cashier:</dt>
+                  <dd>
+                    <a
+                      class="cashier"
+                      :href="'employee-page.html?id=' + currentCheck.id_employee"
+                    >
+                      {{ currentCheck.employeeName }}
+                    </a>
+                  </dd>
+
+                  <dt>Customer:</dt>
+                  <dd>
+                    <a
+                      class="customer"
+                      :href="'customer-page.html?id=' + currentCheck.card_number"
+                    >
+                      {{ currentCheck.customerName }}
+                    </a>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+
+            <div class="check-details-lower">
+              <h3>Products</h3>
+              <div class="table-wrapper">
+                <table class="table-section">
+                  <thead>
+                    <tr class="table-row">
+                      <th class="product-id">ID</th>
+                      <th class="product-name">Name</th>
+                      <th class="product-price">Price</th>
+                      <th class="product-quantity">Quantity</th>
+                      <th class="product-total">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      class="table-row"
+                      v-for="(sale, index) in currentCheck.sales"
+                      :key="index"
+                    >
+                      <td class="product-id">{{ index + 1 }}</td>
+                      <td class="product-name">
+                        <a
+                          :href="'product-page.html?id=' + sale.product_id"
+                          class="product"
+                          >{{ sale.product_name }}</a
+                        >
+                      </td>
+                      <td class="product-price">
+                        {{ sale.selling_price.toFixed(2) }}
+                      </td>
+                      <td class="product-quantity">{{ sale.quantity }}</td>
+                      <td class="product-total">
+                        {{ (sale.selling_price * sale.quantity).toFixed(2) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="check-sum-and-vat">
+                  <dl class="check-sum-and-vat-list">
+                    <dt class="check-sum">Sum:</dt>
+                    <dd class="check-sum-value">
+                      <strong>{{ currentCheck.sum_total.toFixed(2) }}</strong>
+                    </dd>
+
+                    <dt class="check-vat">VAT:</dt>
+                    <dd class="check-vat-value">
+                      {{ currentCheck.vat.toFixed(2) }}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading && currentCheck"></custom-footer>
+    </div>
+  </body>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

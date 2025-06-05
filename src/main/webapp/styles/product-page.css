@@ -1,0 +1,160 @@
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-details-upper {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.product-image, .edit-product-image {
+  width: 300px;
+  height: 300px;
+  background-color: #d9d9d9;
+  object-fit: fill;
+}
+
+.edit-product-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.product-main-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  position: relative;
+}
+
+.product-details-lower p {
+  font-style: italic;
+}
+
+.product-name h3 {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: normal;
+}
+
+h3 {
+    margin: 10px 0;
+}
+
+h3.product-management-header {
+  margin: 10px 0;
+}
+
+.product-status p {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.product-id p {
+  margin: 10px 0;
+}
+
+.product-count {
+  flex: 1;
+}
+
+.product-status.in-stock p {
+  background-color: #b0c4b1;
+}
+
+.product-status.out-of-stock p {
+  background-color: #891a1a;
+  color: white;
+}
+
+.form-field {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 440px;
+}
+
+.characteristics .form-field,
+.manufacturer .form-field
+{
+  width: 100%;
+}
+
+.edit-status-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.status-btn {
+  opacity: 0.5;
+}
+
+.status-btn.active {
+  opacity: 1;
+}
+
+.product-price {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.product-price p {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.custom-strike {
+  text-decoration: line-through;
+  text-decoration-color: #891a1a;
+  text-decoration-thickness: 2px;
+}
+
+.product-discount {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.discount {
+  background-color: #ffd0c6;
+  color: #891a1a;
+  border-radius: 4px;
+  padding: 5px 5px;
+}
+
+.description-block p {
+  color: #243336;
+  font-style: italic;
+  margin: 0;
+}
+
+.buttons-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.characteristics,
+.manufacturer,
+.categories {
+  max-width: 440px;
+}

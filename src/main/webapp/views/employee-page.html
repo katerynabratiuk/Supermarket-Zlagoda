@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/employee-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Employee Page</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
+
+      <main v-if="!isLoading && currentEmployee">
+        <div class="employee-header">
+          <h2>Employee</h2>
+          <edit-button
+            :is-manager="isManager"
+            :is-edit-mode="isEditMode"
+            @toggle="toggleEditMode"
+          ></edit-button>
+        </div>
+
+        <section class="contents">
+          <form action="" class="edit-form" @submit.prevent="saveEditEmployee">
+            <div class="employee-details-upper-wrapper">
+              <div class="employee-details-upper">
+                <div class="employee-name">
+                  <h3 v-if="!isEditMode">
+                    {{ currentEmployee.empl_surname }} {{
+                    currentEmployee.empl_name }}
+                    <span v-if="currentEmployee.empl_patronymic">
+                      {{ currentEmployee.empl_patronymic }}
+                    </span>
+                  </h3>
+                  <div class="form-field" v-else>
+                    <label for="empl_surname">Surname:</label>
+                    <input
+                      type="text"
+                      id="empl_surname"
+                      v-model="currentEmployee.empl_surname"
+                      class="edit-input"
+                      required
+                    />
+
+                    <label for="empl_name">Name:</label>
+                    <input
+                      type="text"
+                      id="empl_name"
+                      v-model="currentEmployee.empl_name"
+                      class="edit-input"
+                      required
+                    />
+
+                    <label for="empl_patronymic">Patronymic:</label>
+                    <input
+                      type="text"
+                      id="empl_patronymic"
+                      v-model="currentEmployee.empl_patronymic"
+                      class="edit-input"
+                    />
+
+                    <div class="employee-role">
+                      <p v-if="!isEditMode">
+                        Role: {{ currentEmployee.empl_role }}
+                      </p>
+                      <div v-else class="form-field">
+                        <label for="empl_role">Role:</label>
+                        <select
+                          id="empl_role"
+                          v-model="currentEmployee.empl_role"
+                          class="edit-dropdown"
+                        >
+                          <option disabled :value="null">Select role</option>
+                          <option value="Cashier">Cashier</option>
+                          <option value="Manager">Manager</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="employee-id">
+                <p>ID: {{ currentEmployee.id_employee }}</p>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="employee-details-lower">
+              <div class="employee-salary">
+                <h4 for="salary">Salary:</h4>
+                <p v-if="!isEditMode">
+                  {{ currentEmployee.salary.toFixed(2) }} ₴
+                </p>
+                <div v-else class="form-field">
+                  <input
+                    type="number"
+                    id="salary"
+                    step="100"
+                    min="0"
+                    v-model.number="currentEmployee.salary"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="employee-date-of-birth">
+                <h4 for="date_of_birth">Date of birth:</h4>
+                <p v-if="!isEditMode">{{ currentEmployee.date_of_birth }}</p>
+                <div v-else class="form-field">
+                  <input
+                    type="date"
+                    id="date_of_birth"
+                    v-model="currentEmployee.date_of_birth"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="employee-phone-number">
+                <h4 for="phone_number">Phone number:</h4>
+                <p v-if="!isEditMode">{{ currentEmployee.phone_number }}</p>
+                <div v-else class="form-field">
+                  <input
+                    type="tel"
+                    id="phone_number"
+                    v-model="currentEmployee.phone_number"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="employee-address">
+                <h4 for="city">Address:</h4>
+                <div v-if="!isEditMode">
+                  <p>
+                    {{ currentEmployee.city }}, {{ currentEmployee.street }}, {{
+                    currentEmployee.zip_code }}
+                  </p>
+                </div>
+                <div v-else class="form-field">
+                  <label for="city">City:</label>
+                  <input
+                    type="text"
+                    id="city"
+                    v-model="currentEmployee.city"
+                    class="edit-input"
+                    required
+                  />
+
+                  <label for="street">Street:</label>
+                  <input
+                    type="text"
+                    id="street"
+                    v-model="currentEmployee.street"
+                    class="edit-input"
+                    required
+                  />
+
+                  <label for="zip_code">Zip Code:</label>
+                  <input
+                    type="text"
+                    id="zip_code"
+                    v-model="currentEmployee.zip_code"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons-section" v-if="isManager && isEditMode">
+              <button class="delete-btn" @click="confirmAndDeleteEmployee">
+                Delete
+              </button>
+              <button class="save-btn" type="sumbit">Save</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading  && currentEmployee"></custom-footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>

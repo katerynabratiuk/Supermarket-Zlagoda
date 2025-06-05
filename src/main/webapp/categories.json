@@ -1,0 +1,11 @@
+[
+  { "category": "Vegetables and fruits", "id": 1 },
+  { "category": "Dairy products and eggs", "id": 2 },
+  { "category": "Alcohol", "id": 3 },
+  { "category": "Soft Drinks", "id": 4 },
+  { "category": "Meat", "id": 5 },
+  { "category": "Confectionary", "id": 6 },
+  { "category": "Fish and seafood", "id": 7 },
+  { "category": "Bakery", "id": 8 },
+  { "category": "Chips and snacks", "id": 9 }
+]

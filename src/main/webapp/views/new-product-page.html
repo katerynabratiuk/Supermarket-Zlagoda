@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/product-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Add New Product</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole"  />
+      </header>
+
+      <main v-if="!isLoading">
+        <div class="product-header">
+          <h2>Add New Product</h2>
+        </div>
+
+        <section class="contents">
+          <form action="" class="edit-form" @submit.prevent="addNewProduct">
+            <div class="product-details-upper">
+              <div class="edit-product-image">
+                <img
+                  v-if="imagePreview"
+                  :src="imagePreview"
+                  alt="New Product Image"
+                />
+                <input
+                  type="file"
+                  id="image-input"
+                  accept="image/*"
+                  @change="handleImageUpload"
+                />
+              </div>
+
+              <div class="product-main-info">
+                <div class="form-field">
+                  <label for="product-name">Name:</label>
+                  <input
+                    id="product-name"
+                    v-model="newProduct.name"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  Status:
+                  <div class="edit-status-buttons">
+                    <button
+                      class="status-btn in-stock"
+                      :class="{'active': newProduct.status === 'In Stock'}"
+                      @click="newProduct.status = 'In Stock'"
+                    >
+                      In Stock
+                    </button>
+                    <button
+                      class="status-btn out-of-stock"
+                      :class="{'active': newProduct.status === 'Out Of Stock'}"
+                      @click="newProduct.status = 'Out Of Stock'"
+                    >
+                      Out of Stock
+                    </button>
+                  </div>
+                </div>
+
+                <div class="product-management-info">
+                  <h3 class="product-management-header">Management details:</h3>
+
+                  <div class="form-field">
+                    <label for="product-count">Count:</label>
+                    <input
+                      id="product-count"
+                      v-model.number="newProduct.count"
+                      type="number"
+                      min="0"
+                      class="edit-input"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="product-price">
+                  <div class="form-field">
+                    <label for="product-price">Price:</label>
+                    <input
+                      id="product-price"
+                      v-model.number="newProduct.price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="edit-input"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-details-lower">
+              <section class="characteristics">
+                <h3 for="characteristics">Characteristics:</h3>
+                <textarea
+                  id="characteristics"
+                  v-model="newProduct.description"
+                  class="edit-textarea"
+                  required
+                ></textarea>
+              </section>
+
+              <section class="manufacturer">
+                <h3 for="manufacturer">Manufacturer:</h3>
+                <input
+                  id="manufacturer"
+                  type="text"
+                  v-model="newProduct.manufacturer"
+                  class="edit-input"
+                  required
+                />
+              </section>
+
+              <section class="categories">
+                <h3 for="category">Category:</h3>
+                <select
+                  id="category"
+                  v-model="newProduct.category"
+                  class="edit-dropdown"
+                >
+                  <option disabled value="">Select category</option>
+                  <option
+                    v-for="category in productsCategories"
+                    :key="category.category"
+                    :value="category.category"
+                  >
+                    {{ category.category }}
+                  </option>
+                </select>
+              </section>
+            </div>
+
+            <div class="buttons-section" v-if="isManager">
+              <button class="save-btn" type="sumbit">Add Product</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading"></custom-footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>
