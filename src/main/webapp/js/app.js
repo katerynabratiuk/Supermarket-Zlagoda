@@ -345,7 +345,7 @@ let app = Vue.createApp(
       },
       async loadCategories() {
         try {
-          const response = await fetch("../categories.json")
+          const response = await fetch("http://localhost:8090/category")
 
           if (!response.ok) throw new Error("Fetch categories error! Status: ${response.status}")
 

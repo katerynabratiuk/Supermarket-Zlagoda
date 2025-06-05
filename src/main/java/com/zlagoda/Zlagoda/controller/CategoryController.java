@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+})
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -17,7 +21,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping(produces="application/json")
+    @GetMapping()
     public @ResponseBody List<Category> getCategories()
     {
         return categoryService.findAll();
