@@ -79,11 +79,11 @@
                   </button>
                 </form>
 
-                <a v-else href="products.html"> {{ item.category }} </a>
+                <a v-else href="products.html"> {{ item.name }} </a>
               </div>
               <a
                 href="products.html"
-                :title="'View products in ' + item.category + ' category'"
+                :title="'View products in ' + item.name + ' category'"
                 class="category-arrow"
                 >></a
               >
