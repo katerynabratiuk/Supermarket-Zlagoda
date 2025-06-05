@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/categories.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Categories - Zlagoda</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar
+          :user-role="userRole"
+          :is-manager="isManager"
+          :is-cashier="isCashier"
+        />
+      </header>
+
+      <main>
+        <div class="categories-header">
+          <h2>Categories</h2>
+          <edit-button
+            type="button"
+            :is-manager="isManager"
+            :is-edit-mode="isEditMode"
+            @toggle="toggleEditMode"
+          >
+          </edit-button>
+        </div>
+
+        <section class="contents">
+          <ul v-if="!isLoading">
+            <li v-for="item in productsCategories" :key="item.id">
+              <div class="category-item">
+                <button
+                  type="button"
+                  class="delete-item-btn"
+                  v-if="isManager && isEditMode"
+                  @click="confirmDeleteCategory(item.id)"
+                >
+                  <span class="material-symbols-outlined"> close </span>
+                </button>
+
+                <button
+                  type="button"
+                  class="edit-item-btn"
+                  v-if="isManager && isEditMode"
+                  @click="toggleEdit(item.id)"
+                >
+                  <span class="material-symbols-outlined"> edit </span>
+                </button>
+
+                <form
+                  class="edit-form"
+                  v-if="isManager && isEditMode && currentEditingItemID === item.id"
+                  @submit.prevent="saveEditCategory(item)"
+                >
+                  <input
+                    id="product-category"
+                    v-model="item.category"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
+                  <button type="submit" class="add-new-item-btn">
+                    <span class="material-symbols-outlined">
+                      download_done </span
+                    >Save
+                  </button>
+                </form>
+
+                <a v-else href="products.html"> {{ item.category }} </a>
+              </div>
+              <a
+                href="products.html"
+                :title="'View products in ' + item.category + ' category'"
+                class="category-arrow"
+                >></a
+              >
+            </li>
+
+            <li v-if="isManager && isEditMode">
+              <form class="edit-form" @submit.prevent="addNewCategory">
+                <div class="category-item">
+                  <input
+                    id="product-category-new"
+                    type="text"
+                    v-model="newCategory.category"
+                    class="edit-input"
+                    placeholder="Add new category"
+                  />
+                  <button type="submit" class="add-new-item-btn">
+                    <span class="material-symbols-outlined"> add_circle </span>
+                    Add New
+                  </button>
+                </div>
+              </form>
+            </li>
+          </ul>
+          <div class="buttons-section" v-if="isManager && isEditMode">
+            <button
+              type="button"
+              class="save-change-btn"
+              @click="toggleEditMode"
+            >
+              Save
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <custom-footer></custom-footer>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

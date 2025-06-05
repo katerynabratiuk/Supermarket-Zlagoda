@@ -1,0 +1,153 @@
+button {
+  background-color: #4a5759;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  height: 100%;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background-color: #b0c4b1;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 5px 10px;
+}
+
+.search-form button {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.search-form button:hover {
+  background-color: transparent;
+}
+
+.search-form label {
+  display: none;
+}
+
+.search-form .material-symbols-outlined {
+  font-size: inherit;
+  color: #4a5759;
+}
+
+.search-form input[type="search"] {
+  border: none;
+  background-color: transparent;
+  padding: 5px 10px;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.delete-item-btn,
+.edit-item-btn {
+  background-color: transparent;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  color: #891a1a;
+}
+
+.delete-btn {
+  background-color: #891a1a;
+}
+
+.edit-item-btn {
+  color: #4a5759;
+}
+
+.delete-item-btn:hover,
+.edit-item-btn:hover,
+.login-btn:hover {
+  background-color: transparent;
+}
+
+button:hover {
+  background-color: #3a4446;
+}
+
+.delete-btn:hover {
+  background-color:#741616
+}
+
+.add-new-item-btn {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-color: transparent;
+  color: inherit;
+}
+
+.add-new-item-btn:hover {
+  background-color: transparent;
+}
+
+.edit-input,
+.edit-textarea,
+.edit-dropdown {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ececec;
+  border: 1px solid #243336;
+  border-radius: 4px;
+  padding: 8px 20px;
+  margin: 5px 0;
+  font: inherit;
+}
+
+.edit-textarea {
+  height: 100px;
+  resize: none;
+}
+
+select {
+  box-sizing: border-box;
+  background-color: #ececec;
+  border: 1px solid #243336;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.status-btn {
+  margin: 10px 0;
+}
+.status-btn.in-stock {
+  background-color: #b0c4b1;
+  color: inherit;
+}
+
+.status-btn.out-of-stock {
+  background-color: #891a1a;
+  color: white;
+}
+
+.status-btn {
+  opacity: 0.5;
+}
+
+.status-btn.active {
+  opacity: 1;
+}
+
+button .material-symbols-outlined {
+  font-size: 18px;
+}
+
+input:focus,
+button:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+}

@@ -1,0 +1,397 @@
+[
+    {
+      "check_number": "0000000001",
+      "print_date": "2024-01-15",
+      "id_employee": "10001",
+      "card_number": "0000000000001",
+      "sum_total": 584.600,
+      "vat": 116.920,
+      "sales": [
+        { "product_name": "Sweet Yellow Pepper", "selling_price": 164.950, "quantity": 1, "product_id": 1 },
+        { "product_name": "Organic Carrots", "selling_price": 36.400, "quantity": 3, "product_id": 2 },
+        { "product_name": "Craft Beer", "selling_price": 55.250, "quantity": 2, "product_id": 5}
+      ]
+    },
+    {
+      "check_number": "0000000002",
+      "print_date": "2024-01-15",
+      "id_employee": "10002",
+      "card_number": "0000000000002",
+      "sum_total": 418.680,
+      "vat": 83.736,
+      "sales": [
+        { "product_name": "Free Range Eggs", "selling_price": 55.120, "quantity": 3, "product_id": 4},
+        { "product_name": "Chicken Breast", "selling_price": 103.992, "quantity": 2, "product_id": 7},
+        { "product_name": "Red Apples", "selling_price": 42.240, "quantity": 1, "product_id": 12 }
+      ]
+    },
+    {
+      "check_number": "0000000003",
+      "print_date": "2024-01-15",
+      "id_employee": "10004",
+      "card_number": "0000000000003",
+      "sum_total": 517.000,
+      "vat": 103.400,
+      "sales": [
+        { "product_name": "Dark Chocolate", "selling_price": 72.300, "quantity": 3, "product_id": 8},
+        { "product_name": "Whole Grain Bread", "selling_price": 28.750, "quantity": 4, "product_id": 10 },
+        { "product_name": "Beef Steak", "selling_price": 319.750, "quantity": 0.5, "product_id": 16}
+      ]
+    },
+    {
+      "check_number": "0000000004",
+      "print_date": "2024-01-16",
+      "id_employee": "10005",
+      "card_number": "0000000000004",
+      "sum_total": 754.520,
+      "vat": 150.904,
+      "sales": [
+        { "product_name": "Potato Chips", "selling_price": 37.200, "quantity": 2, "product_id": 11},
+        { "product_name": "Red Wine", "selling_price": 189.000, "quantity": 3, "product_id": 14 },
+        { "product_name": "Tuna Fillet", "selling_price": 159.000, "quantity": 1, "product_id": 27},
+        { "product_name": "Orange Juice", "selling_price": 27.920, "quantity": 1, "product_id": 15 }
+      ]
+    },
+    {
+      "check_number": "0000000005",
+      "print_date": "2024-01-16",
+      "id_employee": "10006",
+      "card_number": "0000000000005",
+      "sum_total": 702.050,
+      "vat": 140.410,
+      "sales": [
+        { "product_name": "Atlantic Salmon", "selling_price": 199.600, "quantity": 1, "product_id": 9},
+        { "product_name": "Shrimp", "selling_price": 275.300, "quantity": 1.5, "product_id": 18 },
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 2, "product_id": 24 }
+      ]
+    },
+    {
+      "check_number": "0000000006",
+      "print_date": "2024-01-16",
+      "id_employee": "10007",
+      "card_number": "0000000000006",
+      "sum_total": 409.300,
+      "vat": 81.860,
+      "sales": [
+        { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 4, "product_id": 22},
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 1, "product_id": 19 },
+        { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 2, "product_id": 30 }
+      ]
+    },
+    {
+      "check_number": "0000000007",
+      "print_date": "2024-01-17",
+      "id_employee": "10008",
+      "card_number": "0000000000007",
+      "sum_total": 903.030,
+      "vat": 180.606,
+      "sales": [
+        { "product_name": "Sweet Yellow Pepper", "selling_price": 164.950, "quantity": 2, "product_id": 1 },
+        { "product_name": "Organic Carrots", "selling_price": 36.400, "quantity": 3, "product_id": 2 },
+        { "product_name": "Free Range Eggs", "selling_price": 55.120, "quantity": 4, "product_id": 4},
+        { "product_name": "Dark Chocolate", "selling_price": 72.300, "quantity": 1, "product_id": 8}
+      ]
+    },
+    {
+      "check_number": "0000000008",
+      "print_date": "2024-01-17",
+      "id_employee": "10009",
+      "card_number": "0000000000008",
+      "sum_total": 557.500,
+      "vat": 111.500,
+      "sales": [
+        { "product_name": "Craft Beer", "selling_price": 55.250, "quantity": 3, "product_id": 5 },
+        { "product_name": "Whole Grain Bread", "selling_price": 28.750, "quantity": 2, "product_id": 10 },
+        { "product_name": "Beef Steak", "selling_price": 319.750, "quantity": 0.5, "product_id": 16}
+      ]
+    },
+    {
+      "check_number": "0000000009",
+      "print_date": "2024-01-17",
+      "id_employee": "10010",
+      "card_number": "0000000000009",
+      "sum_total": 333.920,
+      "vat": 66.784,
+      "sales": [
+        { "product_name": "Red Apples", "selling_price": 42.240, "quantity": 3, "product_id": 12 },
+        { "product_name": "Potato Chips", "selling_price": 37.200, "quantity": 1, "product_id": 11 },
+        { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 2, "product_id": 22}
+      ]
+    },
+    {
+      "check_number": "0000000010",
+      "print_date": "2024-01-18",
+      "id_employee": "10011",
+      "card_number": "0000000000010",
+      "sum_total": 709.200,
+      "vat": 141.840,
+      "sales": [
+        { "product_name": "Atlantic Salmon", "selling_price": 199.600, "quantity": 2, "product_id": 9 },
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 4, "product_id": 19},
+        { "product_name": "Vodka", "selling_price": 50.000, "quantity": 3, "product_id": 23 }
+      ]
+    },
+    {
+      "check_number": "0000000011",
+      "print_date": "2024-01-18",
+      "id_employee": "10012",
+      "card_number": "0000000000011",
+      "sum_total": 544.380,
+      "vat": 108.876,
+      "sales": [
+        { "product_name": "Orange Juice", "selling_price": 27.920, "quantity": 5, "product_id": 15 },
+        { "product_name": "Shrimp", "selling_price": 275.300, "quantity": 1, "product_id": 18 },
+        { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 3, "product_id": 30 }
+      ]
+    },
+    {
+      "check_number": "0000000012",
+      "print_date": "2024-01-18",
+      "id_employee": "10014",
+      "card_number": "0000000000012",
+      "sum_total": 589.010,
+      "vat": 117.802,
+      "sales": [
+        { "product_name": "Gummy Bears", "selling_price": 49.920, "quantity": 2, "product_id": 17 },
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 3, "product_id": 24 },
+        { "product_name": "Chocolate Cake", "selling_price": 134.500, "quantity": 3, "product_id": 26}
+      ]
+    },
+    {
+      "check_number": "0000000013",
+      "print_date": "2024-01-19",
+      "id_employee": "10015",
+      "card_number": "0000000000013",
+      "sum_total": 528.500,
+      "vat": 105.700,
+      "sales": [
+        { "product_name": "Sweet Yellow Pepper", "selling_price": 164.950, "quantity": 1, "product_id": 1 },
+        { "product_name": "Organic Carrots", "selling_price": 36.400, "quantity": 4, "product_id": 2 },
+        { "product_name": "Craft Beer", "selling_price": 55.250, "quantity": 3, "product_id": 5 }
+      ]
+    },
+    {
+      "check_number": "0000000014",
+      "print_date": "2024-01-19",
+      "id_employee": "10016",
+      "card_number": "0000000000014",
+      "sum_total": 385.020,
+      "vat": 77.004,
+      "sales": [
+        { "product_name": "Free Range Eggs", "selling_price": 55.120, "quantity": 2, "product_id": 4 },
+        { "product_name": "Chicken Breast", "selling_price": 103.992, "quantity": 1, "product_id": 7},
+        { "product_name": "Red Apples", "selling_price": 42.240, "quantity": 3, "product_id": 12 }
+      ]
+    },
+    {
+      "check_number": "0000000015",
+      "print_date": "2024-01-19",
+      "id_employee": "10017",
+      "card_number": "0000000000015",
+      "sum_total": 558.300,
+      "vat": 111.660,
+      "sales": [
+        { "product_name": "Dark Chocolate", "selling_price": 72.300, "quantity": 4, "product_id": 8 },
+        { "product_name": "Whole Grain Bread", "selling_price": 28.750, "quantity": 3, "product_id": 10 },
+        { "product_name": "Beef Steak", "selling_price": 319.750, "quantity": 0.2, "product_id": 16 }
+      ]
+    },
+    {
+      "check_number": "0000000016",
+      "print_date": "2024-01-20",
+      "id_employee": "10018",
+      "card_number": "0000000000016",
+      "sum_total": 549.560,
+      "vat": 109.912,
+      "sales": [
+        { "product_name": "Potato Chips", "selling_price": 37.200, "quantity": 3, "product_id": 11 },
+        { "product_name": "Red Wine", "selling_price": 189.000, "quantity": 2, "product_id": 14},
+        { "product_name": "Tuna Fillet", "selling_price": 159.000, "quantity": 0.5, "product_id": 27 },
+        { "product_name": "Orange Juice", "selling_price": 27.920, "quantity": 2, "product_id": 15}
+      ]
+    },
+    {
+      "check_number": "0000000017",
+      "print_date": "2024-01-20",
+      "id_employee": "10019",
+      "card_number": "0000000000017",
+      "sum_total": 865.250,
+      "vat": 173.050,
+      "sales": [
+        { "product_name": "Atlantic Salmon", "selling_price": 199.600, "quantity": 3, "product_id": 9 },
+        { "product_name": "Shrimp", "selling_price": 275.300, "quantity": 1, "product_id": 18 },
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 3, "product_id": 24}
+      ]
+    },
+    {
+      "check_number": "0000000018",
+      "print_date": "2024-01-20",
+      "id_employee": "10020",
+      "card_number": "0000000000018",
+      "sum_total": 504.320,
+      "vat": 100.864,
+      "sales": [
+        { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 5, "product_id": 22 },
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 2, "product_id": 19 },
+        { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 1, "product_id": 30}
+      ]
+    },
+    {
+      "check_number": "0000000019",
+      "print_date": "2024-01-21",
+      "id_employee": "10021",
+      "card_number": "0000000000019",
+      "sum_total": 903.030,
+      "vat": 180.606,
+      "sales": [
+        { "product_name": "Sweet Yellow Pepper", "selling_price": 164.950, "quantity": 4, "product_id": 1 },
+        { "product_name": "Organic Carrots", "selling_price": 36.400, "quantity": 3, "product_id": 2 },
+        { "product_name": "Free Range Eggs", "selling_price": 55.120, "quantity": 2, "product_id": 4 },
+        { "product_name": "Dark Chocolate", "selling_price": 72.300, "quantity": 1, "product_id": 8}
+      ]
+    },
+    {
+      "check_number": "0000000020",
+      "print_date": "2024-01-21",
+      "id_employee": "10022",
+      "card_number": "0000000000020",
+      "sum_total": 544.880,
+      "vat": 108.976,
+      "sales": [
+        { "product_name": "Craft Beer", "selling_price": 55.250, "quantity": 2, "product_id": 5 },
+        { "product_name": "Whole Grain Bread", "selling_price": 28.750, "quantity": 4, "product_id": 10 },
+        { "product_name": "Beef Steak", "selling_price": 319.750, "quantity": 0.5, "product_id": 16 }
+      ]
+    },
+    {
+      "check_number": "0000000021",
+      "print_date": "2024-01-21",
+      "id_employee": "10023",
+      "card_number": "0000000000021",
+      "sum_total": 333.920,
+      "vat": 66.784,
+      "sales": [
+        { "product_name": "Red Apples", "selling_price": 42.240, "quantity": 2, "product_id": 12 },
+        { "product_name": "Potato Chips", "selling_price": 37.200, "quantity": 1, "product_id": 11 },
+        { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 2, "product_id": 22}
+      ]
+    },
+    {
+      "check_number": "0000000022",
+      "print_date": "2024-01-22",
+      "id_employee": "10024",
+      "card_number": "0000000000022",
+      "sum_total": 693.700,
+      "vat": 138.740,
+      "sales": [
+        { "product_name": "Atlantic Salmon", "selling_price": 199.600, "quantity": 3, "product_id": 9 },
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 1, "product_id": 19 },
+        { "product_name": "Vodka", "selling_price": 50.000, "quantity": 2, "product_id": 23 }
+      ]
+    },
+    {
+      "check_number": "0000000023",
+      "print_date": "2024-01-22",
+      "id_employee": "10025",
+      "card_number": "0000000000023",
+      "sum_total": 481.500,
+      "vat": 96.300,
+      "sales": [
+        { "product_name": "Orange Juice", "selling_price": 27.920, "quantity": 2, "product_id": 15 },
+        { "product_name": "Shrimp", "selling_price": 275.300, "quantity": 0.5, "product_id": 18 },
+        { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 3, "product_id": 30}
+      ]
+    },
+    {
+      "check_number": "0000000024",
+      "print_date": "2024-01-22",
+      "id_employee": "10026",
+      "card_number": "0000000000024",
+      "sum_total": 542.960,
+      "vat": 108.592,
+      "sales": [
+        { "product_name": "Gummy Bears", "selling_price": 49.920, "quantity": 1, "product_id": 17 },
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 3, "product_id": 24 },
+        { "product_name": "Chocolate Cake", "selling_price": 134.500, "quantity": 3, "product_id": 26}
+      ]
+    },
+    {
+      "check_number": "0000000025",
+      "print_date": "2024-01-23",
+      "id_employee": "10027",
+      "card_number": "0000000000025",
+      "sum_total": 448.600,
+      "vat": 89.720,
+      "sales": [
+        { "product_name": "Popcorn", "selling_price": 23.920, "quantity": 1, "product_id": 20 },
+        { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 2, "product_id": 22 },
+        { "product_name": "Vodka", "selling_price": 225.000, "quantity": 1, "product_id": 23},
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 1, "product_id": 19}
+      ]
+    },
+    {
+      "check_number": "0000000026",
+      "print_date": "2024-01-23",
+      "id_employee": "10028",
+      "card_number": "0000000000026",
+      "sum_total": 556.680,
+      "vat": 111.336,
+      "sales": [
+        { "product_name": "Red Wine", "selling_price": 189.000, "quantity": 2, "product_id": 14},
+         { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 4, "product_id": 24},
+          { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 2, "product_id": 30}
+      ]
+    },
+    {
+      "check_number": "0000000027",
+      "print_date": "2024-01-23",
+      "id_employee": "10029",
+      "card_number": "0000000000027",
+      "sum_total": 759.300,
+      "vat": 151.860,
+      "sales": [
+        { "product_name": "Sweet Yellow Pepper", "selling_price": 164.950, "quantity": 3, "product_id": 1 },
+        { "product_name": "Organic Carrots", "selling_price": 36.400, "quantity": 5, "product_id": 2},
+        { "product_name": "Free Range Eggs", "selling_price": 55.120, "quantity": 4, "product_id": 4}
+      ]
+    },
+    {
+      "check_number": "0000000028",
+      "print_date": "2024-01-24",
+      "id_employee": "10030",
+      "card_number": "0000000000028",
+      "sum_total": 515.740,
+      "vat": 103.148,
+      "sales": [
+        { "product_name": "Atlantic Salmon", "selling_price": 199.600, "quantity": 1.5, "product_id": 9 },
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 4, "product_id": 24},
+        { "product_name": "Popcorn", "selling_price": 23.920, "quantity": 3, "product_id": 20}
+      ]
+    },
+    {
+      "check_number": "0000000029",
+      "print_date": "2024-01-24",
+      "id_employee": "10001",
+      "card_number": "0000000000029",
+      "sum_total": 579.780,
+      "vat": 115.956,
+      "sales": [
+        { "product_name": "Tuna Fillet", "selling_price": 159.000, "quantity": 2, "product_id": 27},
+        { "product_name": "Baguette", "selling_price": 24.500, "quantity": 5, "product_id": 19 },
+        { "product_name": "Tomatoes", "selling_price": 37.840, "quantity": 1, "product_id": 30}
+      ]
+    },
+    {
+      "check_number": "0000000030",
+      "print_date": "2024-01-24",
+      "id_employee": "10002",
+      "card_number": "0000000000030",
+      "sum_total": 471.080,
+      "vat": 94.216,
+      "sales": [
+        { "product_name": "Gummy Bears", "selling_price": 49.920, "quantity": 2, "product_id": 17},
+        { "product_name": "Lemonade", "selling_price": 26.750, "quantity": 5, "product_id": 24 },
+         { "product_name": "Cheddar Cheese", "selling_price": 78.080, "quantity": 2, "product_id": 22}
+      ]
+    }
+  ]

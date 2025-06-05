@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Log in - Zlagoda</title>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <main>
+        <div class="login-container">
+          <div class="logo">
+            <img src="../images/logo-green.svg" alt="Zlagoda Logo" />
+            <h1>Zlagoda</h1>
+          </div>
+
+          <div class="login-form">
+            <form>
+              <div class="form-group-input">
+                <div class="form-group">
+                  <label for="userid">User ID</label>
+                  <input
+                    type="text"
+                    id="userid"
+                    name="userid"
+                    v-model="userId"
+                  />
+                </div>
+
+                <div class="form-group password-wrapper">
+                  <label for="password">Password</label>
+                  <div class="password-field">
+                    <input
+                      :type="isPasswordVisible ? 'text' : 'password'"
+                      id="password"
+                      name="password"
+                    />
+                    <button
+                      type="button"
+                      class="toggle-password-btn"
+                      @click.prevent="togglePasswordVisibility"
+                    >
+                      <span class="material-symbols-outlined">
+                        {{ isPasswordVisible ? 'visibility_off' : 'visibility'
+                        }}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button class="login-button" type="submit">Log In</button>
+            </form>
+          </div>
+
+          <div class="continue-without-login">
+            <a href="../views/categories.html" @click="loadCategories">CONTINUE WITHOUT LOGGING IN</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

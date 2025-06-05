@@ -1,0 +1,29 @@
+.categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contents ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contents li {
+  padding: 10px 0;
+  border-bottom: 1px solid #d9d9d9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contents li:last-child {
+  border-bottom: none;
+}
+
+.category-item, .edit-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

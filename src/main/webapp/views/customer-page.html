@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/customer-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Customer Page</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole"/>
+      </header>
+
+      <main v-if="!isLoading && currentCustomer">
+        <div class="customer-header">
+          <h2>Customer</h2>
+          <edit-button
+            :is-manager="isManager"
+            :is-edit-mode="isEditMode"
+            @toggle="toggleEditMode"
+          ></edit-button>
+        </div>
+
+        <section class="contents">
+          <form
+            action=""
+            class="edit-form"
+            @submit.prevent="saveEditCustomer"
+          >
+            <div class="customer-details-upper-wrapper">
+              <div class="customer-details-upper">
+                <div class="customer-name">
+                  <h3 v-if="!isEditMode">
+                    {{ currentCustomer.cust_surname }} {{
+                    currentCustomer.cust_name }}
+                    <span v-if="currentCustomer.cust_patronymic">
+                      {{ currentCustomer.cust_patronymic }}
+                    </span>
+                  </h3>
+                  <div class="form-field" v-else>
+                    <label for="cust_surname">Surname:</label>
+                    <input
+                      type="text"
+                      id="cust_surname"
+                      v-model="currentCustomer.cust_surname"
+                      class="edit-input"
+                      required
+                    />
+
+                    <label for="cust_name">Name:</label>
+                    <input
+                      type="text"
+                      id="cust_name"
+                      v-model="currentCustomer.cust_name"
+                      class="edit-input"
+                      required
+                    />
+
+                    <label for="cust_patronymic">Patronymic:</label>
+                    <input
+                      type="text"
+                      id="cust_patronymic"
+                      v-model="currentCustomer.cust_patronymic"
+                      class="edit-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="customer-card-number">
+                <p>Сard Number: {{ currentCustomer.card_number }}</p>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="customer-details-lower">
+              <div class="customer-percent">
+                <h4 for="percent">Percent:</h4>
+                <p v-if="!isEditMode">{{ currentCustomer.percent}}%</p>
+                <div v-else class="form-field">
+                  <input
+                    type="number"
+                    id="percent"
+                    step="1"
+                    min="0"
+                    v-model.number="currentCustomer.percent"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="customer-phone-number">
+                <h4 for="phone_number">Phone number:</h4>
+                <p v-if="!isEditMode">{{ currentCustomer.phone_number }}</p>
+                <div v-else class="form-field">
+                  <input
+                    type="tel"
+                    id="phone_number"
+                    v-model="currentCustomer.phone_number"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div
+                class="customer-address"
+                v-if="currentCustomer.city || currentCustomer.street || currentCustomer.zipcode"
+              >
+                <h4 for="city">Address:</h4>
+                <div v-if="!isEditMode">
+                  <p>
+                    <span v-if="currentCustomer.city"
+                      >{{ currentCustomer.city }}</span
+                    >
+                    <span v-if="currentCustomer.street"
+                      >, {{ currentCustomer.street }}</span
+                    >
+                    <span v-if="currentCustomer.zipcode">
+                      , {{ currentCustomer.zip_code }}</span
+                    >
+                  </p>
+                </div>
+                <div v-else class="form-field">
+                  <label for="city">City:</label>
+                  <input
+                    type="text"
+                    id="city"
+                    v-model="currentCustomer.city"
+                    class="edit-input"
+                  />
+
+                  <label for="street">Street:</label>
+                  <input
+                    type="text"
+                    id="street"
+                    v-model="currentCustomer.street"
+                    class="edit-input"
+                  />
+
+                  <label for="zip_code">Zip Code:</label>
+                  <input
+                    type="text"
+                    id="zip_code"
+                    v-model="currentCustomer.zip_code"
+                    class="edit-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons-section" v-if="isManager && isEditMode">
+              <button class="delete-btn" @click="confirmAndDeleteCustomer">
+                Delete
+              </button>
+              <button class="save-btn" type="sumbit">Save</button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading && currentCustomer" ></custom-footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>
