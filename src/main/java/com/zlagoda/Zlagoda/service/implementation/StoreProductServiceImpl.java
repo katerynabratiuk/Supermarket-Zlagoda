@@ -1,0 +1,63 @@
+package com.zlagoda.Zlagoda.service.implementation;
+
+import com.zlagoda.Zlagoda.entity.StoreProduct;
+import com.zlagoda.Zlagoda.repository.StoreProductRepository;
+import com.zlagoda.Zlagoda.service.StoreProductService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StoreProductServiceImpl implements StoreProductService {
+
+    private final StoreProductRepository storeProductRepository;
+
+    public StoreProductServiceImpl(StoreProductRepository storeProductRepository) {
+        this.storeProductRepository = storeProductRepository;
+    }
+
+    @Override
+    public List<StoreProduct> findByCategory(String categoryName) {
+        return storeProductRepository.findByCategory(categoryName);
+    }
+
+    @Override
+    public List<StoreProduct> findAll() {
+        return storeProductRepository.findAll();
+    }
+
+    @Override
+    public List<StoreProduct> findByName(String name) {
+        return storeProductRepository.findByName(name);
+    }
+
+    @Override
+    public StoreProduct findById(String id) {
+        return storeProductRepository.findById(id);
+    }
+
+    @Override
+    public void create(StoreProduct storeProduct) {
+        storeProductRepository.create(storeProduct);
+    }
+
+    @Override
+    public void update(StoreProduct storeProduct) {
+        storeProductRepository.update(storeProduct);
+    }
+
+    @Override
+    public void delete(String id) {
+        storeProductRepository.delete(id);
+    }
+
+    @Override
+    public List<StoreProduct> findPromotional() {
+        return storeProductRepository.findPromotional();
+    }
+
+    @Override
+    public List<StoreProduct> findNonPromotional() {
+        return storeProductRepository.findNonPromotional();
+    }
+}
