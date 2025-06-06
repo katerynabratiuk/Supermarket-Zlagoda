@@ -46,7 +46,7 @@
                   type="button"
                   class="delete-item-btn"
                   v-if="isManager && isEditMode"
-                  @click="confirmDeleteCategory(item.id)"
+                  @click="confirmDeleteCategory(item.category_number)"
                 >
                   <span class="material-symbols-outlined"> close </span>
                 </button>
@@ -67,7 +67,7 @@
                 >
                   <input
                     id="product-category"
-                    v-model="item.category"
+                    v-model="item.category_name"
                     type="text"
                     class="edit-input"
                     required
@@ -79,7 +79,7 @@
                   </button>
                 </form>
 
-                <a v-else href="products.html"> {{ item.name }} </a>
+                <a v-else href="products.html"> {{ item.category_name }} </a>
               </div>
               <a
                 href="products.html"
@@ -95,7 +95,7 @@
                   <input
                     id="product-category-new"
                     type="text"
-                    v-model="newCategory.category"
+                    v-model="newCategory.category_name"
                     class="edit-input"
                     placeholder="Add new category"
                   />

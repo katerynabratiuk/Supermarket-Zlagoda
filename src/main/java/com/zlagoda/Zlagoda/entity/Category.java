@@ -6,13 +6,13 @@ import jakarta.validation.constraints.Size;
 
 public class Category{
 
-    @NotNull
+    //@NotNull
     @JsonProperty("category_number")
     private Integer number;
 
+    @JsonProperty("category_name")
     @NotNull
     @Size(min=3, max=50)
-    @JsonProperty("category_name")
     private String name;
 
     public Category() {

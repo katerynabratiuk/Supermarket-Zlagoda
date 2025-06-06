@@ -13,7 +13,10 @@ let app = Vue.createApp(
         employees: [],
         checks: [],
 
-        newCategory: { category: '', id: null },
+        newCategory: {
+        category_name: '',
+        category_number: null
+        },
 
         newProduct: {
           id: null,
@@ -387,7 +390,7 @@ let app = Vue.createApp(
       },
       async loadEmployees() {
         try {
-          const response = await fetch("../employees.json")
+          const response = await fetch("http://localhost:8090/employee")
 
           if (!response.ok) throw new Error("Fetch employees error! Status: ${response.status}")
 
@@ -411,13 +414,14 @@ let app = Vue.createApp(
         const categoryIdToDelete = categoryId
         if (confirm("Are you sure you want to delete this category?")) {
           try {
-            const response = await fetch(`/api/categories/${categoryId}`, {
+            const response = await fetch(`http://localhost:8090/category/${categoryId}`, {
               method: 'DELETE',
             })
 
             if (response.ok) {
               this.productsCategories = this.productsCategories.filter(item => item.id !== categoryIdToDelete)
-              this.newCategory = { category: '', id: null }
+              this.newCategory = { category_name: '', category_number: null }
+              await this.loadCategories()
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
               alert("Failed to delete category. Please try again.")
@@ -432,7 +436,7 @@ let app = Vue.createApp(
       },
       async addNewCategory() {
         try {
-          const response = await fetch('/api/categories/add', {
+          const response = await fetch('http://localhost:8090/category', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -441,10 +445,12 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            this.productsCategories.push(newCategory)
-            this.newCategory = { category: '', id: null }
-            console.log("New product added successfully:", newCategory)
-          } else {
+            const addedCategory = { ...this.newCategory };
+            this.productsCategories.push(addedCategory);
+            console.log("New product added successfully:", addedCategory);
+            this.newCategory = { category_name: '', category_number: null };
+          }
+          else {
             console.error("Adding category failed on the server. Status:", response.status)
             alert("Failed to add category. Please try again.")
           }
@@ -455,8 +461,8 @@ let app = Vue.createApp(
       },
       async saveEditCategory(category) {
         try {
-          const response = await fetch(`/api/categories/${category.id}`, {
-            method: 'PATCH',
+          const response = await fetch(`http://localhost:8090/category`, {
+            method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -651,7 +657,7 @@ let app = Vue.createApp(
       },
       async addNewEmployee() {
         try {
-          const response = await fetch('/api/employees/add', {
+          const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -677,7 +683,7 @@ let app = Vue.createApp(
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
           try {
-            const response = await fetch(`/api/employees/${employeeId}`, {
+            const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
               method: 'DELETE',
             })
 
@@ -699,7 +705,7 @@ let app = Vue.createApp(
       },
       async saveEditEmployee() {
         try {
-          const response = await fetch(`/api/employees/${this.currentEmployee.id_employee}`, {
+          const response = await fetch(`http://localhost:8090/employee/edit/${this.currentEmployee.id_employee}`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',

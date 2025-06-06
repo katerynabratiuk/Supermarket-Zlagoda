@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employee/")
+@RequestMapping("/employee")
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+})
 public class EmployeeController {
 
     private final EmployeeServiceImpl employeeService;
@@ -22,27 +26,27 @@ public class EmployeeController {
         return employeeService.findAll();
     }
 
-    @GetMapping("by-id/{employeeId}")
+    @GetMapping("/{employeeId}")
     public Employee getEmployee(@PathVariable String employeeId) {
         return employeeService.findById(employeeId);
     }
 
-    @GetMapping("by-role/{role}")
+    @GetMapping("/by-role/{role}")
     public List<Employee> findByRole(@PathVariable String role) {
         return employeeService.findByRole(role);
     }
 
-    @PostMapping("add")
+    @PostMapping()
     public void create(@RequestBody @Valid Employee employee) {
         employeeService.create(employee);
     }
 
-    @PutMapping("edit/{id}")
+    @PutMapping("/{id}")
     public void update(@RequestBody @Valid Employee employee) {
         employeeService.update(employee);
     }
 
-    @DeleteMapping("delete/{employeeId}")
+    @DeleteMapping("/{employeeId}")
     public void delete(@PathVariable String employeeId) {
         employeeService.delete(employeeId);
     }
