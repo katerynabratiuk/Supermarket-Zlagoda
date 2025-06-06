@@ -32,6 +32,9 @@ public class CategoryController {
         categoryService.create(category);
     }
 
+    @PutMapping("/edit/{id}")
+    public void editCategory(@RequestBody @Valid Category category) { categoryService.update(category); }
+
     @DeleteMapping("/{number}")
     public void deleteCategory(@PathVariable Integer number) {
         categoryService.delete(number);
