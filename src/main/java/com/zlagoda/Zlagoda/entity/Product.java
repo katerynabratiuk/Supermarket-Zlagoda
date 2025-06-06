@@ -1,23 +1,28 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class Product {
     @NotNull
+    @JsonProperty("id_product")
     private Integer id;
 
     @NotNull
     @NotBlank
+    @JsonProperty("product_name")
     private String name;
 
     @NotNull
     @Valid
+    @JsonProperty("category")
     private Category category;
 
     @NotNull
     @NotBlank
+    @JsonProperty("characteristics")
     private String characteristics;
 
 

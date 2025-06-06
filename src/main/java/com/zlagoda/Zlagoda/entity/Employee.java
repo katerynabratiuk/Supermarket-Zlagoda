@@ -1,5 +1,6 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -9,53 +10,65 @@ import java.time.LocalDate;
 public class Employee {
 
     @NotNull
+    @JsonProperty("id_employee")
     private String id;
 
     @NotNull
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("empl_name")
     private String name;
 
     @NotNull
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("empl_surname")
     private String surname;
 
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("empl_patronymic")
     private String patronymic;
 
     @NotNull
     @NotBlank
+    @JsonProperty("empl_role")
     private String role;
 
     @NotNull
     @Positive
+    @JsonProperty("salary")
     private BigDecimal salary;
 
     @NotNull
     @Past
+    @JsonProperty("date_of_birth")
     private LocalDate dateOfBirth;
 
     @NotNull
     @PastOrPresent
+    @JsonProperty("date_of_start")
     private LocalDate dateOfStart;
 
     @NotNull
     @Pattern(regexp = "(\\+)?[0-9]{10}")
+    @JsonProperty("phone_number")
     private String phoneNumber;
 
     @NotNull
     @Size(min=2, max=50)
     @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    @JsonProperty("city")
     private String city;
 
     @NotNull
     @Size(min=2, max=50)
     @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    @JsonProperty("street")
     private String street;
 
     @NotNull
     @Size(min = 5, max = 5)
     @Pattern(regexp = "[0-9]]")
     @NotBlank
+    @JsonProperty("zip_code")
     private String zipCode;
 
     public Employee(){};
