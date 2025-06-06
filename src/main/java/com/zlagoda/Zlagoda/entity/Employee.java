@@ -48,25 +48,25 @@ public class Employee {
     private LocalDate dateOfStart;
 
     @NotNull
-    @Pattern(regexp = "(\\+)?[0-9]{10}")
+    //@Pattern(regexp = "(\\+)?[0-9]{10}")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
     @NotNull
     @Size(min=2, max=50)
-    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     @JsonProperty("city")
     private String city;
 
     @NotNull
     @Size(min=2, max=50)
-    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     @JsonProperty("street")
     private String street;
 
     @NotNull
     @Size(min = 5, max = 5)
-    @Pattern(regexp = "[0-9]]")
+    //@Pattern(regexp = "[0-9]")
     @NotBlank
     @JsonProperty("zip_code")
     private String zipCode;
