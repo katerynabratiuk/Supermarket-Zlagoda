@@ -13,7 +13,10 @@ let app = Vue.createApp(
         employees: [],
         checks: [],
 
-        newCategory: { category: '', id: null },
+        newCategory: {
+        category_name: '',
+        category_number: null
+        },
 
         newProduct: {
           id: null,
@@ -417,7 +420,8 @@ let app = Vue.createApp(
 
             if (response.ok) {
               this.productsCategories = this.productsCategories.filter(item => item.id !== categoryIdToDelete)
-              this.newCategory = { category: '', id: null }
+              this.newCategory = { category_name: '', category_number: null }
+              await this.loadCategories()
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
               alert("Failed to delete category. Please try again.")
@@ -441,10 +445,12 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            this.productsCategories.push(newCategory)
-            this.newCategory = { category: '', id: null }
-            console.log("New product added successfully:", newCategory)
-          } else {
+            const addedCategory = { ...this.newCategory };
+            this.productsCategories.push(addedCategory);
+            console.log("New product added successfully:", addedCategory);
+            this.newCategory = { category_name: '', category_number: null };
+          }
+          else {
             console.error("Adding category failed on the server. Status:", response.status)
             alert("Failed to add category. Please try again.")
           }
