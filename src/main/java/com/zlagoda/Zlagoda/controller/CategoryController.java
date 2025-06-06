@@ -27,7 +27,7 @@ public class CategoryController {
         return categoryService.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public void createCategory(@RequestBody @Valid Category category) {
         categoryService.create(category);
     }
