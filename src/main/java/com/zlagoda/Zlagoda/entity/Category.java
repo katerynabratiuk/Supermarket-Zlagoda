@@ -12,7 +12,7 @@ public class Category{
 
     @NotNull
     @Size(min=3, max=50)
-    @JsonProperty("category_number")
+    @JsonProperty("category_name")
     private String name;
 
     public Category() {
