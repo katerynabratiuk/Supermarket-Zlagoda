@@ -369,7 +369,7 @@ let app = Vue.createApp(
       },
       async loadCustomers() {
         try {
-          const response = await fetch("../customers.json")
+          const response = await fetch("http://localhost:8090/customer")
           if (!response.ok) throw new Error("Fetch customers error! Status: ${response.status}")
 
           this.customers = await response.json()
@@ -581,7 +581,7 @@ let app = Vue.createApp(
       },
       async addNewCustomer() {
         try {
-          const response = await fetch('/api/customers/add', {
+          const response = await fetch('http://localhost:8090/customer', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -608,7 +608,7 @@ let app = Vue.createApp(
         const customerId = this.currentCustomer.card_number
         if (confirm("Are you sure you want to delete this customer?")) {
           try {
-            const response = await fetch(`/api/customers/${customerId}`, {
+            const response = await fetch(`http://localhost:8090/customer/${customerId}`, {
               method: 'DELETE',
             })
 
@@ -631,8 +631,8 @@ let app = Vue.createApp(
       },
       async saveEditCustomer() {
         try {
-          const response = await fetch(`/api/customers/${this.currentCustomer.card_number}`, {
-            method: 'PATCH',
+          const response = await fetch(`http://localhost:8090/customer/${this.currentCustomer.card_number}`, {
+            method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
