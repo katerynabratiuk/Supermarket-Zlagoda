@@ -411,7 +411,7 @@ let app = Vue.createApp(
         const categoryIdToDelete = categoryId
         if (confirm("Are you sure you want to delete this category?")) {
           try {
-            const response = await fetch(`/api/categories/${categoryId}`, {
+            const response = await fetch(`http://localhost:8090/category/${categoryId}`, {
               method: 'DELETE',
             })
 
@@ -432,7 +432,7 @@ let app = Vue.createApp(
       },
       async addNewCategory() {
         try {
-          const response = await fetch('/api/categories/add', {
+          const response = await fetch('http://localhost:8090/category', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -455,8 +455,8 @@ let app = Vue.createApp(
       },
       async saveEditCategory(category) {
         try {
-          const response = await fetch(`/api/categories/${category.id}`, {
-            method: 'PATCH',
+          const response = await fetch(`http://localhost:8090/category`, {
+            method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -651,7 +651,7 @@ let app = Vue.createApp(
       },
       async addNewEmployee() {
         try {
-          const response = await fetch('http://localhost:8090/employee/add', {
+          const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -677,7 +677,7 @@ let app = Vue.createApp(
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
           try {
-            const response = await fetch(`http://localhost:8090/employee/delete/${employeeId}`, {
+            const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
               method: 'DELETE',
             })
 

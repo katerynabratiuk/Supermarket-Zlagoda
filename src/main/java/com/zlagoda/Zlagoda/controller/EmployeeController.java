@@ -26,7 +26,7 @@ public class EmployeeController {
         return employeeService.findAll();
     }
 
-    @GetMapping("/by-id/{employeeId}")
+    @GetMapping("/{employeeId}")
     public Employee getEmployee(@PathVariable String employeeId) {
         return employeeService.findById(employeeId);
     }
@@ -36,17 +36,17 @@ public class EmployeeController {
         return employeeService.findByRole(role);
     }
 
-    @PostMapping("/add")
+    @PostMapping()
     public void create(@RequestBody @Valid Employee employee) {
         employeeService.create(employee);
     }
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     public void update(@RequestBody @Valid Employee employee) {
         employeeService.update(employee);
     }
 
-    @DeleteMapping("/delete/{employeeId}")
+    @DeleteMapping("/{employeeId}")
     public void delete(@PathVariable String employeeId) {
         employeeService.delete(employeeId);
     }
