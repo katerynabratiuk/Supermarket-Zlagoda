@@ -387,7 +387,7 @@ let app = Vue.createApp(
       },
       async loadEmployees() {
         try {
-          const response = await fetch("../employees.json")
+          const response = await fetch("http://localhost:8090/employee")
 
           if (!response.ok) throw new Error("Fetch employees error! Status: ${response.status}")
 
@@ -651,7 +651,7 @@ let app = Vue.createApp(
       },
       async addNewEmployee() {
         try {
-          const response = await fetch('/api/employees/add', {
+          const response = await fetch('http://localhost:8090/employee/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -677,7 +677,7 @@ let app = Vue.createApp(
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
           try {
-            const response = await fetch(`/api/employees/${employeeId}`, {
+            const response = await fetch(`http://localhost:8090/employee/delete/${employeeId}`, {
               method: 'DELETE',
             })
 
@@ -699,7 +699,7 @@ let app = Vue.createApp(
       },
       async saveEditEmployee() {
         try {
-          const response = await fetch(`/api/employees/${this.currentEmployee.id_employee}`, {
+          const response = await fetch(`http://localhost:8090/employee/edit/${this.currentEmployee.id_employee}`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
