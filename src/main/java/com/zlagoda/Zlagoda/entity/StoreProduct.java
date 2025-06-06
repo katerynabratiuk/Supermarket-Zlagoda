@@ -1,5 +1,6 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -9,20 +10,26 @@ import java.math.BigDecimal;
 public class StoreProduct {
 
     @NotNull
+    @JsonProperty("UPC")
     private String UPC;
 
+    @JsonProperty("UPC_prom")
     private String UPC_prom;
 
     @NotNull
+    @JsonProperty("product")
     private Product product;
 
     @DecimalMin(value="0", inclusive = false)
+    @JsonProperty("selling_price")
     private BigDecimal sellingPrice;
 
     @Min(1)
+    @JsonProperty("products_number")
     private Integer productsNumber;
 
     @NotNull
+    @JsonProperty("promotional_product")
     private boolean isPromotional;
 
     public StoreProduct() {

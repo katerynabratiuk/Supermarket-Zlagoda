@@ -1,41 +1,51 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public class CustomerCard {
 
     @NotNull
+    @JsonProperty("card_number")
     private String cardNumber;
 
     @NotNull
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("cust_surname")
     private String surname;
 
     @NotNull
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("cust_name")
     private String name;
 
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @JsonProperty("cust_patronymic")
     private String patronymic;
 
     @NotNull
     @Pattern(regexp = "(\\+)?[0-9]{10}")
+    @JsonProperty("phone_number")
     private String phoneNumber;
 
     @Size(min=2, max=50)
     @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    @JsonProperty("city")
     private String city;
 
     @Size(min=2, max=50)
     @NotBlank
+    @JsonProperty("street")
     private String street;
 
     @Size(min = 5, max = 5)
     @NotBlank
-    private String zip_code;
+    @JsonProperty("zip_code")
+    private String zipCode;
 
     @Positive
     @Max(10)
+    @JsonProperty("percent")
     private Integer percent;
 
     public CustomerCard() {
@@ -109,7 +119,7 @@ public class CustomerCard {
     }
 
     public CustomerCard(String cardNumber, String surname, String name, String patronymic,
-                        String phoneNumber, String city, String street, String zip_code, Integer percent) {
+                        String phoneNumber, String city, String street, String zipCode, Integer percent) {
         this.cardNumber = cardNumber;
         this.surname = surname;
         this.name = name;
@@ -117,7 +127,7 @@ public class CustomerCard {
         this.phoneNumber = phoneNumber;
         this.city = city;
         this.street = street;
-        this.zip_code = zip_code;
+        this.zipCode = zipCode;
         this.percent = percent;
     }
 
@@ -130,11 +140,11 @@ public class CustomerCard {
     }
 
     public String getZipCode() {
-        return zip_code;
+        return zipCode;
     }
 
     public void setZipCode(String zip_code) {
-        this.zip_code = zip_code;
+        this.zipCode = zip_code;
     }
 
     public String getStreet() {
@@ -193,11 +203,4 @@ public class CustomerCard {
         this.cardNumber = cardNumber;
     }
 
-    public String getZip_code() {
-        return zip_code;
-    }
-
-    public void setZip_code(String zip_code) {
-        this.zip_code = zip_code;
-    }
 }

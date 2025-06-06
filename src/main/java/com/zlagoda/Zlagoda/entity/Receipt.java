@@ -1,5 +1,6 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -10,28 +11,35 @@ public class Receipt {
 
     @NotNull
     @NotBlank
+    @JsonProperty("check_number")
     private String checkNumber;
 
     @NotNull
+    @JsonProperty("employee")
     private Employee employee;
 
+    @JsonProperty("customer_card")
     private CustomerCard card;
 
     @NotNull
     @PastOrPresent
+    @JsonProperty("print_date")
     private LocalDate printDate;
 
     @NotNull
     @Positive
     @DecimalMin(value = "0", inclusive = false)
+    @JsonProperty("sum_total")
     private BigDecimal sumTotal;
 
     @NotNull
     @Positive
+    @JsonProperty("vat")
     private BigDecimal vat;
 
     @NotNull
     @Size(min = 1)
+    @JsonProperty("products")
     private ArrayList<StoreProduct> products = new ArrayList<>();
 
     public Receipt() {}

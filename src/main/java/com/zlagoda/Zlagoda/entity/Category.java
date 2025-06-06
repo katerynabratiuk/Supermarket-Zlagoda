@@ -1,15 +1,18 @@
 package com.zlagoda.Zlagoda.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class Category{
 
     @NotNull
+    @JsonProperty("category_number")
     private Integer number;
 
     @NotNull
     @Size(min=3, max=50)
+    @JsonProperty("category_name")
     private String name;
 
     public Category() {

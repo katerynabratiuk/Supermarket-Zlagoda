@@ -27,14 +27,18 @@ public class CategoryController {
         return categoryService.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public void createCategory(@RequestBody @Valid Category category) {
         categoryService.create(category);
     }
 
-    @DeleteMapping("/{number}")
-    public void deleteCategory(@PathVariable Integer number) {
-        categoryService.delete(number);
+    @PutMapping("/edit/{id}")
+    public void editCategory(@RequestBody @Valid Category category) { categoryService.update(category); }
+
+    @DeleteMapping("delete/{id}")
+    public void deleteCategory(@PathVariable Integer id) {
+        categoryService.delete(id);
     }
+
 
 }
