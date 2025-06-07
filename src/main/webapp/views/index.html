@@ -23,15 +23,20 @@
           </div>
 
           <div class="login-form">
-            <form>
+            <form @submit.prevent="handleLogin">
               <div class="form-group-input">
                 <div class="form-group">
-                  <label for="userid">User ID</label>
+                  <label for="phone">Phone Number</label>
                   <input
-                    type="text"
-                    id="userid"
-                    name="userid"
-                    v-model="userId"
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    v-model="userPhoneNumber"
+                    minlength="13"
+                    maxlength="13"
+                    @input="addPlusSign"
+                    required
+                    autocomplete="on"
                   />
                 </div>
 
@@ -42,6 +47,8 @@
                       :type="isPasswordVisible ? 'text' : 'password'"
                       id="password"
                       name="password"
+                      v-model="userPassword"
+                      required
                     />
                     <button
                       type="button"
