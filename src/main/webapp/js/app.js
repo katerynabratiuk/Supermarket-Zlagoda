@@ -565,7 +565,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
-            this.toggleEditMode()
+            window.location.href = "products.html"
           } else {
             console.error("Updating product failed on the server. Status:", response.status)
             alert("Failed to update product. Please try again.")
@@ -641,7 +641,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
-            this.toggleEditMode()
+            window.location.href = "customers.html"
           } else {
             console.error("Updating customer failed on the server. Status:", response.status)
             alert("Failed to update customer. Please try again.")
@@ -715,6 +715,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
+            window.location.href = "employees.html"
           } else {
             console.error("Updating employee failed on the server. Status:", response.status)
             alert("Failed to update employee. Please try again.")
