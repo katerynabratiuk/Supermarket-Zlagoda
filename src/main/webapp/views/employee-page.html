@@ -132,6 +132,20 @@
                 </div>
               </div>
 
+              <div class="employee-date-of-start">
+                <h4 for="date_of_start">Date of start:</h4>
+                <p v-if="!isEditMode">{{ currentEmployee.date_of_start }}</p>
+                <div v-else class="form-field">
+                  <input
+                    type="date"
+                    id="date_of_start"
+                    v-model="currentEmployee.date_of_start"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </div>
+
               <div class="employee-phone-number">
                 <h4 for="phone_number">Phone number:</h4>
                 <p v-if="!isEditMode">{{ currentEmployee.phone_number }}</p>
@@ -141,6 +155,9 @@
                     id="phone_number"
                     v-model="currentEmployee.phone_number"
                     class="edit-input"
+                    minlength="13"
+                    maxlength="13"
+                    @input="addPlusSign"
                     required
                   />
                 </div>

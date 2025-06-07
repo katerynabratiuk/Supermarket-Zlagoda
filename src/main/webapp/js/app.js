@@ -6,7 +6,7 @@ let app = Vue.createApp(
         isEditMode: false,
         isPasswordVisible: false,
         userRole: 'Manager',
-        userPhoneNumber: '+',
+        userPhoneNumber: '',
         userPassword: '',
         errorMassage: '',
 
@@ -61,7 +61,7 @@ let app = Vue.createApp(
           salary: 0,
           date_of_birth: '',
           date_of_start: '',
-          phone_number: '',
+          phone_number: '+',
           city: '',
           street: '',
           zip_code: ''
