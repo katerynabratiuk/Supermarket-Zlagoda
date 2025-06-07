@@ -705,8 +705,8 @@ let app = Vue.createApp(
       },
       async saveEditEmployee() {
         try {
-          const response = await fetch(`http://localhost:8090/employee/edit/${this.currentEmployee.id_employee}`, {
-            method: 'PATCH',
+          const response = await fetch(`http://localhost:8090/employee/${this.currentEmployee.id_employee}`, {
+            method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
