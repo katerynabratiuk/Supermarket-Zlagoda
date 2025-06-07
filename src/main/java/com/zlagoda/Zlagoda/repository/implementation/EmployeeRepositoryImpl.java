@@ -108,8 +108,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             if (rs.next())
             {
                 employee.setId(rs.getString("id_employee"));
-                employee.setSurname(rs.getString("empl_surname"));
                 employee.setName(rs.getString("empl_name"));
+                employee.setSurname(rs.getString("empl_surname"));
                 employee.setPatronymic(rs.getString("empl_patronymic"));
                 employee.setRole(rs.getString("empl_role"));
                 employee.setSalary(rs.getBigDecimal("salary"));
@@ -193,8 +193,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     private static Employee extractEmployeeFromResultSet(ResultSet resultSet) throws SQLException {
         return new Employee(
                 resultSet.getString("id_employee"),
-                resultSet.getString("empl_surname"),
                 resultSet.getString("empl_name"),
+                resultSet.getString("empl_surname"),
                 resultSet.getString("empl_patronymic"),
                 resultSet.getString("empl_role"),
                 resultSet.getBigDecimal("salary"),

@@ -149,8 +149,8 @@ public class Employee {
 
 
     public Employee(String id,
-                    String surname,
                     String name,
+                    String surname,
                     String patronymic,
                     String role,
                     BigDecimal salary,
