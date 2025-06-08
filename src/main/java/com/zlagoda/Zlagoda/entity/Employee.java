@@ -270,8 +270,6 @@ public class Employee {
         this.zipCode = zipCode;
     }
 
-
-
     @Override
     public String toString() {
         return "Employee{" +
