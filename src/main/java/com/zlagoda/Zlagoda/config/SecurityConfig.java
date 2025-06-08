@@ -3,6 +3,7 @@ package com.zlagoda.Zlagoda.config;
 import com.zlagoda.Zlagoda.security.EmployeeDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,9 +30,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
          http.csrf(AbstractHttpConfigurer::disable)
                  .authorizeHttpRequests(auth -> auth
-                         .requestMatchers("/manager/**").hasRole("MANAGER")
-                         .requestMatchers("/cashier/**").hasRole("CASHIER")
-                         .requestMatchers("/user/**").hasRole("USER")
+                         .requestMatchers(HttpMethod.GET, "/product/**").hasAnyRole("USER", "CASHIER", "MANAGER")
+                         .requestMatchers(HttpMethod.GET, "/category").hasAnyRole("USER")
+                         .requestMatchers(HttpMethod.GET, "/category/**").hasAnyRole("CASHIER", "MANAGER")
+                         .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyRole("CASHIER", "MANAGER")
+                         .requestMatchers(HttpMethod.GET, "/check/**").hasAnyRole("CASHIER", "MANAGER")
+                         .requestMatchers(HttpMethod.GET, "/employee/**").hasAnyRole("CASHIER", "MANAGER")
+
+                         .requestMatchers(HttpMethod.POST, "/product/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.POST, "/category/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.POST, "/customer/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.POST, "/employee/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.POST, "/check/**").hasAnyRole("CASHIER")
+
+                         .requestMatchers(HttpMethod.PUT, "/product/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.PUT, "/category/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.PUT, "/customer/**").hasAnyRole("CASHIER", "MANAGER")
+                         .requestMatchers(HttpMethod.PUT, "/employee/**").hasAnyRole("MANAGER")
+
+                         .requestMatchers(HttpMethod.DELETE, "/product/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.DELETE, "/category/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.DELETE, "/customer/**").hasAnyRole("MANAGER")
+                         .requestMatchers(HttpMethod.DELETE, "/employee/**").hasAnyRole("MANAGER")
                          .anyRequest().authenticated()
                  )
                  .formLogin(withDefaults());
