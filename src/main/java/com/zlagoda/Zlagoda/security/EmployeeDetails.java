@@ -23,7 +23,7 @@ public class EmployeeDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return employee.getPassword();
+        return employee.getSurname();
     }
 
     @Override
