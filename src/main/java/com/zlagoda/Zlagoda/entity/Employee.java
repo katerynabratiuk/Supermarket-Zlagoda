@@ -71,6 +71,10 @@ public class Employee {
     @JsonProperty("zip_code")
     private String zipCode;
 
+    @NotBlank
+    @Size(min=8, max=30)
+    private String password;
+
     public Employee(){};
 
     public static class Builder implements BuilderInterface<Employee> {
@@ -159,7 +163,8 @@ public class Employee {
                     String phoneNumber,
                     String city,
                     String street,
-                    String zipCode) {
+                    String zipCode,
+                    String password) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -172,6 +177,7 @@ public class Employee {
         this.city = city;
         this.street = street;
         this.zipCode = zipCode;
+        this.password = password;
     }
 
     public String getId() {
@@ -269,6 +275,8 @@ public class Employee {
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+
+    public String getPassword() { return password;}
 
 
 

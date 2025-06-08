@@ -15,8 +15,10 @@ public class EmployeeDetails implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return List.of(new SimpleGrantedAuthority(employee.getRole()));
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + employee.getRole().toUpperCase())
+        );
     }
 
     @Override
@@ -26,7 +28,7 @@ public class EmployeeDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return employee.getId();
+        return employee.getPhoneNumber();
     }
 
     @Override public boolean isAccountNonExpired() { return true; }
