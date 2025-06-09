@@ -6,6 +6,9 @@ let app = Vue.createApp(
         isEditMode: false,
         isPasswordVisible: false,
         userRole: 'Manager',
+        userPhoneNumber: '',
+        userPassword: '',
+        errorMassage: '',
 
         productsCategories: [],
         products: [],
@@ -58,7 +61,7 @@ let app = Vue.createApp(
           salary: 0,
           date_of_birth: '',
           date_of_start: '',
-          phone_number: '',
+          phone_number: '+',
           city: '',
           street: '',
           zip_code: ''
@@ -136,6 +139,50 @@ let app = Vue.createApp(
       }
     },
     methods: {
+      async handleLogin() {
+        const payload = {
+          phone: this.userPhoneNumber,
+          password: this.userPassword
+        };
+
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json()
+
+          if (!response.ok) {
+            const status = response.status;
+
+            if (status === 401) {
+              this.errorMessage = data.message || 'Incorrect password';
+            } else if (status === 404) {
+              this.errorMessage = data.message || 'Phone number not found';
+            } else if (status === 400) {
+              this.errorMessage = data.message || 'Bad request';
+            } else {
+              this.errorMessage = data.message || 'Unknown error occurred';
+            }
+          }
+          console.log('Login successful')
+          this.errorMessage = ''
+          window.location.href='categories.html'
+        } catch (error) {
+          this.errorMessage = 'Unexpected error during login';
+          console.error('Login error:', error);
+        }
+    
+      },
+      addPlusSign() {
+        if (!this.userPhoneNumber.startsWith('+')) {
+          this.userPhoneNumber = '+' + this.userPhoneNumber.replace(/\+/g, '');
+        }
+      },
       displayedItems(listName) {
         return (array) => {
           if (!array || !Array.isArray(array)) {
@@ -300,8 +347,6 @@ let app = Vue.createApp(
               console.error(error)
             }
           }
-
-
         } else if (path.includes('checks.html')) {
           await this.loadChecks()
 
@@ -341,9 +386,6 @@ let app = Vue.createApp(
               console.error(error)
             }
           }
-
-        } else {
-          console.error('No specific data loading for this page:', path)
         }
       },
       async loadCategories() {
@@ -565,7 +607,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
-            this.toggleEditMode()
+            window.location.href = "products.html"
           } else {
             console.error("Updating product failed on the server. Status:", response.status)
             alert("Failed to update product. Please try again.")
@@ -641,7 +683,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
-            this.toggleEditMode()
+            window.location.href = "customers.html"
           } else {
             console.error("Updating customer failed on the server. Status:", response.status)
             alert("Failed to update customer. Please try again.")
@@ -715,6 +757,7 @@ let app = Vue.createApp(
 
           if (response.ok) {
             this.currentEditingItemID = null
+            window.location.href = "employees.html"
           } else {
             console.error("Updating employee failed on the server. Status:", response.status)
             alert("Failed to update employee. Please try again.")
@@ -743,7 +786,7 @@ app.component("navbar", {
           </div>
           <h1>Zlagoda</h1>
           <div class="login">
-            <button class="login-btn" @click="handleLogin">
+            <button class="login-btn" @click="loginPageDirect">
               {{ loginLabel }}
              </button>
             <span class="material-symbols-outlined">person</span>
@@ -809,10 +852,10 @@ app.component("navbar", {
       }
       return currentPage === path || (currentPage in pathDict & path === pathDict[currentPage])
     },
-    handleLogin() {
-      if (this.userRole === "Unauthorized") {
+    loginPageDirect() {
+      // if (this.userRole === "Unauthorized") {
         window.location.href = "index.html"
-      }
+      // }
     }
   }
 })
