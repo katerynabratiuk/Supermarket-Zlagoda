@@ -203,7 +203,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 resultSet.getString("phone_number"),
                 resultSet.getString("city"),
                 resultSet.getString("street"),
-                resultSet.getString("zip_code")
+                resultSet.getString("zip_code"),
+                resultSet.getString("empl_username")
         );
     }
 }
