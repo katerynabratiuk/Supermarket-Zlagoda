@@ -29,7 +29,8 @@ let app = Vue.createApp(
           category: '',
           description: '',
           manufacturer: '',
-          status: 'Out Of Stock',
+          status:'',
+          products_number:0,
           isOnSale: false,
           new_price: null,
           count: 0
@@ -84,17 +85,17 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
-        return {
-          'in-stock': this.currentProduct?.status === 'In Stock',
-          'out-of-stock': this.currentProduct?.status !== 'In Stock'
-        }
-      },
-      newStatusClass() {
-        return {
-          'in-stock': this.newProduct.status === 'In Stock',
-          'out-of-stock': this.newProduct.status === 'Out Of Stock'
-        }
-      }
+      return {
+        'in-stock': this.currentProduct?.products_number > 0,
+        'out-of-stock': this.currentProduct?.products_number === 0
+      };
+    },
+    newStatusClass() {
+      return {
+        'in-stock': this.newProduct.products_number > 0,
+        'out-of-stock': this.newProduct.products_number === 0
+      };
+    }
     },
     watch: {
       currentProduct(newVal) {
@@ -119,7 +120,7 @@ let app = Vue.createApp(
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
       },
-      'currentProduct.count': function (newCount) {
+      'currentProduct.products_number': function (newCount) {
         if (this.currentProduct) {
           if (newCount <= 0) {
             this.currentProduct.status = 'Out Of Stock'
@@ -128,7 +129,7 @@ let app = Vue.createApp(
           }
         }
       },
-      'newProduct.count': function (newCount) {
+      'newProduct.products_number': function (newCount) {
         if (this.newProduct) {
           if (newCount <= 0) {
             this.newProduct.status = 'Out Of Stock'
@@ -322,6 +323,7 @@ let app = Vue.createApp(
             try {
               const product = await this.getProductById(productId)
               this.currentProduct = product
+              console.log(this.currentProduct)
             }
             catch (error) {
               console.error(error)

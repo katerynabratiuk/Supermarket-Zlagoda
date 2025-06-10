@@ -79,18 +79,19 @@
                     <div class="edit-status-buttons">
                       <button
                         class="status-btn in-stock"
-                        :class="{ active: currentProduct.status === 'In Stock' }"
-                        @click="currentProduct.status = 'In Stock'"
+                        :class="{ active: currentProduct.products_number > 0 }"
+                        @click="currentProduct.products_number = 1"
                       >
                         In Stock
                       </button>
                       <button
                         class="status-btn out-of-stock"
-                        :class="{ active: currentProduct.status === 'Out of Stock' }"
-                        @click="currentProduct.status = 'Out of Stock'"
+                        :class="{ active: currentProduct.products_number === 0 }"
+                        @click="currentProduct.products_number = 0"
                       >
                         Out of Stock
                       </button>
+
                     </div>
                   </div>
                 </div>
@@ -121,7 +122,7 @@
                 <div class="product-price">
                   <div
                     class="product-discount"
-                    v-if="currentProduct.isOnSale && !isEditMode"
+                    v-if="currentProduct.promotional_product && !isEditMode"
                   >
                     <del class="custom-strike product-old-price">
                       &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
