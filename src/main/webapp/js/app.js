@@ -5,8 +5,8 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         isPasswordVisible: false,
-        userRole: 'Cashier',
-        userPhoneNumber: '',
+        userRole: 'Manager',
+        username: '',
         userPassword: '',
         errorMassage: '',
 
@@ -107,7 +107,7 @@ let app = Vue.createApp(
       subtotal() {
         return this.newCheck.sales.reduce((total, sale) => {
           return total + (sale.selling_price * sale.quantity)
-        }, 0);
+        }, 0)
       },
       discountPercent() {
         return this.currentCustomer?.percent || 0
@@ -172,7 +172,7 @@ let app = Vue.createApp(
     methods: {
       async handleLogin() {
         const payload = {
-          phone: this.userPhoneNumber,
+          username: this.username,
           password: this.userPassword
         }
 
@@ -191,29 +191,26 @@ let app = Vue.createApp(
             const status = response.status
 
             if (status === 401) {
-              this.errorMessage = data.message || 'Incorrect password'
+              this.errorMessage = data.message || 'Incorrect username or password'
             } else if (status === 404) {
-              this.errorMessage = data.message || 'Phone number not found'
+              this.errorMessage = data.message || 'Username not found'
             } else if (status === 400) {
-              this.errorMessage = data.message || 'Bad request'
+              this.errorMessage = data.message || 'Invalid login request'
             } else {
-              this.errorMessage = data.message || 'Unknown error occurred'
+              this.errorMessage = data.message || 'An unknown error occurred'
             }
           }
-          console.log('Login successful')
-          this.errorMessage = ''
-          window.location.href = 'categories.html'
+          else {
+            console.log('Login successful')
+            this.errorMessage = ''
+            window.location.href = 'categories.html'
+          }
         } catch (error) {
           this.errorMessage = 'Unexpected error during login'
           console.error('Login error:', error)
         }
+      },
 
-      },
-      addPlusSign() {
-        if (!this.userPhoneNumber.startsWith('+')) {
-          this.userPhoneNumber = '+' + this.userPhoneNumber.replace(/\+/g, '')
-        }
-      },
       displayedItems(listName) {
         return (array) => {
           if (!array || !Array.isArray(array)) {
@@ -266,7 +263,7 @@ let app = Vue.createApp(
         //   alert("An unexpected error occurred. Please try again later.")
         //   return null
         // }
-        return this.products.find(product => product.id === parseInt(id))
+        return this.products.find(product => product.id === id)
       },
       async getEmployeeById(id) {
         // try {
@@ -350,9 +347,11 @@ let app = Vue.createApp(
         } else if (path.includes('product-page.html')) {
           await Promise.all([this.loadProducts(), this.loadCategories()])
           const productId = new URLSearchParams(window.location.search).get('id')
+          console.log(productId)
           if (productId) {
             try {
               const product = await this.getProductById(productId)
+              console.log(product)
               this.currentProduct = product
             }
             catch (error) {

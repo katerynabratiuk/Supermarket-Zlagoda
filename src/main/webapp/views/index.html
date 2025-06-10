@@ -26,15 +26,12 @@
             <form @submit.prevent="handleLogin">
               <div class="form-group-input">
                 <div class="form-group">
-                  <label for="phone">Phone Number</label>
+                  <label for="username">Username</label>
                   <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    v-model="userPhoneNumber"
-                    minlength="13"
-                    maxlength="13"
-                    @input="addPlusSign"
+                    type="text"
+                    id="username"
+                    name="username"
+                    v-model="username"
                     required
                     autocomplete="on"
                   />
