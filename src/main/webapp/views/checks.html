@@ -39,9 +39,10 @@
                 <span class="material-symbols-outlined">search</span>
               </button>
             </form>
-            <div class="buttons-container" v-if="isManager">
-              <button class="filter-btn">Filter</button>
-              <button class="sort-btn">Sort</button>
+            <div class="buttons-container">
+              <button v-if="isCashier" type="button" class="add-new-btn" @click="goToAddCheck">Add New</button>
+              <button type="button" class="filter-btn">Filter</button>
+              <button type="button" class="sort-btn">Sort</button>
             </div>
           </div>
         </div>
@@ -55,7 +56,7 @@
                   <th class="print-date">Print Date</th>
                   <th class="cashier">Cashier</th>
                   <th class="customer">Customer</th>
-                  <th class="total-price">Total Price</th>
+                  <th class="total-price">Total Price (&#x20B4;)</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,7 +89,7 @@
                     </a>
                     <span v-else> {{ item.card_number }} </span>
                   </td>
-                  <td class="total-price">{{ item.sum_total }}&#x20B4;</td>
+                  <td class="total-price">{{ item.sum_total }}</td>
                 </tr>
               </tbody>
             </table>

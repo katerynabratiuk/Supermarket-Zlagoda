@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
     />
     <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-    <title v-if="currentCheck">Check {{ currentCheck.check_number }}</title>
+    <title>Check {{ currentCheck.check_number }}</title>
   </head>
 
   <body>
@@ -27,7 +27,6 @@
         <section class="check-details">
           <div class="check-header">
             <h2>Check {{ currentCheck.check_number }}</h2>
-            <button class="edit-btn">Edit</button>
           </div>
 
           <section class="contents">
@@ -62,15 +61,16 @@
 
             <div class="check-details-lower">
               <h3>Products</h3>
-              <div class="table-wrapper">
+
+              <div class="table-and-summary">
                 <table class="table-section">
                   <thead>
                     <tr class="table-row">
                       <th class="product-id">ID</th>
                       <th class="product-name">Name</th>
-                      <th class="product-price">Price</th>
+                      <th class="product-price">Price (	&#8372;)</th>
                       <th class="product-quantity">Quantity</th>
-                      <th class="product-total">Total</th>
+                      <th class="product-total">Sale Total (&#8372;)</th>
                     </tr>
                   </thead>
                   <tbody>

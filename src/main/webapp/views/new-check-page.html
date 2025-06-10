@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/check-page.css" />
+    <!-- <link rel="stylesheet" href="../styles/new-check-page.css" /> -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Add New Check</title>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
+
+      <main v-if="!isLoading">
+        <section class="check-details">
+          <div class="check-header">
+            <h2>New Check</h2>
+          </div>
+
+          <section class="contents">
+            <form @submit.prevent="addNewCheck">
+              <div class="check-details-upper">
+                <div class="check-main-info">
+                  <dl class="check-main-info-list">
+                    <dt>Cashier:</dt>
+                    <dd class="form-field">
+                      <select
+                        id="employee-select"
+                        v-model.number="newCheck.id_employee"
+                        required
+                      >
+                        <option value="" disabled>Select Employee</option>
+                        <option
+                          v-for="employee in employees"
+                          :key="employee.id_employee"
+                          :value="employee.id_employee"
+                        >
+                          {{ employee.empl_surname }} {{employee.empl_name }}
+                          {{employee.empl_patronymic }}
+                        </option>
+                      </select>
+                    </dd>
+
+                    <dt>Customer:</dt>
+                    <dd class="form-field">
+                      <select
+                        id="customer-select"
+                        v-model.number="newCheck.card_number"
+                        @change="onCustomerSelected"
+                      >
+                        <option value="" disabled>Select Customer</option>
+                        <option
+                          v-for="customer in customers"
+                          :key="customer.card_number"
+                          :value="customer.card_number"
+                        >
+                          {{ customer.cust_surname }} {{ customer.cust_name }}
+                        </option>
+                      </select>
+                    </dd>
+
+                    <dt>Print date:</dt>
+                    <dd class="form-field">
+                      <input
+                        id="print-date"
+                        type="date"
+                        v-model="newCheck.print_date"
+                        required
+                      />
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+
+              <div class="check-details-lower">
+                <h3>Products</h3>
+
+                <div class="table-and-summary">
+                  <table class="table-section">
+                    <thead>
+                      <tr class="table-row">
+                        <th class="product-id">ID</th>
+                        <th class="product-name">Name</th>
+                        <th class="product-price">Price (&#8372;)</th>
+                        <th class="product-quantity">Quantity</th>
+                        <th class="product-total">Sale Total (&#8372;)</th>
+                        <th class="product-action">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        class="table-row"
+                        v-for="(sale, index) in newCheck.sales"
+                        :key="index"
+                      >
+                        <td class="product-id">{{ sale.product_id }}</td>
+                        <td class="product-name">
+                          <select
+                            v-model="sale.product_id"
+                            @change="onProductSelected(index)"
+                            required
+                          >
+                            <option value="" disabled>Select Product</option>
+                            <option
+                              v-for="product in products"
+                              :key="product.id"
+                              :value="product.id"
+                            >
+                              {{ product.name }}
+                            </option>
+                          </select>
+                        </td>
+                        <td class="product-price">
+                          {{ sale.selling_price.toFixed(2) }}
+                        </td>
+                        <td class="product-quantity">
+                          <input
+                            type="number"
+                            v-model.number="sale.quantity"
+                            min="1"
+                            required
+                          />
+                        </td>
+                        <td class="product-total">
+                          {{ (sale.selling_price * sale.quantity).toFixed(2) }}
+                        </td>
+                        <td>
+                          <button type="button" @click="removeSale(index)">
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                      <td></td>
+                    </tbody>
+                  </table>
+
+                  <button type="button" @click="addSale">Add New</button>
+
+                  <div class="check-sum-and-vat">
+                    <dl class="check-sum-and-vat-list">
+                      <dt class="check-subtotal">Subtotal:</dt>
+                      <dd class="check-subtotal-value">
+                        {{ subtotal.toFixed(2) }}
+                      </dd>
+                      <dt
+                        class="check-discount"
+                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
+                      >
+                        Discount:
+                      </dt>
+                      <dd
+                        class="check-discount-value"
+                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
+                      >
+                        {{ discountPercent }}%
+                      </dd>
+                      <dt class="check-total">Total:</dt>
+                      <dd class="check-total-value">
+                        <strong>{{ totalAfterDiscount.toFixed(2) }}</strong>
+                      </dd>
+                      <dt class="check-vat">VAT:</dt>
+                      <dd class="check-vat-value">
+                        {{ vatAmount.toFixed(2) }}
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <button class="save-btn" type="submit">Create Check</button>
+            </form>
+          </section>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading"></custom-footer>
+    </div>
+  </body>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

@@ -4,6 +4,34 @@
   align-items: center;
 }
 
+.table-and-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  margin-top: 20px;
+  width: 70%;
+}
+
+table th,
+table td,
+.check-sum-and-vat dd{
+  text-align: right;
+}
+
+.table-section th:nth-child(1),
+.table-section td:nth-child(1) {
+  width: max-content;
+  text-align: left;
+}
+
+dl.check-sum-and-vat-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 50px;
+  padding: 10px;
+}
+
 dl {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -19,45 +47,10 @@ dd {
   margin: 0;
 }
 
-table td,
-table th {
-  border-bottom: none;
-}
-
-.table-wrapper {
-  display: grid;
-  width: 70%;
-}
-
-.customer, .cashier, .product {
+.customer,
+.cashier,
+.product {
   text-decoration: underline;
-}
-
-.table-section thead,
-.table-section tbody,
-.table-section,
-.table-section tr,
-.check-sum-and-vat,
-.check-sum-and-vat-list {
-  display: contents;
-}
-
-.check-sum,
-.check-vat {
-  grid-column: 4;
-  padding-left: 10px;
-}
-
-.check-sum-value,
-.check-vat-value {
-  grid-column: 5;
-  justify-self: start;
-  padding-left: 10px;
-}
-
-.check-sum,
-.check-sum-value {
-  margin-top: 40px;
 }
 
 .check-vat,

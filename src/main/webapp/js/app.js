@@ -5,7 +5,7 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         isPasswordVisible: false,
-        userRole: 'Manager',
+        userRole: 'Cashier',
         userPhoneNumber: '',
         userPassword: '',
         errorMassage: '',
@@ -17,8 +17,8 @@ let app = Vue.createApp(
         checks: [],
 
         newCategory: {
-        category_name: '',
-        category_number: null
+          category_name: '',
+          category_number: null
         },
 
         newProduct: {
@@ -51,6 +51,15 @@ let app = Vue.createApp(
         currentCustomer: null,
 
         currentCheck: null,
+        newCheck: {
+          check_number: null,
+          print_date: null,
+          id_employee: null,
+          card_number: null,
+          sum_total: 0,
+          vat: 0,
+          sales: []
+        },
 
         newEmployee: {
           id_employee: null,
@@ -94,7 +103,23 @@ let app = Vue.createApp(
           'in-stock': this.newProduct.status === 'In Stock',
           'out-of-stock': this.newProduct.status === 'Out Of Stock'
         }
-      }
+      },
+      subtotal() {
+        return this.newCheck.sales.reduce((total, sale) => {
+          return total + (sale.selling_price * sale.quantity)
+        }, 0);
+      },
+      discountPercent() {
+        return this.currentCustomer?.percent || 0
+      },
+      totalAfterDiscount() {
+        const discountAmount = this.subtotal * (this.discountPercent / 100)
+        return this.subtotal - discountAmount
+      },
+      vatAmount() {
+        const vatRate = 0.2
+        return this.totalAfterDiscount * vatRate
+      },
     },
     watch: {
       currentProduct(newVal) {
@@ -118,6 +143,12 @@ let app = Vue.createApp(
         if (newVal) {
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
+      },
+      vatAmount(newValue) {
+        this.newCheck.vat = newValue
+      },
+      saleTotal(newValue) {
+        this.newCheck.sumTotal = newValue
       },
       'currentProduct.count': function (newCount) {
         if (this.currentProduct) {
@@ -143,7 +174,7 @@ let app = Vue.createApp(
         const payload = {
           phone: this.userPhoneNumber,
           password: this.userPassword
-        };
+        }
 
         try {
           const response = await fetch('/api/login', {
@@ -152,35 +183,35 @@ let app = Vue.createApp(
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
-          });
+          })
 
           const data = await response.json()
 
           if (!response.ok) {
-            const status = response.status;
+            const status = response.status
 
             if (status === 401) {
-              this.errorMessage = data.message || 'Incorrect password';
+              this.errorMessage = data.message || 'Incorrect password'
             } else if (status === 404) {
-              this.errorMessage = data.message || 'Phone number not found';
+              this.errorMessage = data.message || 'Phone number not found'
             } else if (status === 400) {
-              this.errorMessage = data.message || 'Bad request';
+              this.errorMessage = data.message || 'Bad request'
             } else {
-              this.errorMessage = data.message || 'Unknown error occurred';
+              this.errorMessage = data.message || 'Unknown error occurred'
             }
           }
           console.log('Login successful')
           this.errorMessage = ''
-          window.location.href='categories.html'
+          window.location.href = 'categories.html'
         } catch (error) {
-          this.errorMessage = 'Unexpected error during login';
-          console.error('Login error:', error);
+          this.errorMessage = 'Unexpected error during login'
+          console.error('Login error:', error)
         }
-    
+
       },
       addPlusSign() {
         if (!this.userPhoneNumber.startsWith('+')) {
-          this.userPhoneNumber = '+' + this.userPhoneNumber.replace(/\+/g, '');
+          this.userPhoneNumber = '+' + this.userPhoneNumber.replace(/\+/g, '')
         }
       },
       displayedItems(listName) {
@@ -362,15 +393,20 @@ let app = Vue.createApp(
             const check = await this.getCheckById(checkId)
             this.currentCheck = check
 
-            const employee = await this.getEmployeeById(check.id_employee)
-            const customer = await this.getCustomerById(check.card_number)
+            const employee = await this.getEmployeeById(this.currentCheck.id_employee)
+            const customer = await this.getCustomerById(this.currentCheck.card_number)
 
             this.currentCheck.employeeName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
             this.currentCheck.customerName = `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
           } catch (error) {
             console.error(error)
           }
-
+        } else if (path.includes('new-check-page.html')) {
+          await Promise.all([
+            this.loadProducts(),
+            this.loadEmployees(),
+            this.loadCustomers(),
+          ])
         } else if (path.includes('employees.html')) {
           await this.loadEmployees()
 
@@ -487,10 +523,10 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const addedCategory = { ...this.newCategory };
-            this.productsCategories.push(addedCategory);
-            console.log("New product added successfully:", addedCategory);
-            this.newCategory = { category_name: '', category_number: null };
+            const addedCategory = { ...this.newCategory }
+            this.productsCategories.push(addedCategory)
+            console.log("New product added successfully:", addedCategory)
+            this.newCategory = { category_name: '', category_number: null }
           }
           else {
             console.error("Adding category failed on the server. Status:", response.status)
@@ -682,7 +718,7 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            this.currentEditingItemID = null
+            this.currentCustomer = null
             window.location.href = "customers.html"
           } else {
             console.error("Updating customer failed on the server. Status:", response.status)
@@ -694,48 +730,48 @@ let app = Vue.createApp(
         }
       },
 
-      goToAddEmployee() {
-        window.location.href = 'new-employee-page.html'
+      goToAddCheck() {
+        window.location.href = 'new-check-page.html'
       },
-      async addNewEmployee() {
+      async addNewCheck() {
         try {
-          const response = await fetch('http://localhost:8090/employee', {
+          const response = await fetch('...', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.newEmployee),
+            body: JSON.stringify(this.newCheck),
           })
 
           if (response.ok) {
-            const newEmployee = await response.json()
-            this.employees.push(newEmployee)
-            console.log("New employee added successfully:", newEmployee)
-            window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
+            const newCheck = await response.json()
+            this.checks.push(newCheck)
+            console.log("New check added successfully:", newCheck)
+            window.location.href = `check-page.html?id=${newCheck.check_number}`
           } else {
-            console.error("Adding employee failed on the server. Status:", response.status)
-            alert("Failed to add employee. Please try again.")
+            console.error("Adding check failed on the server. Status:", response.status)
+            alert("Failed to add check. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-      async confirmAndDeleteEmployee() {
-        const employeeId = this.currentEmployee.id_employee
-        if (confirm("Are you sure you want to delete this employee?")) {
+      async confirmAndDeleteCheck() {
+        const checkNumber = this.currentCheck.check_number
+        if (confirm("Are you sure you want to delete this check?")) {
           try {
-            const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
+            const response = await fetch(`...`, {
               method: 'DELETE',
             })
 
             if (response.ok) {
-              this.employees = this.employees.filter(item => item.id_employee !== employeeId)
-              this.currentEmployee = null
-              window.location.href = 'employees.html'
+              this.check = this.check.filter(item => item.check_number !== checkNumber)
+              this.currentCheck = null
+              window.location.href = 'checks.html'
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete employee. Please try again.")
+              alert("Failed to delete check. Please try again.")
             }
           } catch (error) {
             console.error("An unexpected error occurred during deletion:", error)
@@ -745,29 +781,129 @@ let app = Vue.createApp(
           console.log("Deletion cancelled by user.")
         }
       },
-      async saveEditEmployee() {
-        try {
-          const response = await fetch(`http://localhost:8090/employee/${this.currentEmployee.id_employee}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.currentEmployee),
-          })
+      addSale() {
+        this.newCheck.sales.push({
+          product_id: '',
+          product_name: '',
+          selling_price: 0,
+          quantity: 1
+        })
+      },
+      removeSale(index) {
+        this.newCheck.sales.splice(index, 1)
+      },
+      async onProductSelected(index) {
+        const productId = this.newCheck.sales[index].product_id
 
-          if (response.ok) {
-            this.currentEditingItemID = null
-            window.location.href = "employees.html"
-          } else {
-            console.error("Updating employee failed on the server. Status:", response.status)
-            alert("Failed to update employee. Please try again.")
+        if (productId) {
+          try {
+            const selectedProduct = await this.getProductById(productId)
+
+            if (selectedProduct) {
+              this.newCheck.sales[index].selling_price = selectedProduct.price
+              this.newCheck.sales[index].product_name = selectedProduct.name
+            } else {
+              this.newCheck.sales[index].selling_price = 0
+              this.newCheck.sales[index].product_name = ''
+            }
+          } catch (error) {
+            console.error("Error fetching product:", error)
           }
-        } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
+        } else {
+          this.newCheck.sales[index].selling_price = 0
+          this.newCheck.sales[index].product_name = ''
+        }
+      },
+      async onCustomerSelected() {
+        const customerId = this.newCheck.card_number
+        if (customerId) {
+          await this.getCustomerById(customerId)
+            .then(customer => {
+              this.currentCustomer = customer
+            })
+            .catch(error => {
+              console.error("Error fetching customer:", error)
+              this.currentCustomer = null
+            })
+        } else {
+          this.currentCustomer = null
         }
       }
     },
+    goToAddEmployee() {
+      window.location.href = 'new-employee-page.html'
+    },
+    async addNewEmployee() {
+      try {
+        const response = await fetch('http://localhost:8090/employee', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.newEmployee),
+        })
+
+        if (response.ok) {
+          const newEmployee = await response.json()
+          this.employees.push(newEmployee)
+          console.log("New employee added successfully:", newEmployee)
+          window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
+        } else {
+          console.error("Adding employee failed on the server. Status:", response.status)
+          alert("Failed to add employee. Please try again.")
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred during adding:", error)
+        alert("An unexpected error occurred. Please try again later.")
+      }
+    },
+    async confirmAndDeleteEmployee() {
+      const employeeId = this.currentEmployee.id_employee
+      if (confirm("Are you sure you want to delete this employee?")) {
+        try {
+          const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
+            method: 'DELETE',
+          })
+
+          if (response.ok) {
+            this.employees = this.employees.filter(item => item.id_employee !== employeeId)
+            this.currentEmployee = null
+            window.location.href = 'employees.html'
+          } else {
+            console.error("Deletion failed on the server. Status:", response.status)
+            alert("Failed to delete employee. Please try again.")
+          }
+        } catch (error) {
+          console.error("An unexpected error occurred during deletion:", error)
+          alert("An unexpected error occurred. Please try again later.")
+        }
+      } else {
+        console.log("Deletion cancelled by user.")
+      }
+    },
+    async saveEditEmployee() {
+      try {
+        const response = await fetch(`http://localhost:8090/employee/${this.currentEmployee.id_employee}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.currentEmployee),
+        })
+
+        if (response.ok) {
+          this.currentEmployee = null
+          window.location.href = "employees.html"
+        } else {
+          console.error("Updating employee failed on the server. Status:", response.status)
+          alert("Failed to update employee. Please try again.")
+        }
+      } catch (error) {
+        console.error("An unexpected error occurred during updating:", error)
+        alert("An unexpected error occurred. Please try again later.")
+      }
+    },
+
     mounted() {
       this.loadDataForCurrentPage()
       this.isLoading = false
@@ -848,13 +984,14 @@ app.component("navbar", {
         'new-employee-page.html': 'employees.html',
         'customer-page.html': 'customers.html',
         'new-customer-page.html': 'customers.html',
-        'check-page.html' : 'checks.html'
+        'check-page.html': 'checks.html',
+        'new-check-page.html': 'checks.html'
       }
       return currentPage === path || (currentPage in pathDict & path === pathDict[currentPage])
     },
     loginPageDirect() {
       // if (this.userRole === "Unauthorized") {
-        window.location.href = "index.html"
+      window.location.href = "index.html"
       // }
     }
   }
