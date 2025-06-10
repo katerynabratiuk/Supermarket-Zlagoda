@@ -72,14 +72,17 @@
                 </div>
 
                 <div class="product-status" :class="statusClass">
-                  <p v-if="!isEditMode">{{ currentProduct.status }}</p>
+                  <p v-if="!isEditMode">
+  {{ currentProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
+</p>
+
 
                   <div class="form-field" v-else>
                     Status:
                     <div class="edit-status-buttons">
                       <button
                         class="status-btn in-stock"
-                        :class="{ active: currentProduct.products_number > 0 }"
+                        :class="{ active: currentProduct.products_number !== 0 }"
                         @click="currentProduct.products_number = 1"
                       >
                         In Stock
