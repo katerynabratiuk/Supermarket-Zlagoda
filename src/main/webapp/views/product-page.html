@@ -45,7 +45,7 @@
           >
             <div class="product-details-upper">
               <div class="product-image" v-if="!isEditMode">
-                <img :src="currentProduct.image" :alt="currentProduct.name" />
+                <img :src="currentProduct.image" :alt="currentProduct.product.product_name" />
               </div>
               <div v-else class="edit-product-image">
                 <input
@@ -63,7 +63,7 @@
                     <label for="product-name">Name:</label>
                     <input
                       id="product-name"
-                      v-model="currentProduct.name"
+                      v-model="currentProduct.product.product_name"
                       type="text"
                       class="edit-input"
                       required
@@ -97,18 +97,18 @@
 
                 <div class="product-management-info">
                   <div class="product-id">
-                    <p>ID: {{ currentProduct.id }}</p>
+                    <p>ID: {{ currentProduct.UPC }}</p>
                   </div>
 
                   <div v-if="isManager">
                     <div v-if="!isEditMode">
-                      <p>{{ currentProduct.count }} pcs</p>
+                      <p>{{ currentProduct.products_number }} pcs</p>
                     </div>
                     <div v-else class="form-field">
                       <label for="product-count">Count:</label>
                       <input
                         id="product-count"
-                        v-model.number="currentProduct.count"
+                        v-model.number="currentProduct.products_number"
                         type="number"
                         min="0"
                         class="edit-input"
@@ -124,18 +124,18 @@
                     v-if="currentProduct.isOnSale && !isEditMode"
                   >
                     <del class="custom-strike product-old-price">
-                      &#x20B4; {{ currentProduct.price.toFixed(2) }}
+                      &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
                     </del>
                     <span class="discount"> -20% </span>
                   </div>
 
                   <div v-if="!isEditMode">
                     <p>
-                      <span v-if="currentProduct.isOnSale">
+                      <span v-if="currentProduct.promotional_product">
                         &#x20B4; {{ currentProduct.new_price.toFixed(2) }}
                       </span>
                       <span v-else>
-                        &#x20B4; {{ currentProduct.price.toFixed(2) }}
+                        &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
                       </span>
                     </p>
                   </div>
@@ -145,7 +145,7 @@
                       <label for="price">Price:</label>
                       <input
                         id="price"
-                        v-model.number="currentProduct.price"
+                        v-model.number="currentProduct.selling_price"
                         type="number"
                         min="0"
                         step="0.01"
@@ -162,18 +162,18 @@
               <section class="characteristics">
                 <h3 for="characteristics">Characteristics:</h3>
                 <div v-if="!isEditMode">
-                  <p>{{ currentProduct.description }}</p>
+                  <p>{{ currentProduct.product.characteristics }}</p>
                 </div>
                 <div v-else>
                   <textarea
                     id="characteristics"
-                    v-model="currentProduct.description"
+                    v-model="currentProduct.product.characteristics"
                     class="edit-textarea"
                     required
                   ></textarea>
                 </div>
               </section>
-
+<!-- 
               <section class="manufacturer">
                 <h3 for="manufacturer">Manufacturer:</h3>
                 <div v-if="!isEditMode">
@@ -188,17 +188,17 @@
                     required
                   />
                 </div>
-              </section>
+              </section> -->
 
               <section class="categories">
                 <h3 for="category">Category:</h3>
                 <div v-if="!isEditMode">
-                  <p>{{ currentProduct.category }}</p>
+                  <p>{{ currentProduct.product.category.category_name }}</p>
                 </div>
                 <div v-else>
                   <select
                     id="category"
-                    v-model="currentProduct.category"
+                    v-model="currentProduct.product.category.category_name"
                     class="edit-dropdown"
                   >
                     <option disabled value="">Select category</option>
