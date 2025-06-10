@@ -33,12 +33,13 @@
             <form @submit.prevent="addNewCheck">
               <div class="check-details-upper">
                 <div class="check-main-info">
-                  <dl class="check-main-info-list">
+                  <dl class="check-main-info-list form-field">
                     <dt>Cashier:</dt>
-                    <dd class="form-field">
+                    <dd>
                       <select
                         id="employee-select"
                         v-model.number="newCheck.id_employee"
+                        class="edit-dropdown"
                         required
                       >
                         <option value="" disabled>Select Employee</option>
@@ -54,11 +55,12 @@
                     </dd>
 
                     <dt>Customer:</dt>
-                    <dd class="form-field">
+                    <dd>
                       <select
                         id="customer-select"
                         v-model.number="newCheck.card_number"
                         @change="onCustomerSelected"
+                        class="edit-dropdown"
                       >
                         <option value="" disabled>Select Customer</option>
                         <option
@@ -72,8 +74,9 @@
                     </dd>
 
                     <dt>Print date:</dt>
-                    <dd class="form-field">
+                    <dd>
                       <input
+                        class="edit-input"
                         id="print-date"
                         type="date"
                         v-model="newCheck.print_date"
@@ -108,6 +111,7 @@
                         <td class="product-id">{{ sale.product_id }}</td>
                         <td class="product-name">
                           <select
+                            class="edit-dropdown"
                             v-model="sale.product_id"
                             @change="onProductSelected(index)"
                             required
@@ -127,7 +131,10 @@
                         </td>
                         <td class="product-quantity">
                           <input
+                            class="edit-input"
                             type="number"
+                            id="quantity"
+                            name="quantity"
                             v-model.number="sale.quantity"
                             min="1"
                             required

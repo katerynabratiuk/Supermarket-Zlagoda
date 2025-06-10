@@ -32,11 +32,16 @@ dl.check-sum-and-vat-list {
   padding: 10px;
 }
 
-dl {
+.form-field {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
   gap: 10px;
-  margin: 0;
+  width: 440px;
+}
+
+.product-quantity input {
+  width: 50%;
 }
 
 dt {

@@ -105,6 +105,7 @@ button:hover {
   padding: 8px 20px;
   margin: 5px 0;
   font: inherit;
+  cursor: pointer;
 }
 
 .edit-textarea {

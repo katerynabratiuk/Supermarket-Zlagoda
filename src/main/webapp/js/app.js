@@ -5,7 +5,7 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         isPasswordVisible: false,
-        userRole: 'Manager',
+        userRole: 'Cashier',
         username: '',
         userPassword: '',
         errorMassage: '',
@@ -170,46 +170,46 @@ let app = Vue.createApp(
       }
     },
     methods: {
-      async handleLogin() {
-        const payload = {
-          username: this.username,
-          password: this.userPassword
-        }
+        async handleLogin() {
+          const payload = {
+            username: this.username,
+            password: this.userPassword
+          }
 
-        try {
-          const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          })
+          try {
+            const response = await fetch('/api/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            })
 
-          const data = await response.json()
+            const data = await response.json()
 
-          if (!response.ok) {
-            const status = response.status
+            if (!response.ok) {
+              const status = response.status
 
-            if (status === 401) {
-              this.errorMessage = data.message || 'Incorrect username or password'
-            } else if (status === 404) {
-              this.errorMessage = data.message || 'Username not found'
-            } else if (status === 400) {
-              this.errorMessage = data.message || 'Invalid login request'
-            } else {
-              this.errorMessage = data.message || 'An unknown error occurred'
+              if (status === 401) {
+                this.errorMessage = data.message || 'Incorrect username or password'
+              } else if (status === 404) {
+                this.errorMessage = data.message || 'Username not found'
+              } else if (status === 400) {
+                this.errorMessage = data.message || 'Invalid login request'
+              } else {
+                this.errorMessage = data.message || 'An unknown error occurred'
+              }
             }
+            else {
+              console.log('Login successful')
+              this.errorMessage = ''
+              window.location.href = 'categories.html'
+            }
+          } catch (error) {
+            this.errorMessage = 'Unexpected error during login'
+            console.error('Login error:', error)
           }
-          else {
-            console.log('Login successful')
-            this.errorMessage = ''
-            window.location.href = 'categories.html'
-          }
-        } catch (error) {
-          this.errorMessage = 'Unexpected error during login'
-          console.error('Login error:', error)
-        }
-      },
+        },
 
       displayedItems(listName) {
         return (array) => {
