@@ -27,7 +27,7 @@
           <h2>
             Products
             <span class="product-category">
-              | {{ currentProduct.category }}</span
+              | {{ currentProduct.product.category.category_name }}</span
             >
           </h2>
           <edit-button
@@ -45,7 +45,10 @@
           >
             <div class="product-details-upper">
               <div class="product-image" v-if="!isEditMode">
-                <img :src="currentProduct.image" :alt="currentProduct.product.product_name" />
+                <img
+                  :src="currentProduct.image"
+                  :alt="currentProduct.product.product_name"
+                />
               </div>
               <div v-else class="edit-product-image">
                 <input
@@ -58,7 +61,9 @@
 
               <div class="product-main-info">
                 <div class="product-name">
-                  <h3 v-if="!isEditMode">{{ currentProduct.name }}</h3>
+                  <h3 v-if="!isEditMode">
+                    {{ currentProduct.product.product_name }}
+                  </h3>
                   <div v-else class="form-field">
                     <label for="product-name">Name:</label>
                     <input
@@ -91,7 +96,6 @@
                       >
                         Out of Stock
                       </button>
-
                     </div>
                   </div>
                 </div>
@@ -174,22 +178,6 @@
                   ></textarea>
                 </div>
               </section>
-<!-- 
-              <section class="manufacturer">
-                <h3 for="manufacturer">Manufacturer:</h3>
-                <div v-if="!isEditMode">
-                  <p>{{ currentProduct.manufacturer }}</p>
-                </div>
-                <div v-else>
-                  <input
-                    id="manufacturer"
-                    type="text"
-                    v-model="currentProduct.manufacturer"
-                    class="edit-input"
-                    required
-                  />
-                </div>
-              </section> -->
 
               <section class="categories">
                 <h3 for="category">Category:</h3>
@@ -199,16 +187,16 @@
                 <div v-else>
                   <select
                     id="category"
-                    v-model="currentProduct.product.category.category_name"
+                    v-model="currentProduct.product.category"
                     class="edit-dropdown"
                   >
                     <option disabled value="">Select category</option>
                     <option
                       v-for="category in productsCategories"
-                      :key="category.category"
-                      :value="category.category"
+                      :key="category.category_number"
+                      :value="category"
                     >
-                      {{ category.category }}
+                      {{ category.category_name }}
                     </option>
                   </select>
                 </div>
