@@ -40,6 +40,13 @@ dl.check-sum-and-vat-list {
   width: 440px;
 }
 
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
 .product-quantity input {
   width: 50%;
 }

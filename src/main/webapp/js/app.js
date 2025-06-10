@@ -5,7 +5,7 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         isPasswordVisible: false,
-        userRole: 'Cashier',
+        userRole: 'Manager',
         username: '',
         userPassword: '',
         errorMassage: '',
@@ -350,7 +350,7 @@ let app = Vue.createApp(
           if (productId) {
             try {
               const product = await this.getProductById(productId)
-              console.log(product)
+
               this.currentProduct = product
             }
             catch (error) {
