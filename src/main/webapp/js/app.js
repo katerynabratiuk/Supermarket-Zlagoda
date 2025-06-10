@@ -401,7 +401,7 @@ let app = Vue.createApp(
       },
       async loadProducts() {
         try {
-          const response = await fetch("../products.json")
+          const response = await fetch("http://localhost:8090/product")
           if (!response.ok) throw new Error("Fetch products error: ${response.status}")
 
           this.products = await response.json()
@@ -876,22 +876,22 @@ app.component("product-card", {
     `
     <div class="product-card">
     
-      <a :href="'product-page.html?id=' + product.id">
+      <a :href="'product-page.html?id=' + product.upc">
         <div class="product-image">
-          <img :src="product.image" :alt="product.name">
+          <img :src="product.image" :alt="product.product.product_name">
         </div>
       </a>
 
       <div class="product-details">
         <div class="product-name">
-          <a :href="'product-page.html?id=' + product.id">{{ product.name }}</a>
+          <a :href="'product-page.html?id=' + product.upc">{{ product.product.product_name }}</a>
         </div>
 
         <div class="product-price">
-          <div class="product-discount" v-if="product.isOnSale">
+          <div class="product-discount" v-if="product.promotional_product">
             <span class="product-old-price">
               <del class="custom-strike">
-                {{ product.price.toFixed(2) }} &#x20B4
+                {{ product.selling_price.toFixed(2) }} &#x20B4
               </del>
             </span>
             <span class="product-new-price">
@@ -899,7 +899,7 @@ app.component("product-card", {
             </span>
           </div>
           <span v-else>
-            {{ product.price.toFixed(2) }} &#x20B4
+            {{ product.selling_price.toFixed(2) }} &#x20B4
           </span>
         </div>
       </div>

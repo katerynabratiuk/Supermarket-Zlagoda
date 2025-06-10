@@ -52,7 +52,7 @@
           <div class="products-grid" v-if="!isLoading">
             <product-card
               v-for="product in displayedItems('products')(products)"
-              :key="product.id"
+              :key="product.UPC"
               :product="product"
             ></product-card>
           </div>
