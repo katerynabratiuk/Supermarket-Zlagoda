@@ -94,35 +94,6 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
-<<<<<<< HEAD
-        return {
-          'in-stock': this.currentProduct?.status === 'In Stock',
-          'out-of-stock': this.currentProduct?.status !== 'In Stock'
-        }
-      },
-      newStatusClass() {
-        return {
-          'in-stock': this.newProduct.status === 'In Stock',
-          'out-of-stock': this.newProduct.status === 'Out Of Stock'
-        }
-      },
-      subtotal() {
-        return this.newCheck.sales.reduce((total, sale) => {
-          return total + (sale.selling_price * sale.quantity)
-        }, 0)
-      },
-      discountPercent() {
-        return this.currentCustomer?.percent || 0
-      },
-      totalAfterDiscount() {
-        const discountAmount = this.subtotal * (this.discountPercent / 100)
-        return this.subtotal - discountAmount
-      },
-      vatAmount() {
-        const vatRate = 0.2
-        return this.totalAfterDiscount * vatRate
-      },
-=======
       return {
         'in-stock': this.currentProduct?.products_number > 0,
         'out-of-stock': this.currentProduct?.products_number === 0
@@ -134,7 +105,6 @@ let app = Vue.createApp(
         'out-of-stock': this.newProduct.products_number === 0
       };
     }
->>>>>>> origin/main
     },
     watch: {
       currentProduct(newVal) {
@@ -159,17 +129,7 @@ let app = Vue.createApp(
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
       },
-<<<<<<< HEAD
-      vatAmount(newValue) {
-        this.newCheck.vat = newValue
-      },
-      saleTotal(newValue) {
-        this.newCheck.sumTotal = newValue
-      },
-      'currentProduct.count': function (newCount) {
-=======
       'currentProduct.products_number': function (newCount) {
->>>>>>> origin/main
         if (this.currentProduct) {
           if (newCount <= 0) {
             this.currentProduct.status = 'Out Of Stock'
@@ -196,7 +156,7 @@ let app = Vue.createApp(
           }
 
           try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:8090/auth/login', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
