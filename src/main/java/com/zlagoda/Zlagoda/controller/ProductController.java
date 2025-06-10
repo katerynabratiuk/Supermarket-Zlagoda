@@ -1,0 +1,30 @@
+package com.zlagoda.Zlagoda.controller;
+
+import com.zlagoda.Zlagoda.entity.Category;
+import com.zlagoda.Zlagoda.entity.StoreProduct;
+import com.zlagoda.Zlagoda.service.StoreProductService;
+import com.zlagoda.Zlagoda.service.implementation.StoreProductServiceImpl;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/product")
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+})
+public class ProductController {
+
+    private final StoreProductServiceImpl storeProductService;
+
+    public ProductController(StoreProductServiceImpl storeProductService) {
+        this.storeProductService = storeProductService;
+    }
+
+    @GetMapping()
+    public @ResponseBody List<StoreProduct> getAllProducts()
+    {
+        return storeProductService.findAll();
+    }
+}

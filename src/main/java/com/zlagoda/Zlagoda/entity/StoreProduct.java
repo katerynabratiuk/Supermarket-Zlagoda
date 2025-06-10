@@ -24,6 +24,10 @@ public class StoreProduct {
     @JsonProperty("selling_price")
     private BigDecimal sellingPrice;
 
+    @DecimalMin(value="0", inclusive = false)
+    @JsonProperty("new_price")
+    private BigDecimal newPrice;
+
     @Min(1)
     @JsonProperty("products_number")
     private Integer productsNumber;
@@ -63,6 +67,11 @@ public class StoreProduct {
             return this;
         }
 
+        public Builder setNewPrice(BigDecimal sellingPrice) {
+            storeProduct.setNewPrice(sellingPrice);
+            return this;
+        }
+
         public Builder setProductsNumber(Integer productsNumber) {
             storeProduct.setProductsNumber(productsNumber);
             return this;
@@ -72,6 +81,8 @@ public class StoreProduct {
             storeProduct.setPromotional(isPromotional);
             return this;
         }
+
+
 
         @Override
         public StoreProduct build() {
@@ -120,6 +131,8 @@ public class StoreProduct {
     public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
+
+    public void setNewPrice(BigDecimal newPrice) { this.newPrice = newPrice; }
 
     public Integer getProductsNumber() {
         return productsNumber;
