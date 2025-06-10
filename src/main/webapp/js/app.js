@@ -29,7 +29,8 @@ let app = Vue.createApp(
           category: '',
           description: '',
           manufacturer: '',
-          status: 'Out Of Stock',
+          status:'',
+          products_number:0,
           isOnSale: false,
           new_price: null,
           count: 0
@@ -93,6 +94,7 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
+<<<<<<< HEAD
         return {
           'in-stock': this.currentProduct?.status === 'In Stock',
           'out-of-stock': this.currentProduct?.status !== 'In Stock'
@@ -120,6 +122,19 @@ let app = Vue.createApp(
         const vatRate = 0.2
         return this.totalAfterDiscount * vatRate
       },
+=======
+      return {
+        'in-stock': this.currentProduct?.products_number > 0,
+        'out-of-stock': this.currentProduct?.products_number === 0
+      };
+    },
+    newStatusClass() {
+      return {
+        'in-stock': this.newProduct.products_number > 0,
+        'out-of-stock': this.newProduct.products_number === 0
+      };
+    }
+>>>>>>> origin/main
     },
     watch: {
       currentProduct(newVal) {
@@ -144,6 +159,7 @@ let app = Vue.createApp(
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
       },
+<<<<<<< HEAD
       vatAmount(newValue) {
         this.newCheck.vat = newValue
       },
@@ -151,6 +167,9 @@ let app = Vue.createApp(
         this.newCheck.sumTotal = newValue
       },
       'currentProduct.count': function (newCount) {
+=======
+      'currentProduct.products_number': function (newCount) {
+>>>>>>> origin/main
         if (this.currentProduct) {
           if (newCount <= 0) {
             this.currentProduct.status = 'Out Of Stock'
@@ -159,7 +178,7 @@ let app = Vue.createApp(
           }
         }
       },
-      'newProduct.count': function (newCount) {
+      'newProduct.products_number': function (newCount) {
         if (this.newProduct) {
           if (newCount <= 0) {
             this.newProduct.status = 'Out Of Stock'
@@ -352,6 +371,7 @@ let app = Vue.createApp(
               const product = await this.getProductById(productId)
 
               this.currentProduct = product
+              console.log(this.currentProduct)
             }
             catch (error) {
               console.error(error)
