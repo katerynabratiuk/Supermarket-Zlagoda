@@ -95,16 +95,16 @@ let app = Vue.createApp(
       },
       statusClass() {
       return {
-        'in-stock': this.currentProduct?.products_number > 0,
+        'in-stock': this.currentProduct?.products_number !== 0,
         'out-of-stock': this.currentProduct?.products_number === 0
       };
-    },
-    newStatusClass() {
-      return {
-        'in-stock': this.newProduct.products_number > 0,
-        'out-of-stock': this.newProduct.products_number === 0
-      };
-    }
+      },
+      newStatusClass() {
+        return {
+          'in-stock': this.newProduct.products_number !== 0,
+          'out-of-stock': this.newProduct.products_number === 0
+        };
+      }
     },
     watch: {
       currentProduct(newVal) {
