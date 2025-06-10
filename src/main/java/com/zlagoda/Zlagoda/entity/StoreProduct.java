@@ -128,6 +128,10 @@ public class StoreProduct {
         return sellingPrice;
     }
 
+    public BigDecimal getNewPrice() {
+        return newPrice;
+    }
+
     public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
     }

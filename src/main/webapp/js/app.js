@@ -243,27 +243,26 @@ let app = Vue.createApp(
       },
 
       async getProductById(id) {
-        // try {
-        //   const response = await fetch('/api/products/get', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ productId: id }),
-        //   })
+        try {
+          const response = await fetch(`http://localhost:8090/product/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
 
-        //   if (!response.ok) {
-        //     throw new Error(`Failed to fetch product. Status: ${response.status}`)
-        //   }
-        //   const product = await response.json()
-        //   return product
+          if (!response.ok) {
+            throw new Error(`Failed to fetch product. Status: ${response.status}`)
+          }
 
-        // } catch (error) {
-        //   console.error("An error occurred during fetching product:", error)
-        //   alert("An unexpected error occurred. Please try again later.")
-        //   return null
-        // }
-        return this.products.find(product => product.id === id)
+          const product = await response.json()
+          return product
+
+        } catch (error) {
+          console.error("An error occurred during fetching product:", error)
+          alert("An unexpected error occurred. Please try again later.")
+          return null
+        }
       },
       async getEmployeeById(id) {
         // try {

@@ -27,4 +27,17 @@ public class ProductController {
     {
         return storeProductService.findAll();
     }
+
+    @GetMapping("/{id}")
+    public @ResponseBody StoreProduct getProductById(@PathVariable String id)
+    {
+        return storeProductService.findById(id);
+    }
+
+
+    @GetMapping("/promotional")
+    public @ResponseBody List<StoreProduct> getPromotionalProducts()
+    {
+        return storeProductService.findPromotional();
+    }
 }
