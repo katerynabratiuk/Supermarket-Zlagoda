@@ -1,9 +1,6 @@
 package com.zlagoda.Zlagoda.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -17,24 +14,22 @@ public class Employee {
     private String id;
 
     @NotNull
-    @Size(min=1, max=50)
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     @JsonProperty("empl_name")
     private String name;
 
     @NotNull
-    @Size(min=1, max=50)
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     @JsonProperty("empl_surname")
     private String surname;
 
-
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     @JsonProperty("empl_patronymic")
-    //@Size(min=1, max=50)
     private String patronymic;
 
     @NotNull
     @NotBlank
     @JsonProperty("empl_role")
-    @Size(min=1, max=10)
     private String role;
 
     @NotNull
@@ -53,27 +48,30 @@ public class Employee {
     private LocalDate dateOfStart;
 
     @NotNull
-    @Pattern(regexp = "(\\+)?[0-9]{9,12}")
+    //@Pattern(regexp = "(\\+)?[0-9]{10}")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
     @NotNull
     @Size(min=2, max=50)
-    @Pattern(regexp = "[a-zA-Z-]{1,50}")
+    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     @JsonProperty("city")
     private String city;
 
     @NotNull
     @Size(min=2, max=50)
+    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     @JsonProperty("street")
     private String street;
 
     @NotNull
     @Size(min = 5, max = 5)
-    @Pattern(regexp = "[0-9]{5}")
+    //@Pattern(regexp = "[0-9]")
     @NotBlank
     @JsonProperty("zip_code")
     private String zipCode;
+
+    private String empl_username;
 
     public Employee(){};
 
@@ -145,6 +143,11 @@ public class Employee {
             return this;
         }
 
+        public Builder setEmplUsername(String empl_username) {
+            employee.setEmplUsername(empl_username);
+            return this;
+        }
+
         @Override
         public Employee build() {
             return employee;
@@ -163,7 +166,8 @@ public class Employee {
                     String phoneNumber,
                     String city,
                     String street,
-                    String zipCode) {
+                    String zipCode,
+                    String empl_username) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -176,6 +180,7 @@ public class Employee {
         this.city = city;
         this.street = street;
         this.zipCode = zipCode;
+        this.empl_username = empl_username;
     }
 
     public String getId() {
@@ -274,6 +279,10 @@ public class Employee {
         this.zipCode = zipCode;
     }
 
+    public String getEmplUsername() { return empl_username; }
+
+    public void setEmplUsername(String empl_username) { this.empl_username = empl_username; }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -289,6 +298,7 @@ public class Employee {
                 ", city='" + city + '\'' +
                 ", street='" + street + '\'' +
                 ", zipCode='" + zipCode + '\'' +
+                ", username='" + empl_username + '\'' +
                 '}';
     }
 }
