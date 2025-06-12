@@ -505,6 +505,7 @@ let app = Vue.createApp(
             this.productsCategories.push(addedCategory)
             console.log("New product added successfully:", addedCategory)
             this.newCategory = { category_name: '', category_number: null }
+            this.loadCategories()
           }
           else {
             console.error("Adding category failed on the server. Status:", response.status)
