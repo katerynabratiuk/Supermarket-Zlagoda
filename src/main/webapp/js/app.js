@@ -29,8 +29,8 @@ let app = Vue.createApp(
           category: '',
           description: '',
           manufacturer: '',
-          status:'',
-          products_number:0,
+          status: '',
+          products_number: 0,
           isOnSale: false,
           new_price: null,
           count: 0
@@ -94,10 +94,10 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
-      return {
-        'in-stock': this.currentProduct?.products_number !== 0,
-        'out-of-stock': this.currentProduct?.products_number === 0
-      };
+        return {
+          'in-stock': this.currentProduct?.products_number !== 0,
+          'out-of-stock': this.currentProduct?.products_number === 0
+        };
       },
       newStatusClass() {
         return {
@@ -149,46 +149,46 @@ let app = Vue.createApp(
       }
     },
     methods: {
-        async handleLogin() {
-          const payload = {
-            username: this.username,
-            password: this.userPassword
-          }
+      async handleLogin() {
+        const payload = {
+          username: this.username,
+          password: this.userPassword
+        }
 
-          try {
-            const response = await fetch('http://localhost:8090/auth/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(payload)
-            })
+        try {
+          const response = await fetch('http://localhost:8090/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          })
 
-            const data = await response.json()
+          const data = await response.json()
 
-            if (!response.ok) {
-              const status = response.status
+          if (!response.ok) {
+            const status = response.status
 
-              if (status === 401) {
-                this.errorMessage = data.message || 'Incorrect username or password'
-              } else if (status === 404) {
-                this.errorMessage = data.message || 'Username not found'
-              } else if (status === 400) {
-                this.errorMessage = data.message || 'Invalid login request'
-              } else {
-                this.errorMessage = data.message || 'An unknown error occurred'
-              }
+            if (status === 401) {
+              this.errorMessage = data.message || 'Incorrect username or password'
+            } else if (status === 404) {
+              this.errorMessage = data.message || 'Username not found'
+            } else if (status === 400) {
+              this.errorMessage = data.message || 'Invalid login request'
+            } else {
+              this.errorMessage = data.message || 'An unknown error occurred'
             }
-            else {
-              console.log('Login successful')
-              this.errorMessage = ''
-              window.location.href = 'categories.html'
-            }
-          } catch (error) {
-            this.errorMessage = 'Unexpected error during login'
-            console.error('Login error:', error)
           }
-        },
+          else {
+            console.log('Login successful')
+            this.errorMessage = ''
+            window.location.href = 'categories.html'
+          }
+        } catch (error) {
+          this.errorMessage = 'Unexpected error during login'
+          console.error('Login error:', error)
+        }
+      },
 
       displayedItems(listName) {
         return (array) => {
@@ -806,86 +806,85 @@ let app = Vue.createApp(
         } else {
           this.currentCustomer = null
         }
-      }
-    },
-    goToAddEmployee() {
-      window.location.href = 'new-employee-page.html'
-    },
-    async addNewEmployee() {
-      try {
-        const response = await fetch('http://localhost:8090/employee', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(this.newEmployee),
-        })
-
-        if (response.ok) {
-          const newEmployee = await response.json()
-          this.employees.push(newEmployee)
-          console.log("New employee added successfully:", newEmployee)
-          window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
-        } else {
-          console.error("Adding employee failed on the server. Status:", response.status)
-          alert("Failed to add employee. Please try again.")
-        }
-      } catch (error) {
-        console.error("An unexpected error occurred during adding:", error)
-        alert("An unexpected error occurred. Please try again later.")
-      }
-    },
-    async confirmAndDeleteEmployee() {
-      const employeeId = this.currentEmployee.id_employee
-      if (confirm("Are you sure you want to delete this employee?")) {
+      },
+      goToAddEmployee() {
+        window.location.href = 'new-employee-page.html'
+      },
+      async addNewEmployee() {
         try {
-          const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
-            method: 'DELETE',
+          const response = await fetch('http://localhost:8090/employee', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.newEmployee),
           })
 
           if (response.ok) {
-            this.employees = this.employees.filter(item => item.id_employee !== employeeId)
-            this.currentEmployee = null
-            window.location.href = 'employees.html'
+            const newEmployee = await response.json()
+            this.employees.push(newEmployee)
+            console.log("New employee added successfully:", newEmployee)
+            window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
           } else {
-            console.error("Deletion failed on the server. Status:", response.status)
-            alert("Failed to delete employee. Please try again.")
+            console.error("Adding employee failed on the server. Status:", response.status)
+            alert("Failed to add employee. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during deletion:", error)
+          console.error("An unexpected error occurred during adding:", error)
           alert("An unexpected error occurred. Please try again later.")
         }
-      } else {
-        console.log("Deletion cancelled by user.")
-      }
-    },
-    async saveEditEmployee() {
-      try {
-        const response = await fetch(`http://localhost:8090/employee/${this.currentEmployee.id_employee}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(this.currentEmployee),
-        })
+      },
+      async confirmAndDeleteEmployee() {
+        const employeeId = this.currentEmployee.id_employee
+        if (confirm("Are you sure you want to delete this employee?")) {
+          try {
+            const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
+              method: 'DELETE',
+            })
 
-        if (response.ok) {
-          this.currentEmployee = null
-          window.location.href = "employees.html"
+            if (response.ok) {
+              this.employees = this.employees.filter(item => item.id_employee !== employeeId)
+              this.currentEmployee = null
+              window.location.href = 'employees.html'
+            } else {
+              console.error("Deletion failed on the server. Status:", response.status)
+              alert("Failed to delete employee. Please try again.")
+            }
+          } catch (error) {
+            console.error("An unexpected error occurred during deletion:", error)
+            alert("An unexpected error occurred. Please try again later.")
+          }
         } else {
-          console.error("Updating employee failed on the server. Status:", response.status)
-          alert("Failed to update employee. Please try again.")
+          console.log("Deletion cancelled by user.")
         }
-      } catch (error) {
-        console.error("An unexpected error occurred during updating:", error)
-        alert("An unexpected error occurred. Please try again later.")
-      }
-    },
+      },
+      async saveEditEmployee() {
+        try {
+          const response = await fetch(`http://localhost:8090/employee/${this.currentEmployee.id_employee}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.currentEmployee),
+          })
 
+          if (response.ok) {
+            this.currentEmployee = null
+            window.location.href = "employees.html"
+          } else {
+            console.error("Updating employee failed on the server. Status:", response.status)
+            alert("Failed to update employee. Please try again.")
+          }
+        } catch (error) {
+          console.error("An unexpected error occurred during updating:", error)
+          alert("An unexpected error occurred. Please try again later.")
+        }
+      },
+    },
     mounted() {
       this.loadDataForCurrentPage()
       this.isLoading = false
-    },
+    }
   }
 )
 
