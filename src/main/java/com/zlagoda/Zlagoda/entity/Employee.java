@@ -3,13 +3,12 @@ package com.zlagoda.Zlagoda.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
 public class Employee {
 
-    @NotNull
     @JsonProperty("id_employee")
     private String id;
 
@@ -23,7 +22,6 @@ public class Employee {
     @JsonProperty("empl_surname")
     private String surname;
 
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     @JsonProperty("empl_patronymic")
     private String patronymic;
 
@@ -154,6 +152,12 @@ public class Employee {
         }
     }
 
+    @AssertTrue()
+    @Transient
+    public boolean isPatronymicValid() {
+        return patronymic == null || patronymic.isBlank()
+                || patronymic.matches("^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$");
+    }
 
     public Employee(String id,
                     String name,
@@ -190,6 +194,8 @@ public class Employee {
     public void setId(String id) {
         this.id = id;
     }
+
+
 
     public String getName() {
         return name;
