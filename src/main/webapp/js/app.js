@@ -815,26 +815,22 @@ let app = Vue.createApp(
         try {
           const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.newEmployee),
           })
 
           if (response.ok) {
-            const newEmployee = await response.json()
-            this.employees.push(newEmployee)
-            console.log("New employee added successfully:", newEmployee)
-            window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
+            //alert("Employee added successfully");
+            window.location.href = `employees.html`;
           } else {
-            console.error("Adding employee failed on the server. Status:", response.status)
-            alert("Failed to add employee. Please try again.")
+            alert("Failed to add employee. Please try again.");
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
           alert("An unexpected error occurred. Please try again later.")
         }
       },
+
       async confirmAndDeleteEmployee() {
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
