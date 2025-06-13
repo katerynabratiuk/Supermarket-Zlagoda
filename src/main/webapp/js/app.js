@@ -28,15 +28,13 @@ let app = Vue.createApp(
           image: '',
           category: '',
           description: '',
-          manufacturer: '',
-          status: '',
           products_number: 0,
           isOnSale: false,
           new_price: null,
-          count: 0
         },
         imagePreview: null,
         currentProduct: null,
+        productStatus: null,
 
         newCustomer: {
           card_number: null,
@@ -94,17 +92,27 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
+        const product = this.currentProduct || this.newProduct;
         return {
-          'in-stock': this.currentProduct?.products_number !== 0,
-          'out-of-stock': this.currentProduct?.products_number === 0
-        };
+          'in-stock': product?.products_number > 0,
+          'out-of-stock': !product?.products_number || product?.products_number <= 0
+        }
       },
-      newStatusClass() {
-        return {
-          'in-stock': this.newProduct.products_number !== 0,
-          'out-of-stock': this.newProduct.products_number === 0
-        };
-      }
+      subtotal() {
+        return this.newCheck.sales.reduce((total, sale) => {
+          return total + (sale.selling_price * sale.quantity)
+        }, 0)
+      },
+      discountPercent() {
+        return this.currentCustomer?.percent || 0
+      },
+      totalAfterDiscount() {
+        const discount = this.discountPercent / 100
+        return this.subtotal * (1 - discount)
+      },
+      vatAmount() {
+        return this.totalAfterDiscount * 0.2
+      },
     },
     watch: {
       currentProduct(newVal) {
@@ -125,7 +133,7 @@ let app = Vue.createApp(
         }
       },
       currentCheck(newVal) {
-        if (newVal) {
+        if (newVal) { 
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
       },
@@ -315,91 +323,95 @@ let app = Vue.createApp(
 
       async loadDataForCurrentPage() {
         const path = window.location.pathname
+        const page = path.substring(path.lastIndexOf('/') + 1)
 
-        if (path.includes('categories.html')) {
-          await this.loadCategories()
+        const idFromURL = () => new URLSearchParams(window.location.search).get('id')
 
-        } else if (path.includes('products.html')) {
-          await this.loadProducts()
+        try {
+          switch (page) {
+            case 'categories.html':
+              await this.loadCategories()
+              break
 
-        } else if (path.includes('product-page.html')) {
-          await Promise.all([this.loadProducts(), this.loadCategories()])
-          const productId = new URLSearchParams(window.location.search).get('id')
-          console.log(productId)
-          if (productId) {
-            try {
-              const product = await this.getProductById(productId)
+            case 'products.html':
+              await this.loadProducts()
+              break
 
-              this.currentProduct = product
-              console.log(this.currentProduct)
-            }
-            catch (error) {
-              console.error(error)
-            }
+            case 'product-page.html':
+              await Promise.all([this.loadProducts(), this.loadCategories()])
+              const productId = idFromURL()
+              if (productId) {
+                this.currentProduct = await this.getProductById(productId)
+              }
+              break
+
+            case 'new-product-page.html':
+              await this.loadCategories()
+              break
+
+            case 'customers.html':
+              await this.loadCustomers()
+              break
+
+            case 'customer-page.html':
+              await this.loadCustomers()
+              const customerId = idFromURL()
+              if (customerId) {
+                this.currentCustomer = await this.getCustomerById(customerId)
+              }
+              break
+
+            case 'checks.html':
+              await this.loadChecks()
+              break
+
+            case 'check-page.html':
+              await Promise.all([
+                this.loadChecks(),
+                this.loadProducts(),
+                this.loadEmployees(),
+                this.loadCustomers(),
+              ])
+              const checkId = idFromURL()
+              if (checkId) {
+                const check = await this.getCheckById(checkId)
+                this.currentCheck = check
+
+                const [employee, customer] = await Promise.all([
+                  this.getEmployeeById(check.id_employee),
+                  this.getCustomerById(check.card_number),
+                ])
+
+                this.currentCheck.employeeName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
+                this.currentCheck.customerName = `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
+              }
+              break
+
+            case 'new-check-page.html':
+              await Promise.all([
+                this.loadProducts(),
+                this.loadEmployees(),
+                this.loadCustomers(),
+              ])
+              break
+
+            case 'employees.html':
+              await this.loadEmployees()
+              break
+
+            case 'employee-page.html':
+              await this.loadEmployees()
+              const employeeId = idFromURL()
+              if (employeeId) {
+                this.currentEmployee = await this.getEmployeeById(employeeId)
+              }
+              break
+
+            default:
+              console.warn('No data loading defined for page:', page)
           }
-
-        } else if (path.includes('new-product-page.html')) {
-          await this.loadCategories()
-
-        } else if (path.includes('customers.html')) {
-          await this.loadCustomers()
-
-        } else if (path.includes('customer-page.html')) {
-          await this.loadCustomers()
-          const customerId = new URLSearchParams(window.location.search).get('id')
-          if (customerId) {
-            try {
-              const customer = await this.getCustomerById(customerId)
-              this.currentCustomer = customer
-            }
-            catch (error) {
-              console.error(error)
-            }
-          }
-        } else if (path.includes('checks.html')) {
-          await this.loadChecks()
-
-        } else if (path.includes('check-page.html')) {
-          await Promise.all([
-            this.loadChecks(),
-            this.loadProducts(),
-            this.loadEmployees(),
-            this.loadCustomers(),
-          ])
-          const checkId = new URLSearchParams(window.location.search).get('id')
-          try {
-            const check = await this.getCheckById(checkId)
-            this.currentCheck = check
-
-            const employee = await this.getEmployeeById(this.currentCheck.id_employee)
-            const customer = await this.getCustomerById(this.currentCheck.card_number)
-
-            this.currentCheck.employeeName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
-            this.currentCheck.customerName = `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
-          } catch (error) {
-            console.error(error)
-          }
-        } else if (path.includes('new-check-page.html')) {
-          await Promise.all([
-            this.loadProducts(),
-            this.loadEmployees(),
-            this.loadCustomers(),
-          ])
-        } else if (path.includes('employees.html')) {
-          await this.loadEmployees()
-
-        } else if (path.includes('employee-page.html')) {
-          await this.loadEmployees()
-          const employeeId = new URLSearchParams(window.location.search).get('id')
-          if (employeeId) {
-            try {
-              const employee = await this.getEmployeeById(employeeId)
-              this.currentEmployee = employee
-            }
-            catch (error) {
-              console.error(error)
-            }
-          }
+        } catch (error) {
+          console.error('Error loading data for page:', page, error)
         }
       },
       async loadCategories() {
@@ -773,21 +785,18 @@ let app = Vue.createApp(
       async onProductSelected(index) {
         const productId = this.newCheck.sales[index].product_id
 
-        if (productId) {
-          try {
-            const selectedProduct = await this.getProductById(productId)
+        try {
+          const selectedProduct = await this.getProductById(productId)
 
-            if (selectedProduct) {
-              this.newCheck.sales[index].selling_price = selectedProduct.price
-              this.newCheck.sales[index].product_name = selectedProduct.name
-            } else {
-              this.newCheck.sales[index].selling_price = 0
-              this.newCheck.sales[index].product_name = ''
-            }
-          } catch (error) {
-            console.error("Error fetching product:", error)
+          if (selectedProduct) {
+            this.newCheck.sales[index].selling_price = selectedProduct.selling_price
+            this.newCheck.sales[index].product_name = selectedProduct.product.product_name
+          } else {
+            this.newCheck.sales[index].selling_price = 0
+            this.newCheck.sales[index].product_name = ''
           }
-        } else {
+        } catch (error) {
+          console.error("Error fetching product:", error)
           this.newCheck.sales[index].selling_price = 0
           this.newCheck.sales[index].product_name = ''
         }
