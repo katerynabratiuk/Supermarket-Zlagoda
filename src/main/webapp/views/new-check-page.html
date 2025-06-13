@@ -58,7 +58,7 @@
                     <dd>
                       <select
                         id="customer-select"
-                        v-model.number="newCheck.card_number"
+                        v-model="newCheck.card_number"
                         @change="onCustomerSelected"
                         class="edit-dropdown"
                       >
@@ -94,7 +94,7 @@
                   <table class="table-section">
                     <thead>
                       <tr class="table-row">
-                        <th class="product-id">ID</th>
+                        <th class="product-id">UPC</th>
                         <th class="product-name">Name</th>
                         <th class="product-price">Price (&#8372;)</th>
                         <th class="product-quantity">Quantity</th>
@@ -119,10 +119,10 @@
                             <option value="" disabled>Select Product</option>
                             <option
                               v-for="product in products"
-                              :key="product.id"
-                              :value="product.id"
+                              :key="product.upc"
+                              :value="product.upc"
                             >
-                              {{ product.name }}
+                              {{ product.product.product_name }}
                             </option>
                           </select>
                         </td>
