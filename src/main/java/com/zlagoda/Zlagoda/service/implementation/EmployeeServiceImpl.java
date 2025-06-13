@@ -1,8 +1,10 @@
 package com.zlagoda.Zlagoda.service.implementation;
 
 import com.zlagoda.Zlagoda.entity.Employee;
+import com.zlagoda.Zlagoda.util.IdGenerator;
 import com.zlagoda.Zlagoda.repository.EmployeeRepository;
 import com.zlagoda.Zlagoda.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.List;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    @Autowired
+    private IdGenerator idGenerator;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
@@ -38,6 +42,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void create(Employee employee) {
+        if (employee.getId() == null) {
+            employee.setId(idGenerator.generate(IdGenerator.Option.Employee));
+        }
         employeeRepository.create(employee);
     }
 

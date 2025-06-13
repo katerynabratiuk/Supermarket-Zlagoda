@@ -133,6 +133,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         try(Connection connection = dbConnection.getConnection())
         {
             PreparedStatement stmt = connection.prepareStatement(CREATE);
+            System.out.println(employee.getId());
             stmt.setString(1, employee.getId());
             stmt.setString(2, employee.getSurname());
             stmt.setString(3, employee.getName());
@@ -158,7 +159,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         try (Connection connection = dbConnection.getConnection())
         {
             PreparedStatement stmt = connection.prepareStatement(UPDATE);
-            stmt.setString(1, employee.getSurname());
+            stmt.setString(1,employee.getId());
             stmt.setString(2, employee.getName());
             stmt.setString(3, employee.getPatronymic());
             stmt.setString(4, employee.getRole());
