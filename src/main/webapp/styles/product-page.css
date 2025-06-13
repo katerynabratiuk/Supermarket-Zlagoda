@@ -98,14 +98,6 @@ h3.product-management-header {
   justify-content: space-between;
 }
 
-.status-btn {
-  opacity: 0.5;
-}
-
-.status-btn.active {
-  opacity: 1;
-}
-
 .product-price {
   position: absolute;
   left: 0;

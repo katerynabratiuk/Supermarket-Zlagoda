@@ -19,7 +19,7 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar :user-role="userRole"  />
+        <navbar :user-role="userRole" />
       </header>
 
       <main v-if="!isLoading">
@@ -56,24 +56,10 @@
                   />
                 </div>
 
-                <div class="form-field">
-                  Status:
-                  <div class="edit-status-buttons">
-                    <button
-                      class="status-btn in-stock"
-                      :class="{'active': newProduct.status === 'In Stock'}"
-                      @click="newProduct.status = 'In Stock'"
-                    >
-                      In Stock
-                    </button>
-                    <button
-                      class="status-btn out-of-stock"
-                      :class="{'active': newProduct.status === 'Out Of Stock'}"
-                      @click="newProduct.status = 'Out Of Stock'"
-                    >
-                      Out of Stock
-                    </button>
-                  </div>
+                <div class="product-status" :class="statusClass">
+                  <p>
+                    {{ newProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
+                  </p>
                 </div>
 
                 <div class="product-management-info">
@@ -83,7 +69,7 @@
                     <label for="product-count">Count:</label>
                     <input
                       id="product-count"
-                      v-model.number="newProduct.count"
+                      v-model.number="newProduct.products_number"
                       type="number"
                       min="0"
                       class="edit-input"
@@ -141,10 +127,10 @@
                   <option disabled value="">Select category</option>
                   <option
                     v-for="category in productsCategories"
-                    :key="category.category"
-                    :value="category.category"
+                    :key="category.category_name"
+                    :value="category.category_name"
                   >
-                    {{ category.category }}
+                    {{ category.category_name }}
                   </option>
                 </select>
               </section>

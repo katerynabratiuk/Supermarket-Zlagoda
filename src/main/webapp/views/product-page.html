@@ -76,36 +76,15 @@
                   </div>
                 </div>
 
-                <div class="product-status" :class="statusClass">
-                  <p v-if="!isEditMode">
-  {{ currentProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
-</p>
-
-
-                  <div class="form-field" v-else>
-                    Status:
-                    <div class="edit-status-buttons">
-                      <button
-                        class="status-btn in-stock"
-                        :class="{ active: currentProduct.products_number !== 0 }"
-                        @click="currentProduct.products_number = 1"
-                      >
-                        In Stock
-                      </button>
-                      <button
-                        class="status-btn out-of-stock"
-                        :class="{ active: currentProduct.products_number === 0 }"
-                        @click="currentProduct.products_number = 0"
-                      >
-                        Out of Stock
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
                 <div class="product-management-info">
                   <div class="product-id">
-                    <p>ID: {{ currentProduct.UPC }}</p>
+                    <p>UPC: {{ currentProduct.UPC }}</p>
+                  </div>
+
+                  <div class="product-status" :class="statusClass">
+                    <p>
+                      {{ currentProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
+                    </p>
                   </div>
 
                   <div v-if="isManager">
