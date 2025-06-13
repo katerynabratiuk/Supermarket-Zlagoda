@@ -636,8 +636,7 @@ let app = Vue.createApp(
       goToAddCustomer() {
         window.location.href = 'new-customer-page.html'
       },
-      async addNewCustomer() {
-        try {
+      async addNewCustomer() {try {
           const response = await fetch('http://localhost:8090/customer', {
             method: 'POST',
             headers: {
@@ -647,11 +646,10 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const newCustomer = await response.json()
-            this.customers.push(newCustomer)
-            console.log("New customer added successfully:", newCustomer)
-            window.location.href = `customer-page.html?id=${newCustomer.card_number}`
-
+            // const newCustomer = await response.json()
+            // this.customers.push(newCustomer)
+            // console.log("New customer added successfully:", newCustomer)
+            window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
             alert("Failed to add customer. Please try again.")
@@ -673,7 +671,7 @@ let app = Vue.createApp(
               this.customers = this.customers.filter(item => item.card_number !== customerId)
               this.currentCustomer = null
               window.location.href = 'customers.html'
-
+              this.loadCustomers()
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
               alert("Failed to delete customer. Please try again.")
