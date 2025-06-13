@@ -22,10 +22,12 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "    sp.selling_price AS new_price,\n" +
             "    sp.products_number,\n" +
             "    sp.promotional_product,\n" +
-            "    product_name\n" +
+            "    product_name,\n" +
+            "    Category.category_name\n"+
             "FROM store_product sp\n" +
             "JOIN store_product base ON sp.upc_prom = base.upc\n" +
             "JOIN Product ON sp.id_product = Product.id_product\n" +
+            "JOIN Category ON Category.category_number = Product.category_number\n" +
             "\n" +
             "UNION\n" +
             "\n" +
@@ -36,9 +38,11 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "    NULL AS new_price,\n" +
             "    sp.products_number,\n" +
             "    sp.promotional_product,\n" +
-            "    product_name\n" +
+            "    product_name,\n" +
+            "    Category.category_name\n" +
             "FROM store_product sp\n" +
             "JOIN Product ON sp.id_product = Product.id_product\n" +
+            "JOIN Category ON Category.category_number = Product.category_number\n" +
             "WHERE sp.promotional_product = FALSE\n" +
             "  AND sp.upc NOT IN (SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL);\n";
     private static final String CREATE = "INSERT INTO Store_product VALUES (?,?,?,?,?,?)";
@@ -207,6 +211,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                 Product product = new Product.Builder()
                         .setName(rs.getString("product_name"))
                         .setId(rs.getInt("id_product"))
+                        .setCategory(new Category(rs.getString("category_name")))
                         .build();
 
                 spBuilder.setProduct(product);
