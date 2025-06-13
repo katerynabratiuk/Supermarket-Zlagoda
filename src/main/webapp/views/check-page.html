@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
     />
     <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-    <title>Check {{ currentCheck.check_number }}</title>
+    <title>Check {{ currentCheck.check_number }} - Zlagoda</title>
   </head>
 
   <body>
@@ -26,20 +26,25 @@
       <main v-if="!isLoading && currentCheck">
         <section class="check-details">
           <div class="check-header">
-            <h2>Check {{ currentCheck.check_number }}</h2>
+            <h2>Check #{{ currentCheck.check_number }}</h2>
+            <div class="check-actions" v-if="isManager">
+              <button class="delete-btn" @click="confirmAndDeleteCheck">
+                Delete Check
+              </button>
+            </div>
           </div>
 
           <section class="contents">
             <div class="check-details-upper">
               <div class="check-main-info">
                 <dl class="check-main-info-list">
-                  <dt>Print date:</dt>
+                  <dt>Print Date:</dt>
                   <dd>{{ currentCheck.print_date }}</dd>
 
                   <dt>Cashier:</dt>
                   <dd>
                     <a
-                      class="cashier"
+                      class="employee-link"
                       :href="'employee-page.html?id=' + currentCheck.id_employee"
                     >
                       {{ currentCheck.employeeName }}
@@ -49,11 +54,13 @@
                   <dt>Customer:</dt>
                   <dd>
                     <a
-                      class="customer"
+                      v-if="currentCheck.card_number"
+                      class="customer-link"
                       :href="'customer-page.html?id=' + currentCheck.card_number"
                     >
                       {{ currentCheck.customerName }}
                     </a>
+                    <span v-else>No customer</span>
                   </dd>
                 </dl>
               </div>
@@ -66,9 +73,9 @@
                 <table class="table-section">
                   <thead>
                     <tr class="table-row">
-                      <th class="product-id">ID</th>
-                      <th class="product-name">Name</th>
-                      <th class="product-price">Price (	&#8372;)</th>
+                      <th class="product-upc">UPC</th>
+                      <th class="product-name">Product</th>
+                      <th class="product-price">Price (&#8372;)</th>
                       <th class="product-quantity">Quantity</th>
                       <th class="product-total">Sale Total (&#8372;)</th>
                     </tr>
@@ -79,13 +86,16 @@
                       v-for="(sale, index) in currentCheck.sales"
                       :key="index"
                     >
-                      <td class="product-id">{{ index + 1 }}</td>
+                      <td class="product-upc">
+                        {{ sale.upc }}
+                      </td>
                       <td class="product-name">
                         <a
-                          :href="'product-page.html?id=' + sale.product_id"
-                          class="product"
-                          >{{ sale.product_name }}</a
+                          :href="'product-page.html?upc=' + sale.upc"
+                          class="product-link"
                         >
+                          {{ sale.product_name }}
+                        </a>
                       </td>
                       <td class="product-price">
                         {{ sale.selling_price.toFixed(2) }}
@@ -98,10 +108,28 @@
                   </tbody>
                 </table>
 
-                <div class="check-sum-and-vat">
-                  <dl class="check-sum-and-vat-list">
-                    <dt class="check-sum">Sum:</dt>
-                    <dd class="check-sum-value">
+                <div class="check-summary">
+                  <dl class="check-summary-list">
+                    <dt class="check-subtotal">Subtotal:</dt>
+                    <dd class="check-subtotal-value">
+                      {{ subtotal.toFixed(2) }}
+                    </dd>
+
+                    <dt
+                      class="check-discount"
+                      v-if="currentCustomer && currentCustomer.percent"
+                    >
+                      Discount:
+                    </dt>
+                    <dd
+                      class="check-discount-value"
+                      v-if="currentCustomer && currentCustomer.percent"
+                    >
+                      {{ currentCustomer.percent }}%
+                    </dd>
+
+                    <dt class="check-total">Total:</dt>
+                    <dd class="check-total-value">
                       <strong>{{ currentCheck.sum_total.toFixed(2) }}</strong>
                     </dd>
 
