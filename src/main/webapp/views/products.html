@@ -49,6 +49,11 @@
         </div>
 
         <section class="contents">
+          
+          <div v-if="!isLoading && products.length === 0" class="no-products-message">
+            <p>No products found in this category.</p>
+          </div>
+
           <div class="products-grid" v-if="!isLoading">
             <product-card
               v-for="product in displayedItems('products')(products)"

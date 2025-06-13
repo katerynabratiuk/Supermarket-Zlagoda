@@ -40,4 +40,10 @@ public class ProductController {
     {
         return storeProductService.findPromotional();
     }
+
+    @GetMapping("/by-category/{category}")
+    public @ResponseBody List<StoreProduct> getProductsByCategory(@PathVariable String category)
+    {
+        return storeProductService.findByCategory(category);
+    }
 }
