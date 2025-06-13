@@ -14,6 +14,7 @@ public class IdGenerator {
     private final String EMPLOYEE = "SELECT MAX(CAST(id_employee AS INTEGER)) FROM employee";
     private final String PRODUCT = "SELECT MAX(CAST(UPC AS INTEGER)) FROM Store_Product";
     private final String CHECK = "SELECT MAX(CAST(check_number AS INTEGER)) FROM Receipt";
+    private final String CUSTOMER = "SELECT MAX(CAST(card_number AS INTEGER)) FROM Customer_Card";
 
     private final DBConnection dbConnection;
 
@@ -22,7 +23,7 @@ public class IdGenerator {
         this.dbConnection = dbConnection;
     }
 
-    public enum Option {Employee, Product, Check}
+    public enum Option {Employee, Product, Check, Customer}
 
     public String generate(Option option) {
         String query;
@@ -39,6 +40,11 @@ public class IdGenerator {
                 query = CHECK;
                 yield 10;
             }
+            case Customer ->
+            {
+                query = CUSTOMER;
+                yield 13;
+            }
             default -> throw new RuntimeException("No such option");
         };
 
@@ -54,7 +60,7 @@ public class IdGenerator {
             int newId = maxId + 1;
             return String.format("%0"+ attributeLength +"d", newId);
         } catch (SQLException e) {
-            throw new RuntimeException("Error generating Employee ID", e);
+            throw new RuntimeException("Error generating ID", e);
         }
     }
 }
