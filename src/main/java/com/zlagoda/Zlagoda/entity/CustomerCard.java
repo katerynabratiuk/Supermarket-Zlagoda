@@ -3,9 +3,10 @@ package com.zlagoda.Zlagoda.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
+import java.beans.Transient;
+
 public class CustomerCard {
 
-    @NotNull
     @JsonProperty("card_number")
     private String cardNumber;
 
@@ -19,27 +20,26 @@ public class CustomerCard {
     @JsonProperty("cust_name")
     private String name;
 
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
     @JsonProperty("cust_patronymic")
     private String patronymic;
 
     @NotNull
-    @Pattern(regexp = "(\\+)?[0-9]{10}")
+    //@Pattern(regexp = "(\\+)?[0-9]{10}")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    @Size(min=2, max=50)
-    @Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
-    @JsonProperty("city")
+    //@Size(min=2, max=50)
+    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    //@JsonProperty("city")
     private String city;
 
-    @Size(min=2, max=50)
-    @NotBlank
-    @JsonProperty("street")
+    //@Size(min=2, max=50)
+    //@NotBlank
+    //@JsonProperty("street")
     private String street;
 
-    @Size(min = 5, max = 5)
-    @NotBlank
+    //@Size(min = 5, max = 5)
+    //@NotBlank
     @JsonProperty("zip_code")
     private String zipCode;
 
@@ -108,6 +108,13 @@ public class CustomerCard {
         public CustomerCard build() {
             return card;
         }
+    }
+
+    @AssertTrue()
+    @Transient
+    public boolean isPatronymicValid() {
+        return patronymic == null || patronymic.isBlank()
+                || patronymic.matches("^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$");
     }
 
     public CustomerCard(String cardNumber, String surname, String name, String phoneNumber, Integer percent) {

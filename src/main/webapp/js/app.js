@@ -517,6 +517,7 @@ let app = Vue.createApp(
             this.productsCategories.push(addedCategory)
             console.log("New product added successfully:", addedCategory)
             this.newCategory = { category_name: '', category_number: null }
+            this.loadCategories()
           }
           else {
             console.error("Adding category failed on the server. Status:", response.status)
@@ -647,8 +648,7 @@ let app = Vue.createApp(
       goToAddCustomer() {
         window.location.href = 'new-customer-page.html'
       },
-      async addNewCustomer() {
-        try {
+      async addNewCustomer() {try {
           const response = await fetch('http://localhost:8090/customer', {
             method: 'POST',
             headers: {
@@ -658,11 +658,10 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const newCustomer = await response.json()
-            this.customers.push(newCustomer)
-            console.log("New customer added successfully:", newCustomer)
-            window.location.href = `customer-page.html?id=${newCustomer.card_number}`
-
+            // const newCustomer = await response.json()
+            // this.customers.push(newCustomer)
+            // console.log("New customer added successfully:", newCustomer)
+            window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
             alert("Failed to add customer. Please try again.")
@@ -684,7 +683,7 @@ let app = Vue.createApp(
               this.customers = this.customers.filter(item => item.card_number !== customerId)
               this.currentCustomer = null
               window.location.href = 'customers.html'
-
+              this.loadCustomers()
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
               alert("Failed to delete customer. Please try again.")
@@ -823,26 +822,22 @@ let app = Vue.createApp(
         try {
           const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.newEmployee),
           })
 
           if (response.ok) {
-            const newEmployee = await response.json()
-            this.employees.push(newEmployee)
-            console.log("New employee added successfully:", newEmployee)
-            window.location.href = `employee-page.html?id=${newEmployee.id_employee}`
+            //alert("Employee added successfully");
+            window.location.href = `employees.html`;
           } else {
-            console.error("Adding employee failed on the server. Status:", response.status)
-            alert("Failed to add employee. Please try again.")
+            alert("Failed to add employee. Please try again.");
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
           alert("An unexpected error occurred. Please try again later.")
         }
       },
+
       async confirmAndDeleteEmployee() {
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
