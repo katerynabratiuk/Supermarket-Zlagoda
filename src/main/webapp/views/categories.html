@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/navbar.css" />
     <link rel="stylesheet" href="../styles/footer.css" />
     <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
     <link rel="stylesheet" href="../styles/categories.css" />
     <link
       rel="stylesheet"
@@ -18,7 +19,7 @@
 
   <body>
     <div id="app" v-cloak>
-      <header>
+      <header class="noPrint">
         <navbar
           :user-role="userRole"
           :is-manager="isManager"
@@ -27,18 +28,24 @@
       </header>
 
       <main>
-        <div class="categories-header">
+        <div class="categories-header noPrint">
           <h2>Categories</h2>
-          <edit-button
-            type="button"
-            :is-manager="isManager"
-            :is-edit-mode="isEditMode"
-            @toggle="toggleEditMode"
-          >
-          </edit-button>
+
+          <div class="buttons-container" v-if="isManager">
+            <edit-button
+              type="button"
+              :is-manager="isManager"
+              :is-edit-mode="isEditMode"
+              @toggle="toggleEditMode"
+            >
+            </edit-button>
+            <button type="button" class="print-btn" onclick="window.print()">
+              Print
+            </button>
+          </div>
         </div>
 
-        <section class="contents">
+        <section class="contents noPrint">
           <ul v-if="!isLoading">
             <li v-for="item in productsCategories" :key="item.id">
               <div class="category-item">
@@ -107,7 +114,7 @@
               </form>
             </li>
           </ul>
-          <div class="buttons-section" v-if="isManager && isEditMode">
+          <div class="buttons-section noPrint" v-if="isManager && isEditMode">
             <button
               type="button"
               class="save-change-btn"
@@ -117,9 +124,27 @@
             </button>
           </div>
         </section>
+
+        <table class="table-section">
+          <thead class="table-headers">
+            <tr>
+              <th>Category number</th>
+              <th>Category name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="category in productsCategories"
+              :key="category.category_name"
+            >
+              <td>{{ category.category_number }}</td>
+              <td>{{ category.category_name }}</td>
+            </tr>
+          </tbody>
+        </table>
       </main>
 
-      <custom-footer></custom-footer>
+      <custom-footer class="noPrint"></custom-footer>
     </div>
   </body>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
