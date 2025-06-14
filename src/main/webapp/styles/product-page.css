@@ -99,7 +99,7 @@ h3.product-management-header {
 }
 
 .product-price {
-  position: absolute;
+  margin-top: 5px;
   left: 0;
   bottom: 0;
   display: flex;
