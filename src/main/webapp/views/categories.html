@@ -28,7 +28,7 @@
       </header>
 
       <main>
-        <div class="categories-header noPrint">
+        <div class="categories-header noPrint" v-if="!isLoading">
           <h2>Categories</h2>
 
           <div class="buttons-container" v-if="isManager">
@@ -94,7 +94,7 @@
               </a>
               </div>
               <a
-                href="products.html"
+                :href="'products.html?category=' + item.category_name"
                 :title="'View products in ' + item.name + ' category'"
                 class="category-arrow"
                 >></a

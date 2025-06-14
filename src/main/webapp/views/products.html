@@ -23,8 +23,8 @@
       </header>
 
       <main>
-        <div class="products-header noPrint">
-          <h2>Products</h2>
+        <div class="products-header noPrint" v-if="!isLoading">
+          <h2>Products <span v-if="selectedFilter">| {{ selectedFilter}}</span></h2>
 
           <div class="actions-container">
             <form class="search-form" action="/search" method="get">
@@ -90,7 +90,7 @@
             <tr v-for="product in products" :key="product.UPC">
               <td>{{ product.UPC }}</td>
               <td>{{ product.product.product_name }}</td>
-              <td>{{ product.product.category_name }}</td>
+              <td>{{ product.product.category?.category_name }}</td>
               <td>{{ product.products_number }}</td>
               <td>{{ product.selling_price }}</td>
             </tr>
