@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class Product {
-    @NotNull
+
+    //@NotNull
     @JsonProperty("id_product")
     private Integer id;
 
@@ -22,7 +23,7 @@ public class Product {
 
     @NotNull
     @NotBlank
-    @JsonProperty("characteristics")
+    @JsonProperty("description")
     private String characteristics;
 
 

@@ -49,7 +49,18 @@
                   <label for="product-name">Name:</label>
                   <input
                     id="product-name"
-                    v-model="newProduct.name"
+                    v-model="newProduct.product.product_name"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label for="product-upc">UPC:</label>
+                  <input
+                    id="product-name"
+                    v-model="newProduct.UPC"
                     type="text"
                     class="edit-input"
                     required
@@ -83,7 +94,7 @@
                     <label for="product-price">Price:</label>
                     <input
                       id="product-price"
-                      v-model.number="newProduct.price"
+                      v-model.number="newProduct.selling_price"
                       type="number"
                       min="0"
                       step="0.01"
@@ -100,44 +111,31 @@
                 <h3 for="characteristics">Characteristics:</h3>
                 <textarea
                   id="characteristics"
-                  v-model="newProduct.description"
+                  v-model="newProduct.product.description"
                   class="edit-textarea"
                   required
                 ></textarea>
               </section>
 
-              <section class="manufacturer">
-                <h3 for="manufacturer">Manufacturer:</h3>
-                <input
-                  id="manufacturer"
-                  type="text"
-                  v-model="newProduct.manufacturer"
-                  class="edit-input"
-                  required
-                />
-              </section>
-
-              <section class="categories">
-                <h3 for="category">Category:</h3>
-                <select
+              <select
                   id="category"
-                  v-model="newProduct.category"
+                  v-model="newProduct.product.category"
                   class="edit-dropdown"
                 >
                   <option disabled value="">Select category</option>
                   <option
                     v-for="category in productsCategories"
-                    :key="category.category_name"
-                    :value="category.category_name"
+                    :key="category.category_number"
+                    :value="category"
                   >
                     {{ category.category_name }}
                   </option>
-                </select>
-              </section>
+              </select>
+
             </div>
 
             <div class="buttons-section" v-if="isManager">
-              <button class="save-btn" type="sumbit">Add Product</button>
+              <button class="save-btn" type="submit">Add Product</button>
             </div>
           </form>
         </section>

@@ -24,12 +24,17 @@ let app = Vue.createApp(
         },
 
         newProduct: {
-          id: null,
-          name: '',
-          price: null,
+          UPC: null,
+          selling_price: null,
           image: '',
-          category: '',
-          description: '',
+          product:{
+          category:{
+              category_number:null,
+              category_name:''
+            },
+            product_name:'',
+            description:'',
+          },
           products_number: 0,
           isOnSale: false,
           new_price: null,
@@ -606,7 +611,7 @@ let app = Vue.createApp(
       },
       async addNewProduct() {
         try {
-          const response = await fetch('/api/products/add', {
+          const response = await fetch('http://localhost:8090/product', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -615,23 +620,23 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const newProduct = await response.json()
-            this.products.push(newProduct)
-            this.newProduct = {
-              id: null,
-              name: '',
-              price: null,
-              image: '',
-              category: '',
-              description: '',
-              manufacturer: '',
-              status: 'Out Of Stock',
-              isOnSale: false,
-              new_price: null,
-              count: 0
-            }
-            console.log("New product added successfully:", newProduct)
-            window.location.href = `product-page.html?id=${newProduct.id}`
+            // const newProduct = await response.json()
+            // this.products.push(newProduct)
+            // this.newProduct = {
+            //   id: null,
+            //   name: '',
+            //   price: null,
+            //   image: '',
+            //   category: '',
+            //   description: '',
+            //   manufacturer: '',
+            //   status: 'Out Of Stock',
+            //   isOnSale: false,
+            //   new_price: null,
+            //   count: 0
+            // }
+            console.log("New product added successfully:")
+            window.location.href = `products.html`
           } else {
             console.error("Adding product failed on the server. Status:", response.status)
             alert("Failed to add product. Please try again.")

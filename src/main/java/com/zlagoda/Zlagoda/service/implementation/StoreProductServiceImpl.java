@@ -1,8 +1,11 @@
 package com.zlagoda.Zlagoda.service.implementation;
 
+import com.zlagoda.Zlagoda.entity.Product;
 import com.zlagoda.Zlagoda.entity.StoreProduct;
+import com.zlagoda.Zlagoda.repository.ProductRepository;
 import com.zlagoda.Zlagoda.repository.StoreProductRepository;
 import com.zlagoda.Zlagoda.service.StoreProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +14,11 @@ import java.util.List;
 public class StoreProductServiceImpl implements StoreProductService {
 
     private final StoreProductRepository storeProductRepository;
+    private final ProductRepository productRepository;
 
-    public StoreProductServiceImpl(StoreProductRepository storeProductRepository) {
+    public StoreProductServiceImpl(StoreProductRepository storeProductRepository, ProductRepository productRepository) {
         this.storeProductRepository = storeProductRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -37,8 +42,13 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     @Override
-    public void create(StoreProduct storeProduct) {
+    public void create(StoreProduct storeProduct)
+    {
+        productRepository.create(storeProduct.getProduct());
+        List<Product> products = productRepository.findByName(storeProduct.getProduct().getName());
+        storeProduct.setProduct(products.getFirst());
         storeProductRepository.create(storeProduct);
+
     }
 
     @Override
