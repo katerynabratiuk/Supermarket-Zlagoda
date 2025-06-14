@@ -52,35 +52,38 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
     private static final String FIND_BY_ID =
             "SELECT \n" +
                     "    sp.upc,\n" +
+                    "    sp.upc_prom,\n" +
                     "    sp.id_product,\n" +
                     "    base.selling_price AS selling_price,\n" +
                     "    sp.selling_price AS new_price,\n" +
                     "    sp.products_number,\n" +
                     "    sp.promotional_product,\n" +
-                    "    product_name\n" +
-                    "FROM store_product sp " +
-                    "JOIN store_product base ON sp.upc_prom = base.upc " +
-                    "JOIN product p ON sp.id_product = p.id_product " +
-                    "JOIN category c ON p.category_number = c.category_number " +
-                    "WHERE sp.upc = ? " +
-
-                    "UNION " +
-
-                    "SELECT " +
-                    "    sp.upc, " +
-                    "    sp.upc_prom, " +
-                    "    sp.id_product, " +
-                    "    sp.selling_price AS selling_price, " +
-                    "    NULL AS new_price, " +
-                    "    sp.products_number, " +
-                    "    sp.promotional_product, " +
-                    "    p.*, " +
-                    "    c.* " +
-                    "FROM store_product sp " +
-                    "JOIN product p ON sp.id_product = p.id_product " +
-                    "JOIN category c ON p.category_number = c.category_number " +
-                    "WHERE sp.upc = ? AND (sp.promotional_product = FALSE OR sp.upc_prom IS NULL);";
-
+                    "    p.product_name,\n" +
+                    "    p.characteristics,\n" +
+                    "    c.category_number,\n" +
+                    "    c.category_name\n" +
+                    "FROM store_product sp\n" +
+                    "JOIN store_product base ON sp.upc_prom = base.upc\n" +
+                    "JOIN product p ON sp.id_product = p.id_product\n" +
+                    "JOIN category c ON p.category_number = c.category_number\n" +
+                    "WHERE sp.upc = ?\n" +
+                    "UNION\n" +
+                    "SELECT \n" +
+                    "    sp.upc,\n" +
+                    "    sp.upc_prom,\n" +
+                    "    sp.id_product,\n" +
+                    "    sp.selling_price AS selling_price,\n" +
+                    "    NULL AS new_price,\n" +
+                    "    sp.products_number,\n" +
+                    "    sp.promotional_product,\n" +
+                    "    p.product_name,\n" +
+                    "    p.characteristics,\n" +
+                    "    c.category_number,\n" +
+                    "    c.category_name\n" +
+                    "FROM store_product sp\n" +
+                    "JOIN product p ON sp.id_product = p.id_product\n" +
+                    "JOIN category c ON p.category_number = c.category_number\n" +
+                    "WHERE sp.upc = ? AND (sp.promotional_product = FALSE OR sp.upc_prom IS NULL)";
     private static final String FIND_BY_CATEGORY =
             "SELECT\n"
                     + "sp.upc,\n"
