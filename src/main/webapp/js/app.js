@@ -326,7 +326,7 @@ let app = Vue.createApp(
         const page = path.substring(path.lastIndexOf('/') + 1)
 
         const idFromURL = () => new URLSearchParams(window.location.search).get('id')
-
+        this.isLoading = true;
         try {
           switch (page) {
             case 'categories.html':
@@ -412,6 +412,8 @@ let app = Vue.createApp(
           }
         } catch (error) {
           console.error('Error loading data for page:', page, error)
+        } finally {
+           this.isLoading = false;
         }
       },
       async loadCategories() {
@@ -433,6 +435,23 @@ let app = Vue.createApp(
           this.products = await response.json()
         } catch (error) {
           console.error("Error loading product:", error)
+        }
+      },
+
+       async loadProductsByCategory(category_name) {
+        this.isLoading = true;
+        try {
+          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`);
+          if (response.ok) {
+            this.products = await response.json();
+          } else {
+            console.error("Failed to load products. Status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error loading products by category:", error);
+        }
+        finally {
+          this.isLoading = false;
         }
       },
       async loadCustomers() {
@@ -885,9 +904,22 @@ let app = Vue.createApp(
         }
       },
     },
-    mounted() {
-      this.loadDataForCurrentPage()
-      this.isLoading = false
+    async mounted() {
+      this.isLoading = true;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryName = urlParams.get('category');
+
+      try {
+        await this.loadDataForCurrentPage();
+        if (categoryName) {
+          await this.loadProductsByCategory(categoryName);
+        }
+      } catch (error) {
+        console.error('Error during mounted lifecycle:', error);
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 )

@@ -86,7 +86,12 @@
                   </button>
                 </form>
 
-                <a v-else href="products.html"> {{ item.category_name }} </a>
+                <a
+                v-else
+                :href="'products.html?category=' + item.category_name"
+              >
+                {{ item.category_name }}
+              </a>
               </div>
               <a
                 href="products.html"

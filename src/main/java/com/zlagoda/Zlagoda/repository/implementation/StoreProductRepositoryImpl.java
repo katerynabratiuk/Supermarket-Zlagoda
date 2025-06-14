@@ -22,10 +22,12 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "    sp.selling_price AS new_price,\n" +
             "    sp.products_number,\n" +
             "    sp.promotional_product,\n" +
-            "    product_name\n" +
+            "    product_name,\n" +
+            "    Category.category_name\n"+
             "FROM store_product sp\n" +
             "JOIN store_product base ON sp.upc_prom = base.upc\n" +
             "JOIN Product ON sp.id_product = Product.id_product\n" +
+            "JOIN Category ON Category.category_number = Product.category_number\n" +
             "\n" +
             "UNION\n" +
             "\n" +
@@ -36,9 +38,11 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "    NULL AS new_price,\n" +
             "    sp.products_number,\n" +
             "    sp.promotional_product,\n" +
-            "    product_name\n" +
+            "    product_name,\n" +
+            "    Category.category_name\n" +
             "FROM store_product sp\n" +
             "JOIN Product ON sp.id_product = Product.id_product\n" +
+            "JOIN Category ON Category.category_number = Product.category_number\n" +
             "WHERE sp.promotional_product = FALSE\n" +
             "  AND sp.upc NOT IN (SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL);\n";
     private static final String CREATE = "INSERT INTO Store_product VALUES (?,?,?,?,?,?)";
@@ -46,16 +50,14 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "selling_price=?, products_number=?, promotional_product=?, promotional_product=? WHERE UPC=?";
     private static final String DELETE = "DELETE FROM Store_product WHERE UPC=?";
     private static final String FIND_BY_ID =
-            "SELECT " +
-                    "    sp.upc, " +
-                    "    sp.upc_prom, " +
-                    "    sp.id_product, " +
-                    "    base.selling_price AS selling_price, " +
-                    "    sp.selling_price AS new_price, " +
-                    "    sp.products_number, " +
-                    "    sp.promotional_product, " +
-                    "    p.*, " +
-                    "    c.* " +
+            "SELECT \n" +
+                    "    sp.upc,\n" +
+                    "    sp.id_product,\n" +
+                    "    base.selling_price AS selling_price,\n" +
+                    "    sp.selling_price AS new_price,\n" +
+                    "    sp.products_number,\n" +
+                    "    sp.promotional_product,\n" +
+                    "    product_name\n" +
                     "FROM store_product sp " +
                     "JOIN store_product base ON sp.upc_prom = base.upc " +
                     "JOIN product p ON sp.id_product = p.id_product " +
@@ -79,12 +81,70 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                     "JOIN category c ON p.category_number = c.category_number " +
                     "WHERE sp.upc = ? AND (sp.promotional_product = FALSE OR sp.upc_prom IS NULL);";
 
-    private static final String FIND_BY_CATEGORY = FIND_ALL + " WHERE category=?";
+    private static final String FIND_BY_CATEGORY =
+            "SELECT\n"
+                    + "sp.upc,\n"
+                    + "sp.id_product,\n"
+                    + "base.selling_price AS selling_price,\n"
+                    + "sp.selling_price AS new_price,\n"
+                    + "sp.products_number,\n"
+                    + "sp.promotional_product,\n"
+                    + "p.product_name,\n"
+                    + "p.characteristics,\n"
+                    + "c.category_number,\n"
+                    + "c.category_name\n"
+                    + "FROM store_product sp\n"
+                    + "JOIN store_product base ON sp.upc_prom = base.upc\n"
+                    + "JOIN product p ON sp.id_product = p.id_product\n"
+                    + "JOIN product base_p ON base.id_product = base_p.id_product\n"
+                    + "JOIN category c ON base_p.category_number = c.category_number\n"
+                    + "WHERE c.category_name = ?\n"
+                    + "UNION\n"
+                    + "SELECT\n"
+                    + "sp.upc,\n"
+                    + "sp.id_product,\n"
+                    + "sp.selling_price AS selling_price,\n"
+                    + "NULL AS new_price,\n"
+                    + "sp.products_number,\n"
+                    + "sp.promotional_product,\n"
+                    + "p.product_name,\n"
+                    + "p.characteristics,\n"
+                    + "c.category_number,\n"
+                    + "c.category_name\n"
+                    + "FROM store_product sp\n"
+                    + "JOIN product p ON sp.id_product = p.id_product\n"
+                    + "JOIN category c ON p.category_number = c.category_number\n"
+                    + "WHERE c.category_name = ?\n"
+                    + "AND sp.promotional_product = FALSE\n"
+                    + "AND sp.upc NOT IN (\n"
+                    + "SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL\n"
+                    + ");\n"
+                    + "";
+    private static final String FIND_PROMOTIONAL =
+            "SELECT\n"
+                    + "sp.upc,\n"
+                    + "sp.upc_prom,\n"
+                    + "sp.id_product,\n"
+                    + "base.selling_price AS selling_price,\n"
+                    + "sp.selling_price AS new_price,\n"
+                    + "sp.products_number,\n"
+                    + "sp.promotional_product,\n"
+                    + "p.product_name,\n"
+                    + "p.characteristics,\n"
+                    + "c.category_number,\n"
+                    + "c.category_name\n"
+                    + "FROM store_product sp\n"
+                    + "JOIN store_product base ON sp.upc_prom = base.upc\n"
+                    + "JOIN product p ON sp.id_product = p.id_product\n"
+                    + "JOIN product base_p ON base.id_product = base_p.id_product\n"
+                    + "JOIN category c ON base_p.category_number = c.category_number\n"
+                    + "WHERE sp.promotional_product = TRUE\n"
+                    + "AND c.category_name = ?\n"
+                    + "";
     private static final String FIND_BY_NAME = "SELECT UPC, product_name, selling_price " +
             "FROM Store_Product " +
             "INNER JOIN Product ON Store_Product.id_product = Product.id_product " +
             "WHERE product_name ILIKE ?";
-    private static final String FIND_PROMOTIONAL = FIND_ALL + " WHERE promotional_product = TRUE";
     private static final String FIND_NON_PROMOTIONAL = FIND_ALL + " WHERE promotional_product = FALSE";
 
     private final DBConnection dbConnection;
@@ -99,16 +159,29 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             ArrayList<StoreProduct> res = new ArrayList<>();
             PreparedStatement stmt = connection.prepareStatement(FIND_BY_CATEGORY);
             stmt.setString(1, categoryName);
+            stmt.setString(2, categoryName);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                StoreProduct storeProduct = new StoreProduct.Builder()
-                        .setUPC("UPC")
-                        .setProduct(new Product.Builder()
-                                .setName("product_name").build())
+                StoreProduct.Builder spBuilder = new StoreProduct.Builder()
+                        .setUPC(rs.getString("upc"))
                         .setSellingPrice(rs.getBigDecimal("selling_price"))
+                        .setPromotional(rs.getBoolean("promotional_product"))
+                        .setProductsNumber(rs.getInt("products_number"));
+
+                BigDecimal newPrice = rs.getBigDecimal("new_price");
+                if (newPrice != null) {
+                    spBuilder.setNewPrice(newPrice);
+                }
+
+                Product product = new Product.Builder()
+                        .setName(rs.getString("product_name"))
+                        .setId(rs.getInt("id_product"))
                         .build();
-                res.add(storeProduct);
+
+                spBuilder.setProduct(product);
+
+                res.add(spBuilder.build());
             }
             return res;
         } catch (SQLException e) {
@@ -138,6 +211,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                 Product product = new Product.Builder()
                         .setName(rs.getString("product_name"))
                         .setId(rs.getInt("id_product"))
+                        .setCategory(new Category(rs.getString("category_name")))
                         .build();
 
                 spBuilder.setProduct(product);
