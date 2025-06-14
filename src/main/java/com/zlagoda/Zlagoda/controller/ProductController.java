@@ -4,6 +4,7 @@ import com.zlagoda.Zlagoda.entity.Category;
 import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.service.StoreProductService;
 import com.zlagoda.Zlagoda.service.implementation.StoreProductServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,5 +46,11 @@ public class ProductController {
     public @ResponseBody List<StoreProduct> getProductsByCategory(@PathVariable String category)
     {
         return storeProductService.findByCategory(category);
+    }
+
+    @PostMapping()
+    public void createProduct(@RequestBody @Valid StoreProduct storeProduct)
+    {
+        storeProductService.create(storeProduct);
     }
 }
