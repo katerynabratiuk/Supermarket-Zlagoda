@@ -1,59 +1,92 @@
 @font-face {
-    font-family: 'Lato';
-    src: url('../fonts/Lato/Lato-Regular.ttf');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "Lato";
+  src: url("../fonts/Lato/Lato-Regular.ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
 [v-cloak] {
-    display: none !important;
-  }
-
-html{
-    overflow-y: scroll;
+  display: none !important;
 }
 
 body {
-    font-family: 'Lato', sans-serif;
-    background-color: #fff7f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    font-size: 1.2em;
-    min-height: 100vh;
-    color: #243336;
-    overflow-x: hidden;
+  font-family: "Lato", sans-serif;
+  background-color: #fff7f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.2em;
+  min-height: 100vh;
+  color: #243336;
+  overflow-x: hidden;
 }
 
 main {
-    flex: 1;
-    height: 100%;
-    margin: 20px 60px;
-    margin-bottom: 40px;
+  flex: 1;
+  height: 100%;
+  margin: 20px 60px;
+  margin-bottom: 40px;
 }
 
 #app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
 h2 {
-    margin: 0;
-    margin-bottom: 10px;
-    font-size: 1.5em;
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 1.5em;
 }
 
 .contents {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 
 li {
-    list-style: none;
+  list-style: none;
 }
 
 a {
-    color: #243336;
-    text-decoration: none;
+  color: #243336;
+  text-decoration: none;
+}
+
+td,
+th {
+  white-space: normal !important;
+  overflow-wrap: break-word;
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+
+  .table-section {
+    display: table !important;
+    visibility: visible !important;
+  }
+
+  a {
+    text-decoration: none !important;  
+  }
+
+  .table-section {
+    position: fixed !important; 
+    top: 0 !important;    
+    left: 0 !important;
+    width: 100% !important;  
+    height: auto !important;  
+    margin: 0 !important; 
+    padding: 0 !important; 
+    white-space: nowrap !important;
+    overflow: hidden !important; 
+    text-overflow: ellipsis !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    font-size: 0.8em !important;
+  }
 }
