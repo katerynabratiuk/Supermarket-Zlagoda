@@ -205,7 +205,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 resultSet.getString("city"),
                 resultSet.getString("street"),
                 resultSet.getString("zip_code"),
-                resultSet.getString("empl_username")
+                resultSet.getString("empl_username"),
+                resultSet.getBoolean("is_active")
         );
     }
 }
