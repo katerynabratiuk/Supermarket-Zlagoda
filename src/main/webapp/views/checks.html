@@ -90,7 +90,7 @@
                     </a>
                     <span v-else> {{ item.card_number }} </span>
                   </td>
-                  <td class="total-price">{{ item.sum_total }}</td>
+                  <td class="total-price">{{ item.sum_total.toFixed(2) }}</td>
                 </tr>
               </tbody>
             </table>
