@@ -16,6 +16,8 @@ let app = Vue.createApp(
         employees: [],
         checks: [],
 
+        selectedFilter: '',
+
         newCategory: {
           category_name: '',
           category_number: null
@@ -97,7 +99,7 @@ let app = Vue.createApp(
         return this.userRole === "Cashier"
       },
       statusClass() {
-        const product = this.currentProduct || this.newProduct;
+        const product = this.currentProduct || this.newProduct
         return {
           'in-stock': product?.products_number > 0,
           'out-of-stock': !product?.products_number || product?.products_number <= 0
@@ -138,7 +140,7 @@ let app = Vue.createApp(
         }
       },
       currentCheck(newVal) {
-        if (newVal) { 
+        if (newVal) {
           document.title = `Check ${newVal.check_number} - Zlagoda`
         }
       },
@@ -331,7 +333,7 @@ let app = Vue.createApp(
         const page = path.substring(path.lastIndexOf('/') + 1)
 
         const idFromURL = () => new URLSearchParams(window.location.search).get('id')
-        this.isLoading = true;
+        this.isLoading = true
         try {
           switch (page) {
             case 'categories.html':
@@ -418,7 +420,7 @@ let app = Vue.createApp(
         } catch (error) {
           console.error('Error loading data for page:', page, error)
         } finally {
-           this.isLoading = false;
+          this.isLoading = false
         }
       },
       async loadCategories() {
@@ -442,21 +444,19 @@ let app = Vue.createApp(
           console.error("Error loading product:", error)
         }
       },
-
-       async loadProductsByCategory(category_name) {
-        this.isLoading = true;
+      async loadProductsByCategory(category_name) {
+        this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`);
+          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`)
           if (response.ok) {
-            this.products = await response.json();
+            this.products = await response.json()
           } else {
-            console.error("Failed to load products. Status:", response.status);
+            console.error("Failed to load products. Status.", response.status)
           }
         } catch (error) {
-          console.error("Error loading products by category:", error);
-        }
-        finally {
-          this.isLoading = false;
+          console.error("Error loading products by category.", error)
+        } finally {
+          this.isLoading = false
         }
       },
       async loadCustomers() {
@@ -672,7 +672,8 @@ let app = Vue.createApp(
       goToAddCustomer() {
         window.location.href = 'new-customer-page.html'
       },
-      async addNewCustomer() {try {
+      async addNewCustomer() {
+        try {
           const response = await fetch('http://localhost:8090/customer', {
             method: 'POST',
             headers: {
@@ -682,9 +683,9 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            // const newCustomer = await response.json()
-            // this.customers.push(newCustomer)
-            // console.log("New customer added successfully:", newCustomer)
+            const newCustomer = await response.json()
+            this.customers.push(newCustomer)
+            console.log("New customer added successfully:", newCustomer)
             window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
@@ -722,7 +723,7 @@ let app = Vue.createApp(
       },
       async saveEditCustomer() {
         try {
-          const response = await fetch(`http://localhost:8090/customer/${this.currentCustomer.card_number}`, {
+          const response = await fetch(`http://localhost:8090/customer`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -851,10 +852,9 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            //alert("Employee added successfully");
-            window.location.href = `employees.html`;
+            window.location.href = `employees.html`
           } else {
-            alert("Failed to add employee. Please try again.");
+            alert("Failed to add employee. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
@@ -910,20 +910,19 @@ let app = Vue.createApp(
       },
     },
     async mounted() {
-      this.isLoading = true;
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const categoryName = urlParams.get('category');
+      const urlParams = new URLSearchParams(window.location.search)
+      const categoryName = urlParams.get('category')
 
       try {
-        await this.loadDataForCurrentPage();
+        await this.loadDataForCurrentPage()
         if (categoryName) {
-          await this.loadProductsByCategory(categoryName);
+          this.selectedFilter = categoryName
+          await this.loadProductsByCategory(categoryName)
         }
       } catch (error) {
-        console.error('Error during mounted lifecycle:', error);
+        console.error('Error during mounted lifecycle:', error)
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     }
   }
