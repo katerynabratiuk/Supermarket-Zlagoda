@@ -117,7 +117,9 @@
                 ></textarea>
               </section>
 
-              <select
+              <section class="categories">
+                <h3 for="category">Category:</h3>
+                <select
                   id="category"
                   v-model="newProduct.product.category"
                   class="edit-dropdown"
@@ -130,8 +132,8 @@
                   >
                     {{ category.category_name }}
                   </option>
-              </select>
-
+                </select>
+              </section>
             </div>
 
             <div class="buttons-section" v-if="isManager">
