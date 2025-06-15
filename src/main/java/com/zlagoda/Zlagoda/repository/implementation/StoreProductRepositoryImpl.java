@@ -180,6 +180,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                 Product product = new Product.Builder()
                         .setName(rs.getString("product_name"))
                         .setId(rs.getInt("id_product"))
+                        .setCategory(new Category(rs.getString("category_name")))
                         .build();
 
                 spBuilder.setProduct(product);
