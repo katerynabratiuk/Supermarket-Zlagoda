@@ -27,11 +27,6 @@
         <section class="check-details">
           <div class="check-header">
             <h2>Check #{{ currentCheck.check_number }}</h2>
-            <div class="check-actions" v-if="isManager">
-              <button class="delete-btn" @click="confirmAndDeleteCheck">
-                Delete Check
-              </button>
-            </div>
           </div>
 
           <section class="contents">

@@ -771,30 +771,6 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-      async confirmAndDeleteCheck() {
-        const checkNumber = this.currentCheck.check_number
-        if (confirm("Are you sure you want to delete this check?")) {
-          try {
-            const response = await fetch(`...`, {
-              method: 'DELETE',
-            })
-
-            if (response.ok) {
-              this.check = this.check.filter(item => item.check_number !== checkNumber)
-              this.currentCheck = null
-              window.location.href = 'checks.html'
-            } else {
-              console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete check. Please try again.")
-            }
-          } catch (error) {
-            console.error("An unexpected error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
-          }
-        } else {
-          console.log("Deletion cancelled by user.")
-        }
-      },
       addSale() {
         this.newCheck.sales.push({
           product_id: '',
