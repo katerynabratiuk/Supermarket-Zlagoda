@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public class EmployeeRepositoryImpl implements EmployeeRepository {
 
-    private static final String GET_ALL = "SELECT * FROM Employee";
+    private static final String GET_ALL = "SELECT * FROM Employee ORDER BY is_active DESC";
     private static final String CREATE = "INSERT INTO Employee VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     private static final String UPDATE = "UPDATE Employee SET empl_surname=?, empl_name=?, empl_patronymic=?, empl_role=?, salary=?, " +
             "date_of_birth=?, date_of_start=?, phone_number=?, city=?, street=?, zip_code=?, empl_username=?, is_active=? " +
