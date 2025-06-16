@@ -53,4 +53,10 @@ public class ProductController {
     {
         storeProductService.create(storeProduct);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable String id)
+    {
+        storeProductService.delete(id);
+    }
 }
