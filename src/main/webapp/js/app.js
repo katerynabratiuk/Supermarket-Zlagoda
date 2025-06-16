@@ -4,6 +4,7 @@ let app = Vue.createApp(
       return {
         isLoading: true,
         isEditMode: false,
+        showFilter: false,
         isPasswordVisible: false,
         userRole: 'Manager',
         username: '',
@@ -27,13 +28,13 @@ let app = Vue.createApp(
           UPC: null,
           selling_price: null,
           image: '',
-          product:{
-          category:{
-              category_number:null,
-              category_name:''
+          product: {
+            category: {
+              category_number: null,
+              category_name: ''
             },
-            product_name:'',
-            description:'',
+            product_name: '',
+            description: '',
           },
           products_number: 0,
           isOnSale: false,
@@ -369,7 +370,10 @@ let app = Vue.createApp(
               break
 
             case 'checks.html':
-              await this.loadChecks()
+              await Promise.all([
+                this.loadChecks(),
+                this.loadEmployees()
+              ])
               break
 
             case 'check-page.html':
@@ -497,6 +501,9 @@ let app = Vue.createApp(
       },
       toggleEditMode() {
         this.isEditMode = !this.isEditMode
+      },
+      toggleFilterShow() {
+        this.showFilter = !this.showFilter
       },
       toggleEdit(itemId) {
         this.currentEditingItemID = this.currentEditingItemID === itemId ? null : itemId
@@ -934,6 +941,21 @@ app.component("navbar", {
           </li>
         </ul>
       </nav>
+    </div>
+    
+    <div class="login-popup">
+        <ul class="account-options">
+          <li>
+            <div class="login-label">
+              <span>
+                {{ loginLabel }}
+               </span>
+            <span class="material-symbols-outlined">person</span>
+            </div>
+          </li>
+          <li><a href="">My Profile<a></li>
+          <li><a href="">Logout<a></li>
+        </ul>
     </div>
     `,
   data() {

@@ -1,35 +1,37 @@
 .actions-container {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .search-form {
-    background-color: #B0C4B1;
-    display: flex;
-    justify-content: flex-start;
+  background-color: #b0c4b1;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .table-section th,
 .table-section td {
-    width: 20%;
+  width: 20%;
 }
 
 .name a {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .buttons-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .button-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
+  display: flex;
+  justify-content: center;
+  margin: 20px;
 }
 
-.check-number a, .cashier a, .customer a {
-    text-decoration: underline;
+.check-number a,
+.cashier a,
+.customer a {
+  text-decoration: underline;
 }

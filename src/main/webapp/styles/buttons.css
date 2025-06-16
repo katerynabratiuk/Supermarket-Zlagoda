@@ -108,6 +108,10 @@ button:hover {
   cursor: pointer;
 }
 
+.edit-dropdown {
+  font-style: italic;
+}
+
 .edit-textarea {
   height: 100px;
   resize: none;

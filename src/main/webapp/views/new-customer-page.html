@@ -67,16 +67,18 @@
 
             <div class="customer-details-lower">
               <div class="customer-percent form-field">
-                <h4 for="salary">Percent:</h4>
-                <input
-                  type="number"
-                  id="salary"
-                  step="1"
-                  min="0"
+                <h4 for="customer-percent">Percent:</h4>
+                <select
+                  id="customer-percent"
+                  name="customer-percen"
                   v-model.number="newCustomer.percent"
-                  class="edit-input"
+                  class="edit-dropdown"
                   required
-                />
+                >
+                  <option v-for="percent in [0, 5, 10, 15]" :value="percent">
+                    {{ percent }}%
+                  </option>
+                </select>
               </div>
               <div class="customer-phone-number form-field">
                 <h4 for="phone_number">Phone number:</h4>

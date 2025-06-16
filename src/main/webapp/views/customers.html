@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../styles/buttons.css" />
     <link rel="stylesheet" href="../styles/tables.css" />
     <link rel="stylesheet" href="../styles/customers.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -19,7 +20,7 @@
   <body>
     <div id="app" v-cloak>
       <header class="noPrint">
-        <navbar :user-role="userRole"/>
+        <navbar :user-role="userRole" />
       </header>
 
       <main>
@@ -40,11 +41,66 @@
               </button>
             </form>
             <div class="buttons-container" v-if="isManager">
-              <button type="button" class="add-new-btn" @click="goToAddCustomer">Add New</button>
-              <button type="button" class="filter-btn">Filter</button>
-              <button type="button" class="sort-btn">Sort</button>
-              <button type="button" class="print-btn" onclick="window.print()">Print</button>
+              <button
+                type="button"
+                class="add-new-btn"
+                @click="goToAddCustomer"
+              >
+                Add New
+              </button>
+              <button
+                type="button"
+                class="filter-btn"
+                @click="toggleFilterShow"
+              >
+                Filter
+              </button>
+              <button type="button" class="print-btn" onclick="window.print()">
+                Print
+              </button>
             </div>
+          </div>
+
+          <div class="filter-block" v-if="showFilter" @submit.prevent>
+            <form class="filter-form">
+              <div class="form-grid">
+                <div class="form-label">By name:</div>
+                <div class="form-field">
+                  <select
+                    id="customer-select"
+                    name="customer-select"
+                    class="edit-dropdown"
+                  >
+                    <option selected disabled value="">Select Customer</option>
+                    <option
+                      v-for="customer in customers"
+                      :key="customer.card_number"
+                      :value="customer.card_number"
+                    >
+                      {{ customer.cust_surname }} {{ customer.cust_name }} {{
+                      customer.cust_patronymic }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-label">Discount:</div>
+                <div class="form-field">
+                  <select
+                    id="discount-select"
+                    name="discount-select"
+                    class="edit-dropdown"
+                  >
+                    <option v-for="percent in [0, 5, 10, 15]" :value="percent">
+                      {{ percent }}%
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filter-form-button">
+                <button type="submit" class="save-btn">Filter</button>
+              </div>
+            </form>
           </div>
         </div>
 

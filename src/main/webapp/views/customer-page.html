@@ -89,16 +89,19 @@
               <div class="customer-percent">
                 <h4 for="percent">Percent:</h4>
                 <p v-if="!isEditMode">{{ currentCustomer.percent}}%</p>
+
                 <div v-else class="form-field">
-                  <input
-                    type="number"
-                    id="percent"
-                    step="1"
-                    min="0"
+                  <select
+                    id="discount"
+                    name="discount"
                     v-model.number="currentCustomer.percent"
-                    class="edit-input"
+                    class="edit-dropdown"
                     required
-                  />
+                  >
+                    <option v-for="percent in [0, 5, 10, 15]" :value="percent">
+                      {{ percent }}%
+                    </option>
+                  </select>
                 </div>
               </div>
 

@@ -47,7 +47,10 @@
   margin-top: 30px;
 }
 
-
 .check-number a, .cashier a, .customer a {
   text-decoration: underline;
+}
+
+.edit-dropdown {
+  font-style: normal;
 }

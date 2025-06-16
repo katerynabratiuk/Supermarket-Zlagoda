@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../styles/buttons.css" />
     <link rel="stylesheet" href="../styles/products.css" />
     <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -24,7 +25,9 @@
 
       <main>
         <div class="products-header noPrint" v-if="!isLoading">
-          <h2>Products <span v-if="selectedFilter">| {{ selectedFilter}}</span></h2>
+          <h2>
+            Products <span v-if="selectedFilter">| {{ selectedFilter}}</span>
+          </h2>
 
           <div class="actions-container">
             <form class="search-form" action="/search" method="get">
@@ -43,18 +46,108 @@
               <button class="add-new-btn" @click="goToAddProduct">
                 Add New
               </button>
-              <button type="button" class="filter-btn">Filter</button>
-              <button type="button" class="sort-btn">Sort</button>
+              <button
+                type="button"
+                class="filter-btn"
+                @click="toggleFilterShow"
+              >
+                Filter
+              </button>
               <button type="button" class="print-btn" onclick="window.print()">
                 Print
               </button>
             </div>
           </div>
+
+          <div class="filter-block" v-if="showFilter" @submit.prevent>
+            <form class="filter-form">
+              <div class="form-grid">
+                <div class="form-label">UPC:</div>
+                <div class="form-field">
+                  <select
+                    id="upc-select"
+                    name="upc-select"
+                    class="edit-dropdown"
+                  >
+                    <option selected disabled value="">Select UPC</option>
+                    <option
+                      v-for="product in products"
+                      :key="product.upc"
+                      :value="product.upc"
+                    >
+                      {{ product.upc }} ---- {{ product.product.product_name }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-label">Date:</div>
+                <div class="form-field date-range">
+                  <div class="date-group">
+                    <label for="from-date">From:</label>
+                    <input
+                      id="from-date"
+                      name="from-date"
+                      type="date"
+                      class="edit-input"
+                    />
+                  </div>
+                  <div class="date-group">
+                    <label for="to-date">To:</label>
+                    <input
+                      id="to-date"
+                      name="to-date"
+                      type="date"
+                      class="edit-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-label">Show:</div>
+                <div class="form-field">
+                  <div class="checkbox-field">
+                    <input
+                      id="show-promotional"
+                      name="show-promotional"
+                      type="checkbox"
+                    />
+                    <label for="show-total-sum">Promotional</label>
+                  </div>
+
+                  <div class="checkbox-field">
+                    <input
+                      id="show-non-promotional"
+                      name="show-non-promotional"
+                      type="checkbox"
+                    />
+                    <label for="show-non-promotional">Non-Promotional</label>
+                  </div>
+                </div>
+
+                <div class="form-label">Sort by:</div>
+                <div class="form-field">
+                  <div class="radio-field">
+                    <input type="radio" id="name" name="sortby" />
+                    <label for="name">Name</label>
+                  </div>
+                  <div class="radio-field">
+                    <input type="radio" id="quantity" name="sortby" />
+                    <label for="name">Quantity</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="filter-form-button">
+                <button type="submit" class="save-btn">Filter</button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <section class="contents noPrint">
-          
-          <div v-if="!isLoading && products.length === 0" class="no-products-message">
+          <div
+            v-if="!isLoading && products.length === 0"
+            class="no-products-message"
+          >
             <p>No products found in this category.</p>
           </div>
 

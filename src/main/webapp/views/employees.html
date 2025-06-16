@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../styles/buttons.css" />
     <link rel="stylesheet" href="../styles/tables.css" />
     <link rel="stylesheet" href="../styles/employees.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -41,16 +42,73 @@
             </form>
 
             <div class="buttons-container" v-if="isManager">
-              <button type="button "class="add-new-btn" @click="goToAddEmployee">
+              <button
+                type="button "
+                class="add-new-btn"
+                @click="goToAddEmployee"
+              >
                 Add New
               </button>
-              <button type="button" class="filter-btn">Filter</button>
-              <button type="button" class="sort-btn">Sort</button>
-              <button type="button" class="print-btn" onclick="window.print()">Print</button>
+              <button
+                type="button"
+                class="filter-btn"
+                @click="toggleFilterShow"
+              >
+                Filter
+              </button>
+              <button type="button" class="print-btn" onclick="window.print()">
+                Print
+              </button>
             </div>
           </div>
 
-          <div class="filter-block">
+          <div class="filter-block" v-if="showFilter" @submit.prevent>
+            <form class="filter-form">
+              <div class="form-grid">
+                <div class="form-label">Show:</div>
+                <div class="form-field">
+                  <div class="checkbox-field">
+                    <input
+                      id="show-cashiers"
+                      name="show-cashiers"
+                      type="checkbox"
+                    />
+                    <label for="show-cashiers">Cashiers</label>
+                  </div>
+                  <div class="checkbox-field">
+                    <input
+                      id="show-managers"
+                      name="show-managers"
+                      type="checkbox"
+                    />
+                    <label for="show-managers">Managers</label>
+                  </div>
+                </div>
+
+                <div class="form-label">By name:</div>
+                <div class="form-field">
+                  <select
+                    id="cashier-select"
+                    name="cashier-select"
+                    class="edit-dropdown"
+                  >
+                    <option selected disabled value="">Select Employee</option>
+                    <option
+                      v-for="employee in employees"
+                      :key="employee.id_employee"
+                      :value="employee.id_employee"
+                    >
+                      {{ employee.empl_surname }} {{ employee.empl_name }} {{
+                      employee.empl_patronymic }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filter-form-button">
+                <button type="submit" class="save-btn">Filter</button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -62,7 +120,7 @@
                   <th class="id">ID</th>
                   <th class="name">Full Name</th>
                   <th class="role">Role</th>
-                  <th class="date-of-start">Date of Start</th>
+                  <th class="address">Address</th>
                   <th class="phone-number">Phone Number</th>
                 </tr>
               </thead>
@@ -82,7 +140,11 @@
                     >
                   </td>
                   <td class="role">{{ item.empl_role }}</td>
-                  <td class="date-of-start">{{ item.date_of_start }}</td>
+                  <td class="date-of-start">
+                    {{ item.city }}
+                    <span v-if="item.street">,</span> {{item.street}}
+                    <span v-if="item.zipcode">,</span>{{item.zipcode}}
+                  </td>
                   <td class="phone-number">{{ item.phone_number }}</td>
                 </tr>
               </tbody>

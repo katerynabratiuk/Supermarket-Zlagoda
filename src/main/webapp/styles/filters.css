@@ -1,0 +1,67 @@
+.filter-block {
+  background-color: #d9d9d9;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%; 
+  max-width: 800px;
+  margin: 20px 0;
+  box-sizing: border-box;
+}
+  
+  .filter-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    row-gap: 10px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+  }
+  
+  .form-field {
+    display: flex;
+    width: 90%;
+    gap: 10px ;
+  }
+  
+  .date-range {
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .date-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 45%;
+  }
+  
+  .checkbox-field, .radio-field {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .filter-form-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+  }
+  
+  .edit-dropdown,
+  .edit-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .edit-input[type="date"] {
+    min-width: 20%;
+    font-style: italic;
+  }
