@@ -589,7 +589,7 @@ let app = Vue.createApp(
         const productId = this.currentProduct.id
         if (confirm("Are you sure you want to delete this product?")) {
           try {
-            const response = await fetch(`/api/products/${productId}`, {
+            const response = await fetch(`http://localhost:8090/product/${productId}`, {
               method: 'DELETE',
             })
 
