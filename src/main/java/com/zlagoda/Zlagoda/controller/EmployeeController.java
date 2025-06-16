@@ -31,9 +31,17 @@ public class EmployeeController {
         return employeeService.findById(employeeId);
     }
 
-    @GetMapping("/by-role/{role}")
-    public List<Employee> findByRole(@PathVariable String role) {
-        return employeeService.findByRole(role);
+//    @GetMapping("/by-role/{role}")
+//    public List<Employee> findByRole(@PathVariable String role) {
+//        return employeeService.findByRole(role);
+//    }
+
+    @GetMapping("/filter")
+    public List<Employee> filterProducts(
+            @RequestParam(defaultValue = "false") Boolean manager,
+            @RequestParam(defaultValue = "false") Boolean cashier
+    ) {
+        return employeeService.filterEmployee(manager, cashier);
     }
 
     @PostMapping()
