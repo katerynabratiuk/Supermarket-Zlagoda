@@ -17,6 +17,15 @@ table .name {
   width: 30%;
 }
 
+.inactive-row {
+  color: #aaa;
+}
+
+.inactive-row a {
+  color: #aaa;
+}
+
+
 table .role,
 table .date-of-start,
 table .phone-number {
