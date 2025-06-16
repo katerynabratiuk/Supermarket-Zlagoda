@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface EmployeeService{
 
-    List<Employee> findByRole(String role);
     List<Employee> findAll();
     List<Employee> findByName(String name);
     Employee findById(String id);

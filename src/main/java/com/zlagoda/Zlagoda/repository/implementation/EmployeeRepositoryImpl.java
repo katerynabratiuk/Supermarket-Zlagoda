@@ -12,16 +12,14 @@ import java.util.List;
 @Repository
 public class EmployeeRepositoryImpl implements EmployeeRepository {
 
-    private static final String GET_ALL = "SELECT * FROM Employee";
-    private static final String CREATE = "INSERT INTO Employee VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String GET_ALL = "SELECT * FROM Employee ORDER BY is_active DESC";
+    private static final String CREATE = "INSERT INTO Employee VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     private static final String UPDATE = "UPDATE Employee SET empl_surname=?, empl_name=?, empl_patronymic=?, empl_role=?, salary=?, " +
-            "date_of_birth=?, date_of_start=?, phone_number=?, city=?, street=?, zip_code=? " +
+            "date_of_birth=?, date_of_start=?, phone_number=?, city=?, street=?, zip_code=?, empl_username=?, is_active=? " +
             "WHERE id_employee=?";
     private static final String DELETE = "DELETE FROM Employee WHERE id_employee=?";
-
     private static final String FIND_BY_ID = "SELECT * FROM Employee WHERE id_employee=?";
     private static final String FIND_BY_SURNAME = "SELECT * FROM Employee WHERE empl_surname ILIKE ?";
-    private static final String FIND_BY_ROLE = "SELECT * FROM Employee WHERE empl_role=?";
 
     private final DBConnection dbConnection;
 
@@ -30,27 +28,33 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
-    public List<Employee> findByRole(String role) {
-        List<Employee> res = new ArrayList<>();
+    public List<Employee> filter(Boolean manager, Boolean cashier) {
+        if ((manager != null && cashier != null && manager && cashier) ||
+                (manager == null && cashier == null)) {
+            return this.findAll();
+        } else {
+            List<Employee> res = new ArrayList<>();
+            String role = Boolean.TRUE.equals(manager) ? "Manager" : "Cashier";
 
-        try(Connection connection = dbConnection.getConnection())
-        {
-            PreparedStatement statement = connection.prepareStatement(FIND_BY_ROLE);
-            statement.setString(1, role);
-            ResultSet results = statement.executeQuery();
+            try (Connection connection = dbConnection.getConnection()) {
 
-            while(results.next())
-            {
-                Employee empl = extractEmployeeFromResultSet(results);
-                res.add(empl);
+                PreparedStatement stmt = connection.prepareStatement(GET_ALL + " WHERE empl_role = ?;");
+                stmt.setString(1, role);
+                ResultSet results = stmt.executeQuery();
+
+                while (results.next()) {
+                    Employee empl = extractEmployeeFromResultSet(results);
+                    res.add(empl);
+                }
+
+            } catch (SQLException e) {
+                throw new DataAccessException("Failed to find employees", e);
             }
 
+            return res;
         }
-        catch (SQLException e){
-            throw new DataAccessException("Failed to find employees", e);
-        }
-        return res;
     }
+
 
     @Override
     public List<Employee> findAll() {
@@ -119,6 +123,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 employee.setCity(rs.getString("city"));
                 employee.setStreet(rs.getString("street"));
                 employee.setZipCode(rs.getString("zip_code"));
+                employee.setIsActive(rs.getBoolean("is_active"));
             }
             return employee;
         }
@@ -146,6 +151,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             stmt.setString(10, employee.getCity());
             stmt.setString(11, employee.getStreet());
             stmt.setString(12, employee.getZipCode());
+            stmt.setString(13, employee.getEmplUsername());
+            stmt.setBoolean(14, employee.getIsActive());
 
             stmt.executeUpdate();
         }
@@ -159,7 +166,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         try (Connection connection = dbConnection.getConnection())
         {
             PreparedStatement stmt = connection.prepareStatement(UPDATE);
-            stmt.setString(1,employee.getId());
+            stmt.setString(1, employee.getSurname());
             stmt.setString(2, employee.getName());
             stmt.setString(3, employee.getPatronymic());
             stmt.setString(4, employee.getRole());
@@ -170,7 +177,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             stmt.setString(9, employee.getCity());
             stmt.setString(10, employee.getStreet());
             stmt.setString(11, employee.getZipCode());
-            stmt.setString(12, employee.getId());
+            stmt.setString(12, employee.getEmplUsername());
+            stmt.setBoolean(13, employee.getIsActive());
+            stmt.setString(14, employee.getId());
             stmt.executeUpdate();
         } catch (SQLException e){
             throw new DataAccessException("Failed to update employees", e);
@@ -205,7 +214,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 resultSet.getString("city"),
                 resultSet.getString("street"),
                 resultSet.getString("zip_code"),
-                resultSet.getString("empl_username")
+                resultSet.getString("empl_username"),
+                resultSet.getBoolean("is_active")
         );
     }
 }

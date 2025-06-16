@@ -71,6 +71,9 @@ public class Employee {
 
     private String empl_username;
 
+    @JsonProperty("is_active")
+    private Boolean isActive;
+
     public Employee(){};
 
     public static class Builder implements BuilderInterface<Employee> {
@@ -146,6 +149,11 @@ public class Employee {
             return this;
         }
 
+        public Builder setIsActive(boolean isActive) {
+            employee.setIsActive(isActive);
+            return this;
+        }
+
         @Override
         public Employee build() {
             return employee;
@@ -171,7 +179,8 @@ public class Employee {
                     String city,
                     String street,
                     String zipCode,
-                    String empl_username) {
+                    String empl_username,
+                    boolean isActive) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -185,6 +194,7 @@ public class Employee {
         this.street = street;
         this.zipCode = zipCode;
         this.empl_username = empl_username;
+        this.isActive = isActive;
     }
 
     public String getId() {
@@ -289,6 +299,10 @@ public class Employee {
 
     public void setEmplUsername(String empl_username) { this.empl_username = empl_username; }
 
+    public boolean getIsActive() { return isActive; }
+
+    public void setIsActive(boolean isActive) { this.isActive = isActive; }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -305,6 +319,7 @@ public class Employee {
                 ", street='" + street + '\'' +
                 ", zipCode='" + zipCode + '\'' +
                 ", username='" + empl_username + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 }

@@ -20,10 +20,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    @Override
-    public List<Employee> findByRole(String role) {
-        return employeeRepository.findByRole(role);
+
+    public List<Employee> filterEmployee(Boolean manager, Boolean cashier) {
+        return employeeRepository.filter(manager, cashier);
     }
+
 
     @Override
     public List<Employee> findAll() {

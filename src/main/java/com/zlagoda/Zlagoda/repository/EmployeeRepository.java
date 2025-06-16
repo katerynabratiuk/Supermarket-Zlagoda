@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface EmployeeRepository extends GenericRepository<Employee, String>{
 
-    List<Employee> findByRole(String role);
+    List<Employee> filter(Boolean manager, Boolean cashier);
 }

@@ -31,7 +31,6 @@
             @toggle="toggleEditMode"
           ></edit-button>
         </div>
-
         <section class="contents">
           <form action="" class="edit-form" @submit.prevent="saveEditEmployee">
             <div class="employee-details-upper-wrapper">
@@ -70,8 +69,10 @@
                       v-model="currentEmployee.empl_patronymic"
                       class="edit-input"
                     />
+                  </div>
+                </div>
 
-                    <div class="employee-role">
+                                    <div class="employee-role">
                       <p v-if="!isEditMode">
                         Role: {{ currentEmployee.empl_role }}
                       </p>
@@ -88,8 +89,30 @@
                         </select>
                       </div>
                     </div>
+
+                <div class="employee-status">
+                    <template v-if="!isEditMode">
+                      <p>
+                        Status:
+                        <span :class="{'active-text': currentEmployee.is_active, 'inactive-text': !currentEmployee.is_active}">
+                          {{ currentEmployee.is_active ? 'Active' : 'Inactive' }}
+                        </span>
+                      </p>
+                    </template>
+                    <template v-else>
+                      <div class="form-field">
+                        <label for="is_active_toggle" class="toggle-label">Active:</label>
+                        <label class="toggle-switch">
+                          <input
+                            type="checkbox"
+                            id="is_active_toggle"
+                            v-model="currentEmployee.is_active"
+                          />
+                          <span class="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </template>
                   </div>
-                </div>
               </div>
 
               <div class="employee-id">
@@ -208,7 +231,7 @@
               <button class="delete-btn" @click="confirmAndDeleteEmployee">
                 Delete
               </button>
-              <button class="save-btn" type="sumbit">Save</button>
+              <button class="save-btn" type="submit">Save</button>
             </div>
           </form>
         </section>
