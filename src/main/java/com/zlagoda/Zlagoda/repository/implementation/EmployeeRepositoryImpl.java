@@ -119,7 +119,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 employee.setCity(rs.getString("city"));
                 employee.setStreet(rs.getString("street"));
                 employee.setZipCode(rs.getString("zip_code"));
+                employee.setIsActive(rs.getBoolean("is_active"));
             }
+            System.out.println(employee);
             return employee;
         }
         catch (SQLException e)
