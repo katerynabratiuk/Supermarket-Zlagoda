@@ -71,6 +71,7 @@ public class Employee {
 
     private String empl_username;
 
+    @JsonProperty("is_active")
     private Boolean isActive;
 
     public Employee(){};

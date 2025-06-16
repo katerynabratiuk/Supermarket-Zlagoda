@@ -134,6 +134,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         {
             PreparedStatement stmt = connection.prepareStatement(CREATE);
             System.out.println(employee.getId());
+            stmt.setString(1, employee.getId());
             stmt.setString(2, employee.getSurname());
             stmt.setString(3, employee.getName());
             stmt.setString(4, employee.getPatronymic());
@@ -145,6 +146,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             stmt.setString(10, employee.getCity());
             stmt.setString(11, employee.getStreet());
             stmt.setString(12, employee.getZipCode());
+            stmt.setBoolean(13, employee.getIsActive());
 
             stmt.executeUpdate();
         }

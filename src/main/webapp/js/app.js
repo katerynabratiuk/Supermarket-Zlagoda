@@ -79,7 +79,8 @@ let app = Vue.createApp(
           phone_number: '+',
           city: '',
           street: '',
-          zip_code: ''
+          zip_code: '',
+          is_active:true
         },
         currentEmployee: null,
 
