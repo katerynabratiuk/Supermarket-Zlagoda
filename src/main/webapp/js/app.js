@@ -37,7 +37,6 @@ let app = Vue.createApp(
             description: '',
           },
           products_number: 0,
-          isOnSale: false,
           new_price: null,
         },
         imagePreview: null,
@@ -582,6 +581,14 @@ let app = Vue.createApp(
         }
       },
 
+      handlePriceInput(event, isPromotional) {
+        const value = parseFloat(event.target.value) || 0;
+        if (isPromotional) {
+          this.currentProduct.new_price = value;
+        } else {
+          this.currentProduct.selling_price = value;
+        }
+      },
       handleImageUpload(event) {
         const file = event.target.files[0]
         this.selectedFile = file
@@ -628,21 +635,19 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            // const newProduct = await response.json()
-            // this.products.push(newProduct)
-            // this.newProduct = {
-            //   id: null,
-            //   name: '',
-            //   price: null,
-            //   image: '',
-            //   category: '',
-            //   description: '',
-            //   manufacturer: '',
-            //   status: 'Out Of Stock',
-            //   isOnSale: false,
-            //   new_price: null,
-            //   count: 0
-            // }
+            const newProduct = await response.json()
+            this.products.push(newProduct)
+            this.newProduct = {
+              id: null,
+              name: '',
+              price: null,
+              image: '',
+              category: '',
+              description: '',
+              manufacturer: '',
+              status: 'Out Of Stock',
+              count: 0
+            }
             console.log("New product added successfully:")
             window.location.href = `products.html`
           } else {
@@ -656,12 +661,10 @@ let app = Vue.createApp(
       },
       async saveEditProduct() {
         try {
-          const response = await fetch(`/api/products/${this.currentProduct.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.currentProduct),
+          const response = await fetch(`http://localhost:8090/product/${this.currentProduct.UPC}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.currentProduct), 
           })
 
           if (response.ok) {
@@ -954,8 +957,8 @@ app.component("navbar", {
             <span class="material-symbols-outlined">person</span>
             </div>
           </li>
-          <li><a href="">My Profile<a></li>
-          <li><a href="">Logout<a></li>
+          <li><a href="">My Profile</a></li>
+          <li><a href="">Logout</a></li>
         </ul>
     </div>
     `,

@@ -129,10 +129,13 @@
 
                   <div v-else>
                     <div class="form-field">
-                      <label for="price">Price:</label>
+                      <label for="price">
+                        {{ currentProduct.promotional ? 'Discounted price:' : 'Price:' }}
+                      </label>
                       <input
                         id="price"
-                        v-model.number="currentProduct.selling_price"
+                        :value="currentProduct.promotional ? currentProduct.new_price : currentProduct.selling_price"
+                        @input="handlePriceInput($event, currentProduct.promotional)"
                         type="number"
                         min="0"
                         step="0.01"
@@ -181,6 +184,35 @@
                       {{ category.category_name }}
                     </option>
                   </select>
+                </div>
+              </section>
+
+              <section
+                v-if="isManager && isEditMode && !currentProduct.promotional_product"
+                class="promotional"
+              >
+                <div class="promotional-checkbox">
+                  <h4>Promotional:</h4>
+                  <input
+                    id="promotional"
+                    type="checkbox"
+                    v-model="currentProduct.promotional"
+                    :disabled="currentProduct.promotional_product"
+                  />
+                  <label for="promotional">Yes</label>
+                </div>
+
+                <div
+                  v-if="currentProduct.promotional && !currentProduct.promotional_product"
+                >
+                  <label for="upc">UPC of Promotional Product:</label>
+                  <input
+                    id="upc"
+                    v-model="currentProduct.upc_prom"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
                 </div>
               </section>
             </div>

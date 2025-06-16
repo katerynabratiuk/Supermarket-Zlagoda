@@ -147,6 +147,12 @@ h3.product-management-header {
 
 .characteristics,
 .manufacturer,
-.categories {
+.categories, .promotional {
   max-width: 440px;
+}
+
+.promotional-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
