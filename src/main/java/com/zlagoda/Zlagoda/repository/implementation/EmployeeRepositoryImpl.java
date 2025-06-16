@@ -13,9 +13,9 @@ import java.util.List;
 public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     private static final String GET_ALL = "SELECT * FROM Employee";
-    private static final String CREATE = "INSERT INTO Employee VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String CREATE = "INSERT INTO Employee VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
     private static final String UPDATE = "UPDATE Employee SET empl_surname=?, empl_name=?, empl_patronymic=?, empl_role=?, salary=?, " +
-            "date_of_birth=?, date_of_start=?, phone_number=?, city=?, street=?, zip_code=? " +
+            "date_of_birth=?, date_of_start=?, phone_number=?, city=?, street=?, zip_code=?, is_active=? " +
             "WHERE id_employee=?";
     private static final String DELETE = "DELETE FROM Employee WHERE id_employee=?";
 
@@ -170,6 +170,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             stmt.setString(10, employee.getStreet());
             stmt.setString(11, employee.getZipCode());
             stmt.setString(12, employee.getId());
+            stmt.setBoolean(13, employee.getIsActive());
             stmt.executeUpdate();
         } catch (SQLException e){
             throw new DataAccessException("Failed to update employees", e);

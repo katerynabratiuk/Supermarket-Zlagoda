@@ -71,7 +71,7 @@ public class Employee {
 
     private String empl_username;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     public Employee(){};
 
