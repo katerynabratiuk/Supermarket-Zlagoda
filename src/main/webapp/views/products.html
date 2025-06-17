@@ -53,6 +53,9 @@
               >
                 Filter
               </button>
+              <button type="button" class="sort-btn" @click="toggleSortShow">
+                Sort
+              </button>
               <button type="button" class="print-btn" onclick="window.print()">
                 Print
               </button>
@@ -122,18 +125,6 @@
                     <label for="show-non-promotional">Non-Promotional</label>
                   </div>
                 </div>
-
-                <div class="form-label">Sort by:</div>
-                <div class="form-field">
-                  <div class="radio-field">
-                    <input type="radio" id="name" name="sortby" />
-                    <label for="name">Name</label>
-                  </div>
-                  <div class="radio-field">
-                    <input type="radio" id="quantity" name="sortby" />
-                    <label for="name">Quantity</label>
-                  </div>
-                </div>
               </div>
 
               <div class="filter-form-button">
@@ -145,6 +136,39 @@
                   Clear
                 </button>
                 <button type="submit" class="filter-btn">Filter</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="filter-block" v-if="showSort">
+            <form class="filter-form" @submit.prevent="applyProductSort">
+              <div class="form-grid">
+                <div class="form-label">Sort by:</div>
+                <div class="form-field">
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="sort-name"
+                      name="sortby"
+                      value="name"
+                      v-model="sortProductsParamsField"
+                    />
+                    <label for="sort-name">Name</label>
+                  </div>
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="sort-quantity"
+                      name="sortby"
+                      value="quantity"
+                      v-model="sortProductsParamsField"
+                    />
+                    <label for="sort-quantity">Quantity</label>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-form-button">
+                <button type="submit" class="sort-btn">Sort</button>
               </div>
             </form>
           </div>

@@ -5,6 +5,7 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         showFilter: false,
+        showSort: false,
         isPasswordVisible: false,
         userRole: 'Manager',
         username: '',
@@ -44,7 +45,8 @@ let app = Vue.createApp(
         currentProduct: null,
         productStatus: null,
         totalPieces: 0,
-        isUPCFiltered: false, 
+        isUPCFiltered: false,
+        sortProductsParamsField: null,
 
         newCustomer: {
           card_number: null,
@@ -510,6 +512,9 @@ let app = Vue.createApp(
       toggleFilterShow() {
         this.showFilter = !this.showFilter
       },
+      toggleSortShow() {
+        this.showSort = !this.showSort
+      },
       toggleEdit(itemId) {
         this.currentEditingItemID = this.currentEditingItemID === itemId ? null : itemId
       },
@@ -583,6 +588,21 @@ let app = Vue.createApp(
         } catch (error) {
           console.error("An unexpected error occurred during updating:", error)
           alert("An unexpected error occurred. Please try again later.")
+        }
+      },
+      async sortCategories() {
+        try {
+          this.isLoading = true
+          const response = await fetch('http://localhost:8090/categories?_sort=category_name')
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          this.productsCategories = await response.json()
+        } catch (error) {
+          console.error('Error sorting categories:', error)
+          alert('Failed to sort categories. Please try again.')
+        } finally {
+          this.isLoading = false
         }
       },
 
@@ -702,11 +722,11 @@ let app = Vue.createApp(
 
           if (upc) {
             params.append('upc', upc)
-            this.currentProduct = this.getProductById(upc) 
+            this.currentProduct = this.getProductById(upc)
             console.log(this.currentProduct)
-            this.isUPCFiltered = true 
+            this.isUPCFiltered = true
           } else {
-            this.isUPCFiltered = false 
+            this.isUPCFiltered = false
           }
 
           if (fromDate) params.append('from_date', fromDate)
@@ -735,7 +755,7 @@ let app = Vue.createApp(
             this.filtersApplied = false
             this.totalPieces = 0
             this.currentProduct = null
-            this.isUPCFiltered = false 
+            this.isUPCFiltered = false
           }
         } catch (error) {
           console.error('Error applying filters to products:', error)
@@ -762,6 +782,38 @@ let app = Vue.createApp(
         this.totalPieces = 0
         this.currentProduct = null
         this.isUPCFiltered = false
+      },
+      async applyProductSort() {
+        try {
+          if (!this.sortProductsParamsField) {
+            return
+          }
+
+          const params = new URLSearchParams()
+          params.append('sort_by', this.sortParams.field)
+          params.append('order', this.sortParams.direction)
+
+          const response = await fetch(`http://localhost:8090/products/sorted?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch sorted products')
+          }
+
+          this.isLoading = true
+          this.products = await response.json()
+          this.showSort = false
+
+        } catch (error) {
+          console.error('Sorting error:', error)
+          alert('Failed to apply sorting. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
       },
 
       goToAddCustomer() {
@@ -895,6 +947,22 @@ let app = Vue.createApp(
         this.loadCustomers()
         this.filtersApplied = false
       },
+      async sortCustomers() {
+        try {
+          this.isLoading = true
+          const response = await fetch('http://localhost:8090/customers?_sort=surname')
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          this.customers = await response.json()
+        } catch (error) {
+          console.error('Error sorting customers:', error)
+          alert('Failed to sort customers. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
+
 
       goToAddCheck() {
         window.location.href = 'new-check-page.html'
@@ -975,7 +1043,7 @@ let app = Vue.createApp(
           const toDateInput = document.getElementById('to-date')
           const showTotalSumCheckbox = document.getElementById('show-total-sum')
 
-          let cashierName = null;
+          let cashierName = null
 
           if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
             cashierName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
@@ -1037,6 +1105,21 @@ let app = Vue.createApp(
         this.loadChecks()
         this.filtersApplied = false
         this.totalSum = 0
+      },
+      async sortChecks() {
+        try {
+          this.isLoading = true
+          const response = await fetch('http://localhost:8090/employees?_sort=check_number')
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          this.checks  = await response.json()
+        } catch (error) {
+          console.error('Error sorting checks:', error)
+          alert('Failed to sort checks. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
       },
 
       goToAddEmployee() {
@@ -1166,7 +1249,22 @@ let app = Vue.createApp(
 
         this.loadEmployees()
         this.filtersApplied = false
-      }
+      },
+      async sortEmployees() {
+        try {
+          this.isLoading = true
+          const response = await fetch('http://localhost:8090/employees?_sort=surname')
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          this.employees = await response.json()
+        } catch (error) {
+          console.error('Error sorting employees:', error)
+          alert('Failed to sort employees. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)

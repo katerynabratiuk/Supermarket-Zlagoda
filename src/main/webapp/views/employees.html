@@ -56,6 +56,7 @@
               >
                 Filter
               </button>
+              <button type="button" class="sort-btn" @click="sortEmployees">Sort</button>
               <button type="button" class="print-btn" onclick="window.print()">
                 Print
               </button>
@@ -128,26 +129,23 @@
               <tbody>
                 <tr
                   class="table-row"
-                  :class="{ 'inactive-row': !item.is_active }"
-                  v-for="item in displayedItems('employees')(employees)"
-                  :key="item.id_employee"
+                  :class="{ 'inactive-row': !employee.is_active }"
+                  v-for="employee in displayedItems('employees')(employees)"
+                  :key="employee.id_employee"
                 >
-                  <td class="id">{{ item.id_employee }}</td>
+                  <td class="id">{{ employee.id_employee }}</td>
                   <td class="name">
-                    <a :href="'employee-page.html?id=' + item.id_employee">
-                      {{ item.empl_surname }} {{ item.empl_name }}
-                      <span v-if="item.empl_patronymic">
-                        {{ item.empl_patronymic }}</span
-                      ></a
-                    >
+                    <a :href="'employee-page.html?id=' + employee.id_employee">
+                      {{ formatEmployeeName(employee) }}
+                    </a>
                   </td>
-                  <td class="role">{{ item.empl_role }}</td>
+                  <td class="role">{{ employee.empl_role }}</td>
                   <td class="date-of-start">
-                    {{ item.city }}
-                    <span v-if="item.street">,</span> {{item.street}}
-                    <span v-if="item.zipcode">,</span>{{item.zipcode}}
+                    {{ employee.city }}
+                    <span v-if="employee.street">,</span> {{employee.street}}
+                    <span v-if="employee.zipcode">,</span>{{employee.zipcode}}
                   </td>
-                  <td class="phone-number">{{ item.phone_number }}</td>
+                  <td class="phone-number">{{ employee.phone_number }}</td>
                 </tr>
               </tbody>
             </table>

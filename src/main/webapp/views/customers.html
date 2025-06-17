@@ -55,6 +55,7 @@
               >
                 Filter
               </button>
+              <button type="button" class="sort-btn" @click="sortCustomers">Sort</button>
               <button type="button" class="print-btn" onclick="window.print()">
                 Print
               </button>
@@ -130,20 +131,17 @@
               <tbody>
                 <tr
                   class="table-row"
-                  v-for="item in displayedItems('customers')(customers)"
-                  :key="item.card_number"
+                  v-for="customer in displayedItems('customers')(customers)"
+                  :key="customer.card_number"
                 >
-                  <td class="id">{{ item.card_number }}</td>
+                  <td class="id">{{ customer.card_number }}</td>
                   <td class="name">
-                    <a :href='"customer-page.html?id=" + item.card_number'>
-                      {{ item.cust_surname }} {{ item.cust_name }}
-                      <span v-if="item.cust_patronymic">
-                        {{ item.cust_patronymic}}</span
-                      >
+                    <a :href='"customer-page.html?id=" + customer.card_number'>
+                      {{ formatCustomerName(customer) }}
                     </a>
                   </td>
-                  <td class="phone-number">{{ item.phone_number }}</td>
-                  <td class="percent">{{ item.percent.toFixed(2) }}</td>
+                  <td class="phone-number">{{ customer.phone_number }}</td>
+                  <td class="percent">{{ customer.percent.toFixed(2) }}</td>
                 </tr>
               </tbody>
             </table>
