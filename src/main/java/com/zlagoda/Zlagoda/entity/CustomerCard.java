@@ -43,8 +43,8 @@ public class CustomerCard {
     @JsonProperty("zip_code")
     private String zipCode;
 
-    @Positive
-    @Max(10)
+    @PositiveOrZero
+    @Max(15)
     @JsonProperty("percent")
     private Integer percent;
 
