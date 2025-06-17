@@ -45,7 +45,7 @@ let app = Vue.createApp(
         productStatus: null,
         totalPieces: 0,
         isUPCFiltered: false,
-        sortProductsParamsField: null,
+        sortProductsParamsField: [],
 
         newCustomer: {
           card_number: null,
