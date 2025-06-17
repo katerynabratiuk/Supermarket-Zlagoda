@@ -63,8 +63,8 @@
             </div>
           </div>
 
-          <div class="filter-block" v-if="showFilter" @submit.prevent>
-            <form class="filter-form">
+          <div class="filter-block" v-if="showFilter">
+            <form class="filter-form" @submit.prevent="applyCheckFilters">
               <div class="form-grid">
                 <div class="form-label">Cashier:</div>
                 <div class="form-field">
@@ -78,9 +78,9 @@
                       v-for="employee in employees"
                       :key="employee.id_employee"
                       :value="employee.id_employee"
+                      :data-name="formatEmployeeName(employee)"
                     >
-                      {{ employee.empl_surname }} {{ employee.empl_name }} {{
-                      employee.empl_patronymic }}
+                      {{ formatEmployeeName(employee) }}
                     </option>
                   </select>
                 </div>
@@ -122,10 +122,16 @@
               </div>
 
               <div class="filter-form-button">
-                <button type="submit" class="save-btn">Filter</button>
+                <button type="button" class="clear-filters-btn" @click="clearCheckFilters">Clear</button>
+                <button type="submit" class="filter-btn">Filter</button>
               </div>
             </form>
           </div>
+
+          <div v-if="filtersApplied && showTotalSumChecked" class="total-sum-message">
+            Total Sum: {{ totalSum.toFixed(2) }}
+          </div>
+          
         </div>
 
         <section class="contents">

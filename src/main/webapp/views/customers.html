@@ -61,7 +61,11 @@
             </div>
           </div>
 
-          <div class="filter-block" v-if="showFilter" @submit.prevent>
+          <div
+            class="filter-block"
+            v-if="showFilter"
+            @submit.prevent="applyCustomerFilters"
+          >
             <form class="filter-form">
               <div class="form-grid">
                 <div class="form-label">By name:</div>
@@ -76,9 +80,9 @@
                       v-for="customer in customers"
                       :key="customer.card_number"
                       :value="customer.card_number"
+                      :data-name="formatCustomerName(customer)"
                     >
-                      {{ customer.cust_surname }} {{ customer.cust_name }} {{
-                      customer.cust_patronymic }}
+                      {{ formatCustomerName(customer) }}
                     </option>
                   </select>
                 </div>
@@ -90,6 +94,7 @@
                     name="discount-select"
                     class="edit-dropdown"
                   >
+                    <option selected disabled value="">Select percent</option>
                     <option v-for="percent in [0, 5, 10, 15]" :value="percent">
                       {{ percent }}%
                     </option>
@@ -98,7 +103,14 @@
               </div>
 
               <div class="filter-form-button">
-                <button type="submit" class="save-btn">Filter</button>
+                <button
+                  type="button"
+                  class="clear-filters-btn"
+                  @click="clearCustomerFilters"
+                >
+                  Clear
+                </button>
+                <button type="submit" class="filter-btn">Filter</button>
               </div>
             </form>
           </div>

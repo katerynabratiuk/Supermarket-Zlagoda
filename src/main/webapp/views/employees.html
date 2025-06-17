@@ -62,7 +62,7 @@
             </div>
           </div>
 
-          <div class="filter-block" v-if="showFilter" @submit.prevent>
+          <div class="filter-block" v-if="showFilter" @submit.prevent="applyEmployeeFilters">
             <form class="filter-form">
               <div class="form-grid">
                 <div class="form-label">Show:</div>
@@ -97,16 +97,17 @@
                       v-for="employee in employees"
                       :key="employee.id_employee"
                       :value="employee.id_employee"
+                      :data-name="formatEmployeeName(employee)"
                     >
-                      {{ employee.empl_surname }} {{ employee.empl_name }} {{
-                      employee.empl_patronymic }}
+                    {{ formatEmployeeName(employee) }}
                     </option>
                   </select>
                 </div>
               </div>
 
               <div class="filter-form-button">
-                <button type="submit" class="save-btn">Filter</button>
+                <button type="button" class="clear-filters-btn" @click="clearEmployeeFilters">Clear</button>
+                <button type="submit" class="filter-btn">Filter</button>
               </div>
             </form>
           </div>

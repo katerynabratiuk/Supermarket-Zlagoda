@@ -18,6 +18,7 @@ let app = Vue.createApp(
         checks: [],
 
         selectedFilter: '',
+        filtersApplied: false,
 
         newCategory: {
           category_name: '',
@@ -42,6 +43,8 @@ let app = Vue.createApp(
         imagePreview: null,
         currentProduct: null,
         productStatus: null,
+        totalPieces: 0,
+        isUPCFiltered: false, 
 
         newCustomer: {
           card_number: null,
@@ -66,6 +69,8 @@ let app = Vue.createApp(
           vat: 0,
           sales: []
         },
+        totalSum: 0,
+        showTotalSumChecked: false,
 
         newEmployee: {
           id_employee: null,
@@ -80,7 +85,7 @@ let app = Vue.createApp(
           city: '',
           street: '',
           zip_code: '',
-          is_active:true
+          is_active: true
         },
         currentEmployee: null,
 
@@ -582,11 +587,11 @@ let app = Vue.createApp(
       },
 
       handlePriceInput(event, isPromotional) {
-        const value = parseFloat(event.target.value) || 0;
+        const value = parseFloat(event.target.value) || 0
         if (isPromotional) {
-          this.currentProduct.new_price = value;
+          this.currentProduct.new_price = value
         } else {
-          this.currentProduct.selling_price = value;
+          this.currentProduct.selling_price = value
         }
       },
       handleImageUpload(event) {
@@ -664,7 +669,7 @@ let app = Vue.createApp(
           const response = await fetch(`http://localhost:8090/product/${this.currentProduct.UPC}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.currentProduct), 
+            body: JSON.stringify(this.currentProduct),
           })
 
           if (response.ok) {
@@ -678,6 +683,85 @@ let app = Vue.createApp(
           console.error("An unexpected error occurred during updating:", error)
           alert("An unexpected error occurred. Please try again later.")
         }
+      },
+      async applyProductFilters() {
+        try {
+          const upcSelect = document.getElementById('upc-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
+          const showPromotionalCheckbox = document.getElementById('show-promotional')
+          const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
+
+          const upc = upcSelect ? upcSelect.value : null
+          const fromDate = fromDateInput ? fromDateInput.value : null
+          const toDate = toDateInput ? toDateInput.value : null
+          const showPromotional = showPromotionalCheckbox ? showPromotionalCheckbox.checked : false
+          const showNonPromotional = showNonPromotionalCheckbox ? showNonPromotionalCheckbox.checked : false
+
+          const params = new URLSearchParams()
+
+          if (upc) {
+            params.append('upc', upc)
+            this.currentProduct = this.getProductById(upc) 
+            console.log(this.currentProduct)
+            this.isUPCFiltered = true 
+          } else {
+            this.isUPCFiltered = false 
+          }
+
+          if (fromDate) params.append('from_date', fromDate)
+          if (toDate) params.append('to_date', toDate)
+          if (showPromotional) params.append('show_promotional', showPromotional)
+          if (showNonPromotional) params.append('show_non_promotional', showNonPromotional)
+
+          if (params.size > 0) {
+            const response = await fetch(`http://localhost:8090/products/filter?${params.toString()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+
+            if (!response.ok) {
+              throw new Error(`Failed to filter products. Status: ${response.status}`)
+            }
+
+            const data = await response.json()
+            this.products = data.products
+            this.totalPieces = data.total_pieces
+            this.filtersApplied = true
+          } else {
+            await this.loadProducts()
+            this.filtersApplied = false
+            this.totalPieces = 0
+            this.currentProduct = null
+            this.isUPCFiltered = false 
+          }
+        } catch (error) {
+          console.error('Error applying filters to products:', error)
+          alert('Failed to apply filters to products. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
+      clearProductFilters() {
+        const upcSelect = document.getElementById('upc-select')
+        const fromDateInput = document.getElementById('from-date')
+        const toDateInput = document.getElementById('to-date')
+        const showPromotionalCheckbox = document.getElementById('show-promotional')
+        const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
+
+        if (upcSelect) upcSelect.value = ''
+        if (fromDateInput) fromDateInput.value = ''
+        if (toDateInput) toDateInput.value = ''
+        if (showPromotionalCheckbox) showPromotionalCheckbox.checked = false
+        if (showNonPromotionalCheckbox) showNonPromotionalCheckbox.checked = false
+
+        this.loadProducts()
+        this.filtersApplied = false
+        this.totalPieces = 0
+        this.currentProduct = null
+        this.isUPCFiltered = false
       },
 
       goToAddCustomer() {
@@ -754,6 +838,63 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
+      formatCustomerName(customer) {
+        return `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
+      },
+      async applyCustomerFilters() {
+        try {
+          const customerSelect = document.getElementById('customer-select')
+          const discountSelect = document.getElementById('discount-select')
+
+          let customerName = null
+          if (customerSelect && customerSelect.options && customerSelect.selectedIndex !== -1) {
+            customerName = customerSelect.options[customerSelect.selectedIndex].dataset.name
+          }
+          const discountPercent = discountSelect ? discountSelect.value : null
+
+          const params = new URLSearchParams()
+
+          if (customerName) params.append('cust_name', customerName)
+          if (discountPercent) params.append('percent', discountPercent)
+
+          if (params.size > 0) {
+            console.log(params.toString())
+            const response = await fetch(`http://localhost:8090/customers/filter?${params.toString()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+
+            if (!response.ok) {
+              throw new Error(`Failed to filter customers. Status: ${response.status}`)
+            }
+
+            this.isLoading = true
+            this.customers = await response.json()
+            this.filtersApplied = true
+          } else {
+            await this.loadCustomers()
+            this.filtersApplied = false
+          }
+
+        } catch (error) {
+          console.error("Error applying filters to customers:", error)
+          alert("Failed to apply filters to customers. Please try again.")
+        } finally {
+          this.isLoading = false
+        }
+      },
+      clearCustomerFilters() {
+        const customerSelect = document.getElementById('customer-select')
+        const discountSelect = document.getElementById('discount-select')
+
+        if (customerSelect) customerSelect.value = ''
+        if (discountSelect) discountSelect.value = ''
+
+        this.loadCustomers()
+        this.filtersApplied = false
+      },
 
       goToAddCheck() {
         window.location.href = 'new-check-page.html'
@@ -827,6 +968,77 @@ let app = Vue.createApp(
           this.currentCustomer = null
         }
       },
+      async applyCheckFilters() {
+        try {
+          const cashierSelect = document.getElementById('cashier-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
+          const showTotalSumCheckbox = document.getElementById('show-total-sum')
+
+          let cashierName = null;
+
+          if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
+            cashierName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
+          }
+
+          const fromDate = fromDateInput ? fromDateInput.value : null
+          const toDate = toDateInput ? toDateInput.value : null
+          const showTotalSum = showTotalSumCheckbox ? showTotalSumCheckbox.checked : false
+
+          this.showTotalSumChecked = showTotalSum
+
+          const params = new URLSearchParams()
+
+          if (cashierName) params.append('empl_name', cashierName)
+          if (fromDate) params.append('from_date', fromDate)
+          if (toDate) params.append('to_date', toDate)
+          if (showTotalSum) params.append('show_total_sum', showTotalSum)
+
+          if (params.size > 0) {
+            const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+
+            if (!response.ok) {
+              throw new Error(`Failed to filter checks. Status: ${response.status}`)
+            }
+            this.isLoading = true
+            const data = await response.json()
+            this.checks = data.checks
+            this.totalSum = data.total_sum
+            this.filtersApplied = true
+          } else {
+            await this.loadChecks()
+            this.filtersApplied = false
+            this.totalSum = 0
+          }
+        } catch (error) {
+          console.error('Error applying filters to checks:', error)
+          alert('Failed to apply filters to checks. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
+      clearCheckFilters() {
+        const cashierSelect = document.getElementById('cashier-select')
+        const fromDateInput = document.getElementById('from-date')
+        const toDateInput = document.getElementById('to-date')
+        const showTotalSumCheckbox = document.getElementById('show-total-sum')
+
+        if (cashierSelect) cashierSelect.value = ''
+        if (fromDateInput) fromDateInput.value = ''
+        if (toDateInput) toDateInput.value = ''
+        if (showTotalSumCheckbox) showTotalSumCheckbox.checked = false
+        this.showTotalSumChecked = false
+
+        this.loadChecks()
+        this.filtersApplied = false
+        this.totalSum = 0
+      },
+
       goToAddEmployee() {
         window.location.href = 'new-employee-page.html'
       },
@@ -848,7 +1060,6 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-
       async confirmAndDeleteEmployee() {
         const employeeId = this.currentEmployee.id_employee
         if (confirm("Are you sure you want to delete this employee?")) {
@@ -895,6 +1106,67 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
+      formatEmployeeName(employee) {
+        return `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
+      },
+      async applyEmployeeFilters() {
+        try {
+
+          const cashierSelect = document.getElementById('cashier-select')
+          const showCashiersCheckbox = document.getElementById('show-cashiers')
+          const showManagersCheckbox = document.getElementById('show-managers')
+
+          let employeeName = null
+          if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
+            employeeName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
+          }
+          const showCashiers = showCashiersCheckbox ? showCashiersCheckbox.checked : false
+          const showManagers = showManagersCheckbox ? showManagersCheckbox.checked : false
+
+          const params = new URLSearchParams()
+
+          if (employeeName) params.append('empl_name', employeeName)
+          if (showCashiers) params.append('show_cashiers', showCashiers)
+          if (showManagers) params.append('show_managers', showManagers)
+
+          if (params.size > 0) {
+            const response = await fetch(`http://localhost:8090/employees/filter?${params.toString()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+
+            if (!response.ok) {
+              throw new Error(`Failed to filter employees. Status: ${response.status}`)
+            }
+
+            this.isLoading = true
+            this.employees = await response.json()
+            this.filtersApplied = true
+          } else {
+            await this.loadEmployees()
+            this.filtersApplied = false
+          }
+        } catch (error) {
+          console.error('Error applying filters to employees:', error)
+          alert('Failed to apply filters to employees. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
+      clearEmployeeFilters() {
+        const cashierSelect = document.getElementById('cashier-select')
+        const showCashiersCheckbox = document.getElementById('show-cashiers')
+        const showManagersCheckbox = document.getElementById('show-managers')
+
+        if (cashierSelect) cashierSelect.value = ''
+        if (showCashiersCheckbox) showCashiersCheckbox.checked = false
+        if (showManagersCheckbox) showManagersCheckbox.checked = false
+
+        this.loadEmployees()
+        this.filtersApplied = false
+      }
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)

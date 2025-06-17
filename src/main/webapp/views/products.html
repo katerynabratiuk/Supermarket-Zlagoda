@@ -26,7 +26,7 @@
       <main>
         <div class="products-header noPrint" v-if="!isLoading">
           <h2>
-            Products <span v-if="selectedFilter">| {{ selectedFilter}}</span>
+            Products <span v-if="selectedFilter">| {{ selectedFilter }}</span>
           </h2>
 
           <div class="actions-container">
@@ -59,8 +59,8 @@
             </div>
           </div>
 
-          <div class="filter-block" v-if="showFilter" @submit.prevent>
-            <form class="filter-form">
+          <div class="filter-block" v-if="showFilter">
+            <form class="filter-form" @submit.prevent="applyProductFilters">
               <div class="form-grid">
                 <div class="form-label">UPC:</div>
                 <div class="form-field">
@@ -137,9 +137,23 @@
               </div>
 
               <div class="filter-form-button">
-                <button type="submit" class="save-btn">Filter</button>
+                <button
+                  type="button"
+                  class="clear-filter-btn"
+                  @click="clearProductFilters"
+                >
+                  Clear
+                </button>
+                <button type="submit" class="filter-btn">Filter</button>
               </div>
             </form>
+          </div>
+
+          <div
+            v-if="filtersApplied && isUPCFiltered"
+            class="total-pieces-message"
+          >
+            {{ currentProduct.product_name }} {{ totalPieces }} pcs
           </div>
         </div>
 
