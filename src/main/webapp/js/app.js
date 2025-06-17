@@ -731,11 +731,11 @@ let app = Vue.createApp(
 
           if (fromDate) params.append('from_date', fromDate)
           if (toDate) params.append('to_date', toDate)
-          if (showPromotional) params.append('show_promotional', showPromotional)
-          if (showNonPromotional) params.append('show_non_promotional', showNonPromotional)
+          if (showPromotional) params.append('promotional', showPromotional)
+          if (showNonPromotional) params.append('promotional', false)
 
           if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/products/filter?${params.toString()}`, {
+            const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json'
@@ -747,7 +747,8 @@ let app = Vue.createApp(
             }
 
             const data = await response.json()
-            this.products = data.products
+            console.log(data)
+            this.products = data
             this.totalPieces = data.total_pieces
             this.filtersApplied = true
           } else {
@@ -793,7 +794,7 @@ let app = Vue.createApp(
           params.append('sort_by', this.sortParams.field)
           params.append('order', this.sortParams.direction)
 
-          const response = await fetch(`http://localhost:8090/products/sorted?${params.toString()}`, {
+          const response = await fetch(`http://localhost:8090/product/sorted?${params.toString()}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json'
