@@ -5,7 +5,6 @@ let app = Vue.createApp(
         isLoading: true,
         isEditMode: false,
         showFilter: false,
-        showSort: false,
         isPasswordVisible: false,
         userRole: 'Manager',
         username: '',
@@ -132,7 +131,7 @@ let app = Vue.createApp(
     watch: {
       currentProduct(newVal) {
         if (newVal) {
-          document.title = `${newVal.name} - Zlagoda`
+          document.title = `${newVal.product.product_name} - Zlagoda`
         }
       },
       currentCustomer(newVal) {
@@ -349,7 +348,7 @@ let app = Vue.createApp(
               break
 
             case 'products.html':
-              await this.loadProducts()
+              await Promise.all([this.loadProducts(), this.loadCategories()])
               break
 
             case 'product-page.html':
@@ -512,9 +511,6 @@ let app = Vue.createApp(
       toggleFilterShow() {
         this.showFilter = !this.showFilter
       },
-      toggleSortShow() {
-        this.showSort = !this.showSort
-      },
       toggleEdit(itemId) {
         this.currentEditingItemID = this.currentEditingItemID === itemId ? null : itemId
       },
@@ -593,7 +589,7 @@ let app = Vue.createApp(
       async sortCategories() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/categories?_sort=category_name')
+          const response = await fetch('http://localhost:8090/categories?sort=category_name')
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
@@ -706,13 +702,19 @@ let app = Vue.createApp(
       },
       async applyProductFilters() {
         try {
-          const upcSelect = document.getElementById('upc-select')
+          this.isLoading = true
+
+          const categorySelect = document.getElementById('category-select')
           const fromDateInput = document.getElementById('from-date')
           const toDateInput = document.getElementById('to-date')
           const showPromotionalCheckbox = document.getElementById('show-promotional')
           const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
 
-          const upc = upcSelect ? upcSelect.value : null
+          let categoryName = null
+          const categoryNumber = categorySelect ? categorySelect.value : null
+          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
+          }
           const fromDate = fromDateInput ? fromDateInput.value : null
           const toDate = toDateInput ? toDateInput.value : null
           const showPromotional = showPromotionalCheckbox ? showPromotionalCheckbox.checked : false
@@ -720,13 +722,8 @@ let app = Vue.createApp(
 
           const params = new URLSearchParams()
 
-          if (upc) {
-            params.append('upc', upc)
-            this.currentProduct = this.getProductById(upc)
-            console.log(this.currentProduct)
-            this.isUPCFiltered = true
-          } else {
-            this.isUPCFiltered = false
+          if (categoryNumber) {
+            params.append('category_name', categoryName)
           }
 
           if (fromDate) params.append('from_date', fromDate)
@@ -751,12 +748,12 @@ let app = Vue.createApp(
             this.products = data
             this.totalPieces = data.total_pieces
             this.filtersApplied = true
+            this.currentCategory = categoryName
           } else {
             await this.loadProducts()
             this.filtersApplied = false
             this.totalPieces = 0
-            this.currentProduct = null
-            this.isUPCFiltered = false
+            this.currentCategory = null
           }
         } catch (error) {
           console.error('Error applying filters to products:', error)
@@ -766,17 +763,18 @@ let app = Vue.createApp(
         }
       },
       clearProductFilters() {
-        const upcSelect = document.getElementById('upc-select')
+        const categorySelect = document.getElementById('category-select')
         const fromDateInput = document.getElementById('from-date')
         const toDateInput = document.getElementById('to-date')
         const showPromotionalCheckbox = document.getElementById('show-promotional')
         const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
 
-        if (upcSelect) upcSelect.value = ''
+        if (categorySelect) categorySelect.value = ''
         if (fromDateInput) fromDateInput.value = ''
         if (toDateInput) toDateInput.value = ''
         if (showPromotionalCheckbox) showPromotionalCheckbox.checked = false
         if (showNonPromotionalCheckbox) showNonPromotionalCheckbox.checked = false
+        this.sortProductsParamsField = null
 
         this.loadProducts()
         this.filtersApplied = false
@@ -896,22 +894,20 @@ let app = Vue.createApp(
       },
       async applyCustomerFilters() {
         try {
-          const customerSelect = document.getElementById('customer-select')
-          const discountSelect = document.getElementById('discount-select')
+          this.isLoading = true
 
-          let customerName = null
-          if (customerSelect && customerSelect.options && customerSelect.selectedIndex !== -1) {
-            customerName = customerSelect.options[customerSelect.selectedIndex].dataset.name
-          }
+          const discountSelect = document.getElementById('discount-select')
           const discountPercent = discountSelect ? discountSelect.value : null
+          const sortNameCheckbox = document.getElementById('sort-name')
+          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false
 
           const params = new URLSearchParams()
 
-          if (customerName) params.append('cust_name', customerName)
           if (discountPercent) params.append('percent', discountPercent)
 
+          if (sortByName) params.append('sort', sortByName)
+
           if (params.size > 0) {
-            console.log(params.toString())
             const response = await fetch(`http://localhost:8090/customers/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
@@ -923,35 +919,34 @@ let app = Vue.createApp(
               throw new Error(`Failed to filter customers. Status: ${response.status}`)
             }
 
-            this.isLoading = true
             this.customers = await response.json()
             this.filtersApplied = true
           } else {
             await this.loadCustomers()
             this.filtersApplied = false
           }
-
         } catch (error) {
-          console.error("Error applying filters to customers:", error)
-          alert("Failed to apply filters to customers. Please try again.")
+          console.error('Error applying filters to customers:', error)
+          alert('Failed to apply filters to customers. Please try again.')
         } finally {
           this.isLoading = false
         }
       },
       clearCustomerFilters() {
-        const customerSelect = document.getElementById('customer-select')
         const discountSelect = document.getElementById('discount-select')
+        const sortNameCheckbox = document.getElementById('sort-name')
 
-        if (customerSelect) customerSelect.value = ''
         if (discountSelect) discountSelect.value = ''
+        if (sortNameCheckbox) sortNameCheckbox.checked = false
 
         this.loadCustomers()
         this.filtersApplied = false
       },
+
       async sortCustomers() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/customers?_sort=surname')
+          const response = await fetch('http://localhost:8090/customers?sort=surname')
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
@@ -1043,9 +1038,9 @@ let app = Vue.createApp(
           const fromDateInput = document.getElementById('from-date')
           const toDateInput = document.getElementById('to-date')
           const showTotalSumCheckbox = document.getElementById('show-total-sum')
+          const sortCheckNumberCheckbox = document.getElementById('sort-check-number')
 
           let cashierName = null
-
           if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
             cashierName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
           }
@@ -1053,6 +1048,7 @@ let app = Vue.createApp(
           const fromDate = fromDateInput ? fromDateInput.value : null
           const toDate = toDateInput ? toDateInput.value : null
           const showTotalSum = showTotalSumCheckbox ? showTotalSumCheckbox.checked : false
+          const sortByCheckNumber = sortCheckNumberCheckbox ? sortCheckNumberCheckbox.checked : false
 
           this.showTotalSumChecked = showTotalSum
 
@@ -1062,6 +1058,7 @@ let app = Vue.createApp(
           if (fromDate) params.append('from_date', fromDate)
           if (toDate) params.append('to_date', toDate)
           if (showTotalSum) params.append('show_total_sum', showTotalSum)
+          if (sortByCheckNumber) params.append('sort', sortByCheckNumber)
 
           if (params.size > 0) {
             const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
@@ -1077,12 +1074,10 @@ let app = Vue.createApp(
             this.isLoading = true
             const data = await response.json()
             this.checks = data.checks
-            this.totalSum = data.total_sum
             this.filtersApplied = true
           } else {
             await this.loadChecks()
             this.filtersApplied = false
-            this.totalSum = 0
           }
         } catch (error) {
           console.error('Error applying filters to checks:', error)
@@ -1096,31 +1091,17 @@ let app = Vue.createApp(
         const fromDateInput = document.getElementById('from-date')
         const toDateInput = document.getElementById('to-date')
         const showTotalSumCheckbox = document.getElementById('show-total-sum')
+        const sortCheckNumberCheckbox = document.getElementById('sort-check-number')
 
         if (cashierSelect) cashierSelect.value = ''
         if (fromDateInput) fromDateInput.value = ''
         if (toDateInput) toDateInput.value = ''
         if (showTotalSumCheckbox) showTotalSumCheckbox.checked = false
         this.showTotalSumChecked = false
+        if (sortCheckNumberCheckbox) sortCheckNumberCheckbox.checked = false
 
         this.loadChecks()
         this.filtersApplied = false
-        this.totalSum = 0
-      },
-      async sortChecks() {
-        try {
-          this.isLoading = true
-          const response = await fetch('http://localhost:8090/employees?_sort=check_number')
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-          this.checks  = await response.json()
-        } catch (error) {
-          console.error('Error sorting checks:', error)
-          alert('Failed to sort checks. Please try again.')
-        } finally {
-          this.isLoading = false
-        }
       },
 
       goToAddEmployee() {
@@ -1195,23 +1176,20 @@ let app = Vue.createApp(
       },
       async applyEmployeeFilters() {
         try {
+          this.isLoading = true
 
-          const cashierSelect = document.getElementById('cashier-select')
           const showCashiersCheckbox = document.getElementById('show-cashiers')
           const showManagersCheckbox = document.getElementById('show-managers')
+          const sortSurnameCheckbox = document.getElementById('sort-surname')
 
-          let employeeName = null
-          if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
-            employeeName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
-          }
           const showCashiers = showCashiersCheckbox ? showCashiersCheckbox.checked : false
           const showManagers = showManagersCheckbox ? showManagersCheckbox.checked : false
+          const sortBySurname = sortSurnameCheckbox ? sortSurnameCheckbox.checked : false
 
           const params = new URLSearchParams()
-
-          if (employeeName) params.append('empl_name', employeeName)
           if (showCashiers) params.append('show_cashiers', showCashiers)
           if (showManagers) params.append('show_managers', showManagers)
+          if (sortBySurname) params.append('sort', sortBySurname)
 
           if (params.size > 0) {
             const response = await fetch(`http://localhost:8090/employees/filter?${params.toString()}`, {
@@ -1225,7 +1203,6 @@ let app = Vue.createApp(
               throw new Error(`Failed to filter employees. Status: ${response.status}`)
             }
 
-            this.isLoading = true
             this.employees = await response.json()
             this.filtersApplied = true
           } else {
@@ -1240,32 +1217,18 @@ let app = Vue.createApp(
         }
       },
       clearEmployeeFilters() {
-        const cashierSelect = document.getElementById('cashier-select')
         const showCashiersCheckbox = document.getElementById('show-cashiers')
         const showManagersCheckbox = document.getElementById('show-managers')
+        const sortSurnameCheckbox = document.getElementById('sort-surname')
 
-        if (cashierSelect) cashierSelect.value = ''
         if (showCashiersCheckbox) showCashiersCheckbox.checked = false
         if (showManagersCheckbox) showManagersCheckbox.checked = false
+        if (sortSurnameCheckbox) sortSurnameCheckbox.checked = false
 
         this.loadEmployees()
         this.filtersApplied = false
       },
-      async sortEmployees() {
-        try {
-          this.isLoading = true
-          const response = await fetch('http://localhost:8090/employees?_sort=surname')
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-          this.employees = await response.json()
-        } catch (error) {
-          console.error('Error sorting employees:', error)
-          alert('Failed to sort employees. Please try again.')
-        } finally {
-          this.isLoading = false
-        }
-      },
+
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)

@@ -57,7 +57,6 @@
               >
                 Filter
               </button>
-              <button type="button" class="sort-btn" @click="sortChecks">Sort</button>
               <button type="button" class="print-btn" onclick="window.print()">
                 Print
               </button>
@@ -120,80 +119,98 @@
                     <label for="show-total-sum">Total sum</label>
                   </div>
                 </div>
+
+                <div class="form-label">Sort by:</div>
+                <div class="checkbox-field">
+                  <input
+                    type="checkbox"
+                    id="sort-check-number"
+                    name="sortby"
+                    value="true"
+                  />
+                  <label for="sort-name">Check number</label>
+                </div>
               </div>
 
               <div class="filter-form-button">
-                <button type="button" class="clear-filters-btn" @click="clearCheckFilters">Clear</button>
+                <button
+                  type="button"
+                  class="clear-filters-btn"
+                  @click="clearCheckFilters"
+                >
+                  Clear
+                </button>
                 <button type="submit" class="filter-btn">Filter</button>
               </div>
             </form>
           </div>
 
-          <div v-if="filtersApplied && showTotalSumChecked" class="total-sum-message">
+          <div
+            v-if="filtersApplied && showTotalSumChecked"
+            class="total-sum-message"
+          >
             Total Sum: {{ totalSum.toFixed(2) }}
           </div>
-          
-        </div>
 
-        <section class="contents">
-          <div class="table-section" v-if="!isLoading">
-            <table>
-              <thead class="table-headers">
-                <tr class="table-row">
-                  <th class="check-number">Check Number</th>
-                  <th class="print-date">Print Date</th>
-                  <th class="cashier">Cashier</th>
-                  <th class="customer">Customer</th>
-                  <th class="total-price">Total Price (&#x20B4;)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  class="table-row"
-                  v-for="item in displayedItems('checks')(checks)"
-                  :key="item.check_number"
-                >
-                  <td class="check-number">
-                    <a :href="'check-page.html?id=' + item.check_number">
-                      {{ item.check_number }}
-                    </a>
-                  </td>
-                  <td class="print-date">{{ item.print_date }}</td>
-                  <td class="cashier">
-                    <a
-                      v-if="isManager"
-                      :href="'employee-page.html?id=' + item.id_employee"
-                    >
-                      {{ item.id_employee }}
-                    </a>
-                    <span v-else> {{ item.id_employee }} </span>
-                  </td>
-                  <td class="customer">
-                    <a
-                      v-if="isManager"
-                      :href="'customer-page.html?id=' + item.card_number"
-                    >
-                      {{ item.card_number }}
-                    </a>
-                    <span v-else> {{ item.card_number }} </span>
-                  </td>
-                  <td class="total-price">{{ item.sum_total.toFixed(2) }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <section class="contents">
+            <div class="table-section" v-if="!isLoading">
+              <table>
+                <thead class="table-headers">
+                  <tr class="table-row">
+                    <th class="check-number">Check Number</th>
+                    <th class="print-date">Print Date</th>
+                    <th class="cashier">Cashier</th>
+                    <th class="customer">Customer</th>
+                    <th class="total-price">Total Price (₴)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="table-row"
+                    v-for="check in displayedItems('checks')(checks)"
+                    :key="check.check_number"
+                  >
+                    <td class="check-number">
+                      <a :href="'check-page.html?id=' + check.check_number">
+                        {{ check.check_number }}
+                      </a>
+                    </td>
+                    <td class="print-date">{{ check.print_date }}</td>
+                    <td class="cashier">
+                      <a
+                        v-if="isManager"
+                        :href="'employee-page.html?id=' + check.id_employee"
+                      >
+                        {{ check.id_employee }}
+                      </a>
+                      <span v-else> {{ check.id_employee }} </span>
+                    </td>
+                    <td class="customer">
+                      <a
+                        v-if="isManager"
+                        :href="'customer-page.html?id=' + check.card_number"
+                      >
+                        {{ check.card_number }}
+                      </a>
+                      <span v-else> {{ check.card_number }} </span>
+                    </td>
+                    <td class="total-price">{{ check.sum_total.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div
+            class="button-container noPrint"
+            v-if="!isLoading && hasMoreItems('checks')(checks)"
+          >
+            <button class="show-more-btn" @click="showMoreItems('checks')">
+              Show More
+            </button>
           </div>
-        </section>
-
-        <div
-          class="button-container noPrint"
-          v-if="!isLoading && hasMoreItems('checks')(checks)"
-        >
-          <button class="show-more-btn" @click="showMoreItems('checks')">
-            Show More
-          </button>
         </div>
       </main>
-
       <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
     </div>
   </body>
