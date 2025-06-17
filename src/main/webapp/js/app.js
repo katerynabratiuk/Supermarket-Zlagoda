@@ -131,7 +131,7 @@ let app = Vue.createApp(
     watch: {
       currentProduct(newVal) {
         if (newVal) {
-          document.title = `${newVal.name} - Zlagoda`
+          document.title = `${newVal.product.product_name} - Zlagoda`
         }
       },
       currentCustomer(newVal) {
