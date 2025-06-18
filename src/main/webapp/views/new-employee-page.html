@@ -39,8 +39,11 @@
                   <input
                     type="text"
                     id="empl_surname"
+                    maxlength="50"
                     v-model="newEmployee.empl_surname"
                     class="edit-input"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Surname must consist of letters"
                     required
                   />
 
@@ -48,8 +51,11 @@
                   <input
                     type="text"
                     id="empl_name"
+                    maxlength="50"
                     v-model="newEmployee.empl_name"
                     class="edit-input"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Name must consist of letters"
                     required
                   />
 
@@ -57,7 +63,10 @@
                   <input
                     type="text"
                     id="empl_patronymic"
+                    maxlength="50"
                     v-model="newEmployee.empl_patronymic"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Patronymic must consist of letters"
                     class="edit-input"
                   />
 
@@ -100,6 +109,7 @@
                   id="salary"
                   step="100"
                   min="0"
+                  max="999999999999.9999"
                   v-model.number="newEmployee.salary"
                   class="edit-input"
                   required
@@ -134,6 +144,10 @@
                 <input
                   type="tel"
                   id="phone_number"
+                  maxlength="13"
+                  minlength="13"
+                  pattern="^\+380\d{9}$"
+                  title="Number must start with +380 and consist of digits"
                   v-model="newEmployee.phone_number"
                   class="edit-input"
                   required
@@ -146,6 +160,7 @@
                 <input
                   type="text"
                   id="city"
+                  maxlength="50"
                   v-model="newEmployee.city"
                   class="edit-input"
                   required
@@ -155,6 +170,7 @@
                 <input
                   type="text"
                   id="street"
+                  maxlength="50"
                   v-model="newEmployee.street"
                   class="edit-input"
                   required
@@ -164,8 +180,12 @@
                 <input
                   type="text"
                   id="zip_code"
-                  v-model="newEmployee.zip_code"
                   class="edit-input"
+                  minlength="5"
+                  maxlength="9"
+                  pattern="^\d+$"
+                  title="Zip code must be 5 to 9 digits"
+                  v-model="newEmployee.zip_code"
                   required
                 />
               </div>

@@ -54,6 +54,8 @@
                       id="cust_surname"
                       v-model="currentCustomer.cust_surname"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Surname must consist of letters"
                       required
                     />
 
@@ -63,6 +65,8 @@
                       id="cust_name"
                       v-model="currentCustomer.cust_name"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Name must consist of letters"
                       required
                     />
 
@@ -72,6 +76,8 @@
                       id="cust_patronymic"
                       v-model="currentCustomer.cust_patronymic"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Patronymic must consist of letters"
                     />
                   </div>
                 </div>
@@ -109,11 +115,16 @@
                 <p v-if="!isEditMode">{{ currentCustomer.phone_number }}</p>
                 <div v-else class="form-field">
                   <input
-                    type="tel"
-                    id="phone_number"
-                    v-model="currentCustomer.phone_number"
-                    class="edit-input"
-                    required
+                          @input="addPlusSign"
+                          class="edit-input"
+                          id="phone_number"
+                          maxlength="13"
+                          minlength="13"
+                          pattern="^\+380\d{9}$"
+                          required
+                          title="Number must start with +380 and consist of digits"
+                          type="tel"
+                          v-model="currentCustomer.phone_number"
                   />
                 </div>
               </div>
@@ -141,6 +152,7 @@
                   <input
                     type="text"
                     id="city"
+                    maxlength="50"
                     v-model="currentCustomer.city"
                     class="edit-input"
                   />
@@ -149,6 +161,7 @@
                   <input
                     type="text"
                     id="street"
+                    maxlength="50"
                     v-model="currentCustomer.street"
                     class="edit-input"
                   />
@@ -159,6 +172,10 @@
                     id="zip_code"
                     v-model="currentCustomer.zip_code"
                     class="edit-input"
+                    minlength="5"
+                    maxlength="9"
+                    pattern="^\d+$"
+                    title="Zip code must be 5 to 9 digits"
                   />
                 </div>
               </div>

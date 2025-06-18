@@ -47,8 +47,11 @@
                     <input
                       type="text"
                       id="empl_surname"
+                      maxlength="50"
                       v-model="currentEmployee.empl_surname"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Surname must consist of letters"
                       required
                     />
 
@@ -56,8 +59,11 @@
                     <input
                       type="text"
                       id="empl_name"
+                      maxlength="50"
                       v-model="currentEmployee.empl_name"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Name must consist of letters"
                       required
                     />
 
@@ -65,13 +71,16 @@
                     <input
                       type="text"
                       id="empl_patronymic"
+                      max="50"
                       v-model="currentEmployee.empl_patronymic"
                       class="edit-input"
+                      pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                      title="Patronymic must consist of letters"
                     />
                   </div>
                 </div>
 
-                                    <div class="employee-role">
+                <div class="employee-role">
                       <p v-if="!isEditMode">
                         Role: {{ currentEmployee.empl_role }}
                       </p>
@@ -81,6 +90,7 @@
                           id="empl_role"
                           v-model="currentEmployee.empl_role"
                           class="edit-dropdown"
+                          required
                         >
                           <option disabled :value="null">Select role</option>
                           <option value="Cashier">Cashier</option>
@@ -133,6 +143,7 @@
                     id="salary"
                     step="100"
                     min="0"
+                    max="9999999999999.9999"
                     v-model.number="currentEmployee.salary"
                     class="edit-input"
                     required
@@ -173,14 +184,16 @@
                 <p v-if="!isEditMode">{{ currentEmployee.phone_number }}</p>
                 <div v-else class="form-field">
                   <input
-                    type="tel"
-                    id="phone_number"
-                    v-model="currentEmployee.phone_number"
-                    class="edit-input"
-                    minlength="13"
-                    maxlength="13"
-                    @input="addPlusSign"
-                    required
+                          @input="addPlusSign"
+                          class="edit-input"
+                          id="phone_number"
+                          maxlength="13"
+                          minlength="13"
+                          pattern="^\+380\d{9}$"
+                          required
+                          title="Number must start with +380 and consist of digits"
+                          type="tel"
+                          v-model="currentEmployee.phone_number"
                   />
                 </div>
               </div>
@@ -198,6 +211,7 @@
                   <input
                     type="text"
                     id="city"
+                    maxlength="50"
                     v-model="currentEmployee.city"
                     class="edit-input"
                     required
@@ -207,6 +221,7 @@
                   <input
                     type="text"
                     id="street"
+                    maxlength="50"
                     v-model="currentEmployee.street"
                     class="edit-input"
                     required
@@ -220,6 +235,8 @@
                     class="edit-input"
                     minlength="5"
                     maxlength="9"
+                    pattern="^\d+$"
+                    title="Zip code must be 5 to 9 digits"
                     required
                   />
                 </div>

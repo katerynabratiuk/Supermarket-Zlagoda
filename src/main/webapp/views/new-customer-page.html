@@ -41,6 +41,9 @@
                     id="cust_surname"
                     v-model="newCustomer.cust_surname"
                     class="edit-input"
+                    maxlength="50"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Surame must consist of letters"
                     required
                   />
 
@@ -48,8 +51,11 @@
                   <input
                     type="text"
                     id="cust_name"
+                    maxlength="50"
                     v-model="newCustomer.cust_name"
                     class="edit-input"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Name must consist of letters"
                     required
                   />
 
@@ -57,7 +63,10 @@
                   <input
                     type="text"
                     id="cust_patronymic"
+                    maxlength="50"
                     v-model="newCustomer.cust_patronymic"
+                    pattern="^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$"
+                    title="Patronymic must consist of letters"
                     class="edit-input"
                   />
                 </div>
@@ -87,6 +96,10 @@
                   id="phone_number"
                   v-model="newCustomer.phone_number"
                   class="edit-input"
+                  maxlength="13"
+                  minlength="13"
+                  pattern="^\+380\d{9}$"
+                  title="Number must start with +380 and consist of digits"
                   required
                 />
               </div>
@@ -97,6 +110,7 @@
                 <input
                   type="text"
                   id="city"
+                  maxlength="50"
                   v-model="newCustomer.city"
                   class="edit-input"
                 />
@@ -105,6 +119,7 @@
                 <input
                   type="text"
                   id="street"
+                  maxlength="50"
                   v-model="newCustomer.street"
                   class="edit-input"
                 />
@@ -114,6 +129,10 @@
                   type="text"
                   id="zip_code"
                   v-model="newCustomer.zip_code"
+                  minlength="5"
+                  maxlength="9"
+                  pattern="^\d+$"
+                  title="Zip code must be 5 to 9 digits"
                   class="edit-input"
                 />
               </div>
