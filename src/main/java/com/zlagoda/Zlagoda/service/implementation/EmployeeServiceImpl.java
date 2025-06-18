@@ -51,6 +51,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void update(Employee employee) {
+        if (employee.getPatronymic() != null && employee.getPatronymic().isBlank()) {
+            employee.setPatronymic(null);
+        }
         employeeRepository.update(employee);
     }
 

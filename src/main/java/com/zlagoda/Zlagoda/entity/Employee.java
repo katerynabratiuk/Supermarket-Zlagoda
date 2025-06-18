@@ -6,66 +6,67 @@ import jakarta.validation.constraints.*;
 import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Employee {
 
     @JsonProperty("id_employee")
     private String id;
 
-    @NotNull
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @NotNull(message = "Name cannot be null!")
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
+             message = "Name does not meet requirements!")
     @JsonProperty("empl_name")
     private String name;
 
-    @NotNull
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @NotNull(message = "Surname cannot be null!")
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
+            message = "Surname does not meet requirements!")
     @JsonProperty("empl_surname")
     private String surname;
 
     @JsonProperty("empl_patronymic")
     private String patronymic;
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Role cannot be null!")
+    @NotBlank(message = "Role cannot be blank!")
     @JsonProperty("empl_role")
     private String role;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Salary cannot be null!")
+    @Positive(message = "Salary must be a positive number!")
     @JsonProperty("salary")
     private BigDecimal salary;
 
-    @NotNull
-    @Past
+    @NotNull(message = "Date of birth cannot be null!")
+    @Past(message = "Date of birth cannot be today or later than today!")
     @JsonProperty("date_of_birth")
     private LocalDate dateOfBirth;
 
-    @NotNull
-    @PastOrPresent
+    @NotNull(message = "Date of start cannot be null!")
+    @PastOrPresent(message = "Date of start cannot be later than today!")
     @JsonProperty("date_of_start")
     private LocalDate dateOfStart;
 
-    @NotNull
-    //@Pattern(regexp = "(\\+)?[0-9]{10}")
+    @NotNull(message = "Phone number cannot be null!")
+    @Pattern(regexp = "^\\+380\\d{9}$")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    @NotNull
-    @Size(min=2, max=50)
-    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    @NotNull(message = "City cannot be null!")
+    @Size(min=2, max=50, message = "City must be between 2 and 50 characters!")
     @JsonProperty("city")
     private String city;
 
-    @NotNull
+    @NotNull(message = "Street cannot be null!")
     @Size(min=2, max=50)
-    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
     @JsonProperty("street")
     private String street;
 
-    @NotNull
-    @Size(min = 5, max = 5)
-    //@Pattern(regexp = "[0-9]")
-    @NotBlank
+    @NotNull(message = "Zip code cannot be null!")
+    @Size(min = 5, max = 9, message = "Zip code must be between 5 and 9 characters!")
+    @Pattern(regexp = "^\\d+$", message = "Zip code must contain numbers only!")
+    @NotBlank(message = "Zip code cannot be blank!")
     @JsonProperty("zip_code")
     private String zipCode;
 
@@ -160,11 +161,16 @@ public class Employee {
         }
     }
 
-    @AssertTrue()
-    @Transient
+    @AssertTrue(message = "Patronymic does not meet requirements!")
     public boolean isPatronymicValid() {
         return patronymic == null || patronymic.isBlank()
                 || patronymic.matches("^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$");
+    }
+
+    @AssertTrue(message = "Employee has to be at least 18 years old!")
+    public boolean isAdultAtStart() {
+        if (dateOfBirth == null || dateOfStart == null) return true;
+        return ChronoUnit.YEARS.between(dateOfBirth, dateOfStart) >= 18;
     }
 
     public Employee(String id,
