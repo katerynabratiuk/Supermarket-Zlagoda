@@ -258,7 +258,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         finalQuery.append(innerQuery);
         finalQuery.append(") AS filtered_products ");
 
-        // Зовнішнє сортування
+        // outer sorting
         if (sortBy != null && !sortBy.isEmpty()) {
             finalQuery.append("ORDER BY ");
             for (int i = 0; i < sortBy.size(); i++) {
