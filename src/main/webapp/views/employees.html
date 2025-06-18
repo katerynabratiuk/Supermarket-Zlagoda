@@ -66,24 +66,29 @@
             <form class="filter-form" @submit.prevent="applyEmployeeFilters">
               <div class="form-grid">
                 <div class="form-label">Show:</div>
-                <div class="form-field">
-                  <div class="checkbox-field">
-                    <input
-                      id="show-cashiers"
-                      name="show-cashiers"
-                      type="checkbox"
-                    />
-                    <label for="show-cashiers">Cashiers</label>
+                  <div class="form-field">
+                    <div class="radio-field">
+                      <input
+                        type="radio"
+                        id="show-cashiers"
+                        name="employee-role"
+                        value="cashier"
+                        v-model="employeeRoleFilter"
+                      />
+                      <label for="show-cashiers">Cashiers</label>
+                    </div>
+                    <div class="radio-field">
+                      <input
+                        type="radio"
+                        id="show-managers"
+                        name="employee-role"
+                        value="manager"
+                        v-model="employeeRoleFilter"
+                      />
+                      <label for="show-managers">Managers</label>
+                    </div>
                   </div>
-                  <div class="checkbox-field">
-                    <input
-                      id="show-managers"
-                      name="show-managers"
-                      type="checkbox"
-                    />
-                    <label for="show-managers">Managers</label>
-                  </div>
-                </div>
+
 
                 <div class="form-label">Sort by:</div>
                 <div class="checkbox-field">
@@ -93,7 +98,7 @@
                     name="sortby"
                     value="true"
                   />
-                  <label for="sort-surname">Surname</label>
+                  <label for="sort-surname">Name</label>
                 </div>
               </div>
 
