@@ -817,6 +817,28 @@ let app = Vue.createApp(
         }
       },
 
+      async saveEditCustomer() {
+        try {
+          const response = await fetch(`http://localhost:8090/customer`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.currentCustomer),
+          })
+
+          if (response.ok) {
+            this.currentCustomer = null
+            window.location.href = "customers.html"
+          } else {
+            console.error("Updating customer failed on the server. Status:", response.status)
+            alert("Failed to update customer. Please try again.")
+          }
+        } catch (error) {
+          console.error("An unexpected error occurred during updating:", error)
+          alert("An unexpected error occurred. Please try again later.")
+        }
+      },
      
       async applyCustomerFilters() {
         try {
