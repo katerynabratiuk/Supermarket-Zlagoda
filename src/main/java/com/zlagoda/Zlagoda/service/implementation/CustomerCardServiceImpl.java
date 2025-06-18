@@ -23,11 +23,6 @@ public class CustomerCardServiceImpl implements CustomerCardService {
     }
 
     @Override
-    public List<CustomerCard> findByPercentage(int percentage) {
-        return customerCardRepository.findByPercentage(percentage);
-    }
-
-    @Override
     public List<CustomerCard> findAll() {
         return customerCardRepository.findAll();
     }
@@ -58,5 +53,9 @@ public class CustomerCardServiceImpl implements CustomerCardService {
     @Override
     public void delete(String id) {
         customerCardRepository.delete(id);
+    }
+
+    public List<CustomerCard> filter(Integer percentage, List<String> sortParams) {
+        return customerCardRepository.filter(percentage, sortParams);
     }
 }

@@ -788,38 +788,6 @@ let app = Vue.createApp(
         this.currentProduct = null
         this.isUPCFiltered = false
       },
-      async applyProductSort() {
-        try {
-          if (!this.sortProductsParamsField) {
-            return
-          }
-
-          const params = new URLSearchParams()
-          params.append('sort_by', this.sortParams.field)
-          params.append('order', this.sortParams.direction)
-
-          const response = await fetch(`http://localhost:8090/product/sorted?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch sorted products')
-          }
-
-          this.isLoading = true
-          this.products = await response.json()
-          this.showSort = false
-
-        } catch (error) {
-          console.error('Sorting error:', error)
-          alert('Failed to apply sorting. Please try again.')
-        } finally {
-          this.isLoading = false
-        }
-      },
 
       goToAddCustomer() {
         window.location.href = 'new-customer-page.html'
@@ -848,96 +816,51 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-      async confirmAndDeleteCustomer() {
-        const customerId = this.currentCustomer.card_number
-        if (confirm("Are you sure you want to delete this customer?")) {
-          try {
-            const response = await fetch(`http://localhost:8090/customer/${customerId}`, {
-              method: 'DELETE',
-            })
 
-            if (response.ok) {
-              this.customers = this.customers.filter(item => item.card_number !== customerId)
-              this.currentCustomer = null
-              window.location.href = 'customers.html'
-              this.loadCustomers()
-            } else {
-              console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete customer. Please try again.")
-            }
-          } catch (error) {
-            console.error("An error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
-          }
-        } else {
-          console.log("Deletion cancelled by user.")
-        }
-      },
-      async saveEditCustomer() {
-        try {
-          const response = await fetch(`http://localhost:8090/customer`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.currentCustomer),
-          })
-
-          if (response.ok) {
-            this.currentCustomer = null
-            window.location.href = "customers.html"
-          } else {
-            console.error("Updating customer failed on the server. Status:", response.status)
-            alert("Failed to update customer. Please try again.")
-          }
-        } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
-        }
-      },
-      formatCustomerName(customer) {
-        return `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
-      },
+     
       async applyCustomerFilters() {
         try {
-          this.isLoading = true
+          this.isLoading = true;
 
-          const discountSelect = document.getElementById('discount-select')
-          const discountPercent = discountSelect ? discountSelect.value : null
-          const sortNameCheckbox = document.getElementById('sort-name')
-          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false
+          const discountSelect = document.getElementById('discount-select');
+          const discountPercent = discountSelect ? discountSelect.value : null;
+          const sortNameCheckbox = document.getElementById('sort-name');
+          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false;
 
-          const params = new URLSearchParams()
+          const params = new URLSearchParams();
 
-          if (discountPercent) params.append('percent', discountPercent)
+          if (discountPercent) params.append('percentage', discountPercent);
+          if (sortByName) params.append('sortBy', 'name');
 
-          if (sortByName) params.append('sort', sortByName)
-
-          if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/customers/filter?${params.toString()}`, {
+          const response = await fetch(
+            params.size > 0
+              ? `http://localhost:8090/customer/filter?${params.toString()}`
+              : `http://localhost:8090/customer`,
+            {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
-              }
-            })
+                'Content-Type': 'application/json',
+              },
+            }
+          );
 
             if (!response.ok) {
               throw new Error(`Failed to filter customers. Status: ${response.status}`)
             }
-
-            this.customers = await response.json()
-            this.filtersApplied = true
-          } else {
-            await this.loadCustomers()
-            this.filtersApplied = false
+          if (!response.ok) {
+            throw new Error(`Failed to load customers. Status: ${response.status}`);
           }
+
+          this.customers = await response.json();
+          this.filtersApplied = params.size > 0;
         } catch (error) {
-          console.error('Error applying filters to customers:', error)
-          alert('Failed to apply filters to customers. Please try again.')
+          console.error('Error applying filters to customers:', error);
+          alert('Failed to apply filters to customers. Please try again.');
         } finally {
-          this.isLoading = false
+          this.isLoading = false;
         }
       },
+
       clearCustomerFilters() {
         const discountSelect = document.getElementById('discount-select')
         const sortNameCheckbox = document.getElementById('sort-name')
@@ -947,22 +870,6 @@ let app = Vue.createApp(
 
         this.loadCustomers()
         this.filtersApplied = false
-      },
-
-      async sortCustomers() {
-        try {
-          this.isLoading = true
-          const response = await fetch('http://localhost:8090/customers?sort=surname')
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-          }
-          this.customers = await response.json()
-        } catch (error) {
-          console.error('Error sorting customers:', error)
-          alert('Failed to sort customers. Please try again.')
-        } finally {
-          this.isLoading = false
-        }
       },
 
 

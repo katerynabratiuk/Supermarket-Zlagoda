@@ -1,10 +1,12 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.entity.CustomerCard;
+import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.service.implementation.CustomerCardServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = {
@@ -21,11 +23,23 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @GetMapping()
-    public @ResponseBody List<CustomerCard> getCustomers()
-    {
+    @GetMapping
+    public @ResponseBody List<CustomerCard> getCustomers() {
         return customerService.findAll();
     }
+
+    @GetMapping("/filter")
+    public List<CustomerCard> filterProducts(
+            @RequestParam(required = false) Integer percentage,
+            @RequestParam(required = false) String sortBy
+    ) {
+        List<String> sortParams = new ArrayList<>();
+        if (sortBy != null && !sortBy.isBlank()) {
+            sortParams.add(sortBy);
+        }
+        return customerService.filter(percentage, sortParams);
+    }
+
 
     @GetMapping("/by-name/{name}")
     public @ResponseBody List<CustomerCard> getCustomersByName(@PathVariable String name)
@@ -51,6 +65,4 @@ public class CustomerController {
     public void deleteCategory(@PathVariable String id) {
         customerService.delete(id);
     }
-
-
 }

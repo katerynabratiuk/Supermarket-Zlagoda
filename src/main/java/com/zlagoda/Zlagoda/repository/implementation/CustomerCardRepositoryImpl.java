@@ -155,4 +155,54 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
             throw new DataAccessException("Failed to delete the customer card", e);
         }
     }
+
+    @Override
+    public List<CustomerCard> filter(Integer percentage, List<String> sortParams) {
+        StringBuilder query = new StringBuilder(GET_ALL);
+        List<Object> parameters = new ArrayList<>();
+        boolean hasWhere = false;
+
+        if (percentage != null) {
+            query.append(" WHERE percent = ?");
+            parameters.add(percentage);
+            hasWhere = true;
+        }
+
+        if (sortParams != null && !sortParams.isEmpty()) {
+            query.append(" ORDER BY ");
+            for (int i = 0; i < sortParams.size(); i++) {
+                System.out.println("HERE");
+                if (i > 0) query.append(", ");
+                switch (sortParams.get(i)) {
+                    case "name":
+                        query.append("cust_surname, cust_name, cust_patronymic");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        List<CustomerCard> result = new ArrayList<>();
+
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                result.add(extractCustomerFromResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to filter customer cards", e);
+        }
+
+        return result;
+    }
+
 }
