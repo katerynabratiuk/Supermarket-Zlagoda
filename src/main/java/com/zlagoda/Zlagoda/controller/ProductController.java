@@ -1,12 +1,14 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.entity.Category;
+import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.service.StoreProductService;
 import com.zlagoda.Zlagoda.service.implementation.StoreProductServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,13 +37,6 @@ public class ProductController {
         return storeProductService.findById(id);
     }
 
-
-    @GetMapping("/promotional")
-    public @ResponseBody List<StoreProduct> getPromotionalProducts()
-    {
-        return storeProductService.findPromotional();
-    }
-
     @GetMapping("/by-category/{category}")
     public @ResponseBody List<StoreProduct> getProductsByCategory(@PathVariable String category)
     {
@@ -58,5 +53,19 @@ public class ProductController {
     public void deleteProduct(@PathVariable String id)
     {
         storeProductService.delete(id);
+    }
+
+
+    @GetMapping("/filter")
+    public List<StoreProduct> filterProducts(
+            @RequestParam(required = false) Boolean promotional,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String sortBy
+    ) {
+        List<String> sortParams = new ArrayList<>();
+        if (sortBy != null && !sortBy.isBlank()) {
+            sortParams.add(sortBy);
+        }
+        return storeProductService.filter(promotional, category, sortParams);
     }
 }

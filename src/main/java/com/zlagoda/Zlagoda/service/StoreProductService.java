@@ -8,8 +8,6 @@ public interface StoreProductService{
 
     List<StoreProduct> findByCategory(String categoryName);
     List<StoreProduct> findByName(String name);
-    List<StoreProduct> findPromotional();
-    List<StoreProduct> findNonPromotional();
     List<StoreProduct> findAll();
     void delete(String UPC);
     void update(StoreProduct storeProduct);

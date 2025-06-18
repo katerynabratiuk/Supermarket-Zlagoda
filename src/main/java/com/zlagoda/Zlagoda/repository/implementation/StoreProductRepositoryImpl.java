@@ -15,140 +15,67 @@ import java.util.List;
 @Repository
 public class StoreProductRepositoryImpl implements StoreProductRepository {
 
-    private static final String FIND_ALL = "SELECT \n" +
-            "    sp.upc,\n" +
-            "    sp.id_product,\n" +
-            "    base.selling_price AS selling_price,\n" +
-            "    sp.selling_price AS new_price,\n" +
-            "    sp.products_number,\n" +
-            "    sp.promotional_product,\n" +
-            "    product_name,\n" +
-            "    Category.category_name\n"+
-            "FROM store_product sp\n" +
-            "JOIN store_product base ON sp.upc_prom = base.upc\n" +
-            "JOIN Product ON sp.id_product = Product.id_product\n" +
-            "JOIN Category ON Category.category_number = Product.category_number\n" +
-            "\n" +
-            "UNION\n" +
-            "\n" +
-            "SELECT \n" +
-            "    sp.upc,\n" +
-            "    sp.id_product,\n" +
-            "    sp.selling_price AS selling_price,\n" +
-            "    NULL AS new_price,\n" +
-            "    sp.products_number,\n" +
-            "    sp.promotional_product,\n" +
-            "    product_name,\n" +
-            "    Category.category_name\n" +
-            "FROM store_product sp\n" +
-            "JOIN Product ON sp.id_product = Product.id_product\n" +
-            "JOIN Category ON Category.category_number = Product.category_number\n" +
-            "WHERE sp.promotional_product = FALSE\n" +
-            "  AND sp.upc NOT IN (SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL);\n";
-    private static final String CREATE = "INSERT INTO Store_product VALUES (?,?,?,?,?,?)";
-    private static final String UPDATE = "UPDATE Store_product SET UPC_prom=?, id_product=?, " +
-            "selling_price=?, products_number=?, promotional_product=?, promotional_product=? WHERE UPC=?";
-    private static final String DELETE = "DELETE FROM Store_product WHERE UPC=?";
-    private static final String FIND_BY_ID =
-            "SELECT \n" +
-                    "    sp.upc,\n" +
-                    "    sp.upc_prom,\n" +
-                    "    sp.id_product,\n" +
-                    "    base.selling_price AS selling_price,\n" +
-                    "    sp.selling_price AS new_price,\n" +
-                    "    sp.products_number,\n" +
-                    "    sp.promotional_product,\n" +
-                    "    p.product_name,\n" +
-                    "    p.characteristics,\n" +
-                    "    c.category_number,\n" +
-                    "    c.category_name\n" +
-                    "FROM store_product sp\n" +
-                    "JOIN store_product base ON sp.upc_prom = base.upc\n" +
-                    "JOIN product p ON sp.id_product = p.id_product\n" +
-                    "JOIN category c ON p.category_number = c.category_number\n" +
-                    "WHERE sp.upc = ?\n" +
-                    "UNION\n" +
-                    "SELECT \n" +
-                    "    sp.upc,\n" +
-                    "    sp.upc_prom,\n" +
-                    "    sp.id_product,\n" +
-                    "    sp.selling_price AS selling_price,\n" +
-                    "    NULL AS new_price,\n" +
-                    "    sp.products_number,\n" +
-                    "    sp.promotional_product,\n" +
-                    "    p.product_name,\n" +
-                    "    p.characteristics,\n" +
-                    "    c.category_number,\n" +
-                    "    c.category_name\n" +
-                    "FROM store_product sp\n" +
-                    "JOIN product p ON sp.id_product = p.id_product\n" +
-                    "JOIN category c ON p.category_number = c.category_number\n" +
-                    "WHERE sp.upc = ? AND (sp.promotional_product = FALSE OR sp.upc_prom IS NULL)";
+    private static final String FIND_ALL_WITH_PROMOTION_PRIORITY =
+            "SELECT DISTINCT ON (pr.id_product) " +
+                    "sp.upc, sp.upc_prom, sp.id_product, " +
+                    "COALESCE(base.selling_price, sp.selling_price) AS selling_price, " +
+                    "CASE WHEN sp.promotional_product THEN sp.selling_price ELSE NULL END AS new_price, " +
+                    "sp.products_number, sp.promotional_product, " +
+                    "pr.product_name, pr.characteristics, " +
+                    "c.category_number, c.category_name " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "JOIN category c ON pr.category_number = c.category_number " +
+                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
+                    "ORDER BY pr.id_product, sp.promotional_product DESC";
+
     private static final String FIND_BY_CATEGORY =
-            "SELECT\n"
-                    + "sp.upc,\n"
-                    + "sp.id_product,\n"
-                    + "base.selling_price AS selling_price,\n"
-                    + "sp.selling_price AS new_price,\n"
-                    + "sp.products_number,\n"
-                    + "sp.promotional_product,\n"
-                    + "p.product_name,\n"
-                    + "p.characteristics,\n"
-                    + "c.category_number,\n"
-                    + "c.category_name\n"
-                    + "FROM store_product sp\n"
-                    + "JOIN store_product base ON sp.upc_prom = base.upc\n"
-                    + "JOIN product p ON sp.id_product = p.id_product\n"
-                    + "JOIN product base_p ON base.id_product = base_p.id_product\n"
-                    + "JOIN category c ON base_p.category_number = c.category_number\n"
-                    + "WHERE c.category_name = ?\n"
-                    + "UNION\n"
-                    + "SELECT\n"
-                    + "sp.upc,\n"
-                    + "sp.id_product,\n"
-                    + "sp.selling_price AS selling_price,\n"
-                    + "NULL AS new_price,\n"
-                    + "sp.products_number,\n"
-                    + "sp.promotional_product,\n"
-                    + "p.product_name,\n"
-                    + "p.characteristics,\n"
-                    + "c.category_number,\n"
-                    + "c.category_name\n"
-                    + "FROM store_product sp\n"
-                    + "JOIN product p ON sp.id_product = p.id_product\n"
-                    + "JOIN category c ON p.category_number = c.category_number\n"
-                    + "WHERE c.category_name = ?\n"
-                    + "AND sp.promotional_product = FALSE\n"
-                    + "AND sp.upc NOT IN (\n"
-                    + "SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL\n"
-                    + ");\n"
-                    + "";
-    private static final String FIND_PROMOTIONAL =
-            "SELECT\n"
-                    + "sp.upc,\n"
-                    + "sp.upc_prom,\n"
-                    + "sp.id_product,\n"
-                    + "base.selling_price AS selling_price,\n"
-                    + "sp.selling_price AS new_price,\n"
-                    + "sp.products_number,\n"
-                    + "sp.promotional_product,\n"
-                    + "p.product_name,\n"
-                    + "p.characteristics,\n"
-                    + "c.category_number,\n"
-                    + "c.category_name\n"
-                    + "FROM store_product sp\n"
-                    + "JOIN store_product base ON sp.upc_prom = base.upc\n"
-                    + "JOIN product p ON sp.id_product = p.id_product\n"
-                    + "JOIN product base_p ON base.id_product = base_p.id_product\n"
-                    + "JOIN category c ON base_p.category_number = c.category_number\n"
-                    + "WHERE sp.promotional_product = TRUE\n"
-                    + "AND c.category_name = ?\n"
-                    + "";
-    private static final String FIND_BY_NAME = "SELECT UPC, product_name, selling_price " +
-            "FROM Store_Product " +
-            "INNER JOIN Product ON Store_Product.id_product = Product.id_product " +
-            "WHERE product_name ILIKE ?";
-    private static final String FIND_NON_PROMOTIONAL = FIND_ALL + " WHERE promotional_product = FALSE";
+            "SELECT DISTINCT ON (pr.id_product) " +
+                    "sp.upc, sp.upc_prom, sp.id_product, sp.selling_price, sp.products_number, sp.promotional_product, " +
+                    "pr.product_name, pr.characteristics, " +
+                    "c.category_number, c.category_name, " +
+                    "base.selling_price AS new_price " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "JOIN category c ON pr.category_number = c.category_number " +
+                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
+                    "WHERE c.category_name = ? " +
+                    "ORDER BY pr.id_product, sp.promotional_product DESC;";
+
+    private static final String FIND_BY_ID =
+            "SELECT sp.*, pr.*, c.*, base.selling_price AS new_price " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "JOIN category c ON pr.category_number = c.category_number " +
+                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
+                    "WHERE sp.upc = ?";
+
+    private static final String FILTER_QUERY =
+            "SELECT DISTINCT ON (pr.id_product) " +
+                    "sp.upc, sp.upc_prom, sp.id_product, " +
+                    "COALESCE(base.selling_price, sp.selling_price) AS selling_price, " +
+                    "CASE WHEN sp.promotional_product THEN sp.selling_price ELSE NULL END AS new_price, " +
+                    "sp.products_number, sp.promotional_product, " +
+                    "pr.product_name, pr.characteristics, " +
+                    "c.category_number, c.category_name " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "JOIN category c ON pr.category_number = c.category_number " +
+                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc ";
+
+
+    private static final String FIND_BY_NAME =
+            "SELECT sp.upc, pr.product_name, sp.selling_price " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "WHERE pr.product_name ILIKE ?";
+
+    private static final String CREATE = "INSERT INTO store_product VALUES (?,?,?,?,?,?)";
+
+    private static final String UPDATE = "UPDATE store_product SET upc_prom=?, id_product=?, " +
+            "selling_price=?, products_number=?, promotional_product=? WHERE upc=?";
+
+    private static final String DELETE = "DELETE FROM store_product WHERE upc=?";
 
     private final DBConnection dbConnection;
 
@@ -156,124 +83,108 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         this.dbConnection = dbConnection;
     }
 
-    @Override
-    public List<StoreProduct> findByCategory(String categoryName) {
-        try (Connection connection = dbConnection.getConnection()) {
-            ArrayList<StoreProduct> res = new ArrayList<>();
-            PreparedStatement stmt = connection.prepareStatement(FIND_BY_CATEGORY);
-            stmt.setString(1, categoryName);
-            stmt.setString(2, categoryName);
-            ResultSet rs = stmt.executeQuery();
+    private StoreProduct extractStoreProductProm(ResultSet rs) throws SQLException {
+        Category category = new Category();
+        category.setNumber(rs.getInt("category_number"));
+        category.setName(rs.getString("category_name"));
 
-            while (rs.next()) {
-                StoreProduct.Builder spBuilder = new StoreProduct.Builder()
-                        .setUPC(rs.getString("upc"))
-                        .setSellingPrice(rs.getBigDecimal("selling_price"))
-                        .setPromotional(rs.getBoolean("promotional_product"))
-                        .setProductsNumber(rs.getInt("products_number"));
+        Product product = new Product.Builder()
+                .setId(rs.getInt("id_product"))
+                .setName(rs.getString("product_name"))
+                .setCharacteristics(rs.getString("characteristics"))
+                .setCategory(category)
+                .build();
 
-                BigDecimal newPrice = rs.getBigDecimal("new_price");
-                if (newPrice != null) {
-                    spBuilder.setNewPrice(newPrice);
-                }
-
-                Product product = new Product.Builder()
-                        .setName(rs.getString("product_name"))
-                        .setId(rs.getInt("id_product"))
-                        .setCategory(new Category(rs.getString("category_name")))
-                        .build();
-
-                spBuilder.setProduct(product);
-
-                res.add(spBuilder.build());
-            }
-            return res;
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to find StoreProduct by UPC", e);
-        }
+        return new StoreProduct.Builder()
+                .setUPC(rs.getString("upc"))
+                .setUPC_prom(rs.getString("upc_prom"))
+                .setProduct(product)
+                .setSellingPrice(rs.getBigDecimal("selling_price"))
+                .setNewPrice(rs.getBigDecimal("new_price"))
+                .setProductsNumber(rs.getInt("products_number"))
+                .setPromotional(rs.getBoolean("promotional_product"))
+                .build();
     }
 
     @Override
     public List<StoreProduct> findAll() {
-        try (Connection connection = dbConnection.getConnection()) {
-            ArrayList<StoreProduct> res = new ArrayList<>();
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(FIND_ALL);
+        try (Connection connection = dbConnection.getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(FIND_ALL_WITH_PROMOTION_PRIORITY)) {
 
+            List<StoreProduct> res = new ArrayList<>();
             while (rs.next()) {
-                StoreProduct.Builder spBuilder = new StoreProduct.Builder()
-                        .setUPC(rs.getString("upc"))
-                        .setSellingPrice(rs.getBigDecimal("selling_price"))
-                        .setPromotional(rs.getBoolean("promotional_product"))
-                        .setProductsNumber(rs.getInt("products_number"));
-
-                BigDecimal newPrice = rs.getBigDecimal("new_price");
-                if (newPrice != null) {
-                    spBuilder.setNewPrice(newPrice);
-                }
-
-                Product product = new Product.Builder()
-                        .setName(rs.getString("product_name"))
-                        .setId(rs.getInt("id_product"))
-                        .setCategory(new Category(rs.getString("category_name")))
-                        .build();
-
-                spBuilder.setProduct(product);
-
-                res.add(spBuilder.build());
+                res.add(extractStoreProductProm(rs));
             }
             return res;
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to find StoreProduct by UPC", e);
+            throw new DataAccessException("Failed to find all StoreProducts", e);
         }
     }
 
-
     @Override
-    public List<StoreProduct> findByName(String name) {
-        try (Connection connection = dbConnection.getConnection()) {
-            ArrayList<StoreProduct> res = new ArrayList<>();
-            PreparedStatement stmt = connection.prepareStatement(FIND_BY_NAME);
-            stmt.setString(1, name);
+    public List<StoreProduct> findByCategory(String categoryName) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(FIND_BY_CATEGORY)) {
+
+            stmt.setString(1, categoryName);
             ResultSet rs = stmt.executeQuery();
 
+            List<StoreProduct> res = new ArrayList<>();
             while (rs.next()) {
-                StoreProduct storeProduct = new StoreProduct.Builder()
-                        .setUPC(rs.getString("UPC"))
-                        .setProduct(new Product.Builder()
-                                .setName(rs.getString("product_name")).build())
-                        .setSellingPrice(rs.getBigDecimal("selling_price"))
-                        .build();
-                res.add(storeProduct);
+                res.add(extractStoreProductProm(rs));
             }
             return res;
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to find StoreProduct by UPC", e);
+            throw new DataAccessException("Failed to find StoreProduct by category", e);
         }
     }
 
     @Override
-    public StoreProduct findById(String UPC) {
-        try (Connection connection = dbConnection.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(FIND_BY_ID);
-            stmt.setString(1, UPC);
-            stmt.setString(2, UPC);
+    public StoreProduct findById(String upc) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(FIND_BY_ID)) {
+
+            stmt.setString(1, upc);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractStoreProduct(rs);
+                return extractStoreProductProm(rs);
             }
+            return null;
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find StoreProduct by UPC", e);
         }
-        return null;
     }
 
+    @Override
+    public List<StoreProduct> findByName(String name) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(FIND_BY_NAME)) {
+
+            stmt.setString(1, "%" + name + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            List<StoreProduct> res = new ArrayList<>();
+            while (rs.next()) {
+                StoreProduct sp = new StoreProduct.Builder()
+                        .setUPC(rs.getString("upc"))
+                        .setProduct(new Product.Builder().setName(rs.getString("product_name")).build())
+                        .setSellingPrice(rs.getBigDecimal("selling_price"))
+                        .build();
+                res.add(sp);
+            }
+            return res;
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to find StoreProduct by name", e);
+        }
+    }
 
     @Override
     public void create(StoreProduct storeProduct) {
-        try (Connection connection = dbConnection.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(CREATE);
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(CREATE)) {
+
             stmt.setString(1, storeProduct.getUPC());
             stmt.setString(2, storeProduct.getUPC_prom());
             stmt.setInt(3, storeProduct.getProduct().getId());
@@ -288,15 +199,15 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
     @Override
     public void update(StoreProduct storeProduct) {
-        try (Connection connection = dbConnection.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(UPDATE);
-            stmt.setString(1, storeProduct.getUPC());
-            stmt.setString(2, storeProduct.getUPC_prom());
-            stmt.setInt(3, storeProduct.getProduct().getId());
-            stmt.setBigDecimal(4, storeProduct.getSellingPrice());
-            stmt.setInt(5, storeProduct.getProductsNumber());
-            stmt.setBoolean(6, storeProduct.isPromotional());
-            stmt.setString(7, storeProduct.getUPC()); // WHERE clause
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(UPDATE)) {
+
+            stmt.setString(1, storeProduct.getUPC_prom());
+            stmt.setInt(2, storeProduct.getProduct().getId());
+            stmt.setBigDecimal(3, storeProduct.getSellingPrice());
+            stmt.setInt(4, storeProduct.getProductsNumber());
+            stmt.setBoolean(5, storeProduct.isPromotional());
+            stmt.setString(6, storeProduct.getUPC());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Failed to update StoreProduct", e);
@@ -304,78 +215,84 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
     }
 
     @Override
-    public void delete(String UPC) {
-        try (Connection connection = dbConnection.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(DELETE);
-            stmt.setString(1, UPC);
+    public void delete(String upc) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(DELETE)) {
+
+            stmt.setString(1, upc);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Failed to delete StoreProduct", e);
         }
     }
 
-
     @Override
-    public List<StoreProduct> findPromotional() {
-        return findByPromotionStatus(true);
-    }
+    public List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy) {
+        StringBuilder innerQuery = new StringBuilder(FILTER_QUERY );
 
-    @Override
-    public List<StoreProduct> findNonPromotional() {
-        return findByPromotionStatus(false);
-    }
+        List<Object> parameters = new ArrayList<>();
+        boolean hasWhere = false;
 
-    private List<StoreProduct> findByPromotionStatus(boolean isPromotional) {
-        String sql = isPromotional ? FIND_PROMOTIONAL : FIND_NON_PROMOTIONAL;
+        if (promotional != null) {
+            innerQuery.append("WHERE sp.promotional_product = ? ");
+            parameters.add(promotional);
+            hasWhere = true;
+            if (!promotional) {
+                innerQuery.append("AND sp.upc NOT IN (SELECT upc_prom FROM store_product WHERE upc_prom IS NOT NULL) ");
+            }
+        }
 
-        try (Connection connection = dbConnection.getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-            List<StoreProduct> result = new ArrayList<>();
+        if (category != null && !category.isBlank()) {
+            if (!hasWhere) {
+                innerQuery.append("WHERE ");
+            } else {
+                innerQuery.append("AND ");
+            }
+            innerQuery.append("c.category_name = ? ");
+            parameters.add(category);
+        }
 
-            while (rs.next()) {
-                Product product = new Product.Builder()
-                        .setName(rs.getString("product_name"))
-                        .build();
+        innerQuery.append("ORDER BY pr.id_product, sp.promotional_product DESC");
 
-                StoreProduct storeProduct = new StoreProduct.Builder()
-                        .setUPC(rs.getString("UPC"))
-                        .setSellingPrice(rs.getBigDecimal("selling_price"))
-                        .setProduct(product)
-                        .build();
+        StringBuilder finalQuery = new StringBuilder("SELECT * FROM (");
+        finalQuery.append(innerQuery);
+        finalQuery.append(") AS filtered_products ");
 
-                result.add(storeProduct);
+        // Зовнішнє сортування
+        if (sortBy != null && !sortBy.isEmpty()) {
+            finalQuery.append("ORDER BY ");
+            for (int i = 0; i < sortBy.size(); i++) {
+                if (i > 0) finalQuery.append(", ");
+                switch (sortBy.get(i)) {
+                    case "product.product_name":
+                        finalQuery.append("product_name");
+                        break;
+                    case "quantity":
+                        finalQuery.append("products_number");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(finalQuery.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
             }
 
+            ResultSet rs = stmt.executeQuery();
+            List<StoreProduct> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(extractStoreProductProm(rs));
+            }
             return result;
+
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to find promotional store products", e);
+            throw new DataAccessException("Failed to filter StoreProduct", e);
         }
-    }
-
-
-
-    private StoreProduct extractStoreProduct(ResultSet rs) throws SQLException {
-        Category category = new Category();
-        category.setNumber(rs.getInt("category_number"));
-        category.setName(rs.getString("category_name"));
-
-        Product product = new Product.Builder()
-                .setId(rs.getInt("id_product"))
-                .setName(rs.getString("product_name"))
-                .setCharacteristics(rs.getString("characteristics"))
-                .setCategory(category)
-                .build();
-
-        return new StoreProduct.Builder()
-                .setUPC(rs.getString("UPC"))
-                .setUPC_prom(rs.getString("UPC_prom"))
-                .setProduct(product)
-                .setSellingPrice(rs.getBigDecimal("selling_price"))
-                .setNewPrice(rs.getBigDecimal("new_price"))
-                .setProductsNumber(rs.getInt("products_number"))
-                .setPromotional(rs.getBoolean("promotional_product"))
-                .build();
     }
 
 

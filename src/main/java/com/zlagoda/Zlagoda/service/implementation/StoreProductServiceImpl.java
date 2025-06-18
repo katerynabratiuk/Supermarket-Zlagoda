@@ -61,13 +61,9 @@ public class StoreProductServiceImpl implements StoreProductService {
         storeProductRepository.delete(id);
     }
 
-    @Override
-    public List<StoreProduct> findPromotional() {
-        return storeProductRepository.findPromotional();
-    }
+    public List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy)
+    {
+        return storeProductRepository.filter(promotional, category, sortBy);
 
-    @Override
-    public List<StoreProduct> findNonPromotional() {
-        return storeProductRepository.findNonPromotional();
     }
 }
