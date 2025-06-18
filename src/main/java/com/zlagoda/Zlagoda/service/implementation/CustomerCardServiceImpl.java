@@ -2,6 +2,7 @@ package com.zlagoda.Zlagoda.service.implementation;
 
 import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.repository.CustomerCardRepository;
+import com.zlagoda.Zlagoda.repository.implementation.CustomerCardRepositoryImpl;
 import com.zlagoda.Zlagoda.service.CustomerCardService;
 import com.zlagoda.Zlagoda.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;

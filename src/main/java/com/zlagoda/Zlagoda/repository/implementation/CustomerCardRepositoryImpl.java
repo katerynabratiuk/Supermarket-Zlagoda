@@ -100,26 +100,6 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
     }
 
     @Override
-    public List<CustomerCard> findByPercentage(int percentage) {
-        List<CustomerCard> result = new ArrayList<>();
-        try (Connection connection = dbConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(FIND_BY_PERCENTAGE)) {
-
-            stmt.setInt(1, percentage);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                result.add(extractCustomerFromResultSet(rs));
-            }
-
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to find the customer card", e);
-        }
-        return result;
-    }
-
-
-    @Override
     public void create(CustomerCard card) {
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(CREATE)) {
