@@ -485,6 +485,12 @@ let app = Vue.createApp(
           console.error("Could not load customers:", error)
         }
       },
+
+      formatCustomerName(customer) {
+        const patronymic = customer.cust_patronymic ? ` ${customer.cust_patronymic}` : ''
+        return `${customer.cust_surname} ${customer.cust_name}${patronymic}`
+      },
+
       async loadChecks() {
         try {
           const response = await fetch("../checks.json")
