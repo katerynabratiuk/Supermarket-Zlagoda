@@ -835,9 +835,9 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const newCustomer = await response.json()
-            this.customers.push(newCustomer)
-            console.log("New customer added successfully:", newCustomer)
+            //const newCustomer = await response.json()
+            //this.customers.push(newCustomer)
+            //console.log("New customer added successfully:", newCustomer)
             window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
