@@ -104,50 +104,53 @@
                 </div>
 
                 <div class="form-label">Show:</div>
-                <div class="form-field">
-                  <div class="checkbox-field">
-                    <input
-                      id="show-promotional"
-                      name="show-promotional"
-                      type="checkbox"
-                    />
-                    <label for="show-total-sum">Promotional</label>
+                  <div class="form-field">
+                    <div class="radio-field">
+                      <input
+                        type="radio"
+                        id="show-promotional"
+                        name="show-type"
+                        value="promotional"
+                        v-model="productTypeFilter"
+                      />
+                      <label for="show-promotional">Promotional</label>
+                    </div>
+
+                    <div class="radio-field">
+                      <input
+                        type="radio"
+                        id="show-non-promotional"
+                        name="show-type"
+                        value="non-promotional"
+                        v-model="productTypeFilter"
+                      />
+                      <label for="show-non-promotional">Non-Promotional</label>
+                    </div>
                   </div>
 
-                  <div class="checkbox-field">
-                    <input
-                      id="show-non-promotional"
-                      name="show-non-promotional"
-                      type="checkbox"
-                    />
-                    <label for="show-non-promotional">Non-Promotional</label>
-                  </div>
-                </div>
 
                 <div class="form-label">Sort by:</div>
-                <div class="form-field">
-                  <div class="radio-field">
-                    <input
-                      type="radio"
-                      id="sort-name"
-                      name="sortby"
-                      value="product.product_name"
-                      v-model="sortProductsParamsField"
-                    />
-                    <label for="sort-name">Name</label>
+                  <div class="form-field">
+                    <div class="checkbox-field">
+                      <input
+                        type="checkbox"
+                        id="sort-name"
+                        value="product.product_name"
+                        v-model="sortProductsParamsField"
+                      />
+                      <label for="sort-name">Name</label>
+                    </div>
+                    <div class="checkbox-field">
+                      <input
+                        type="checkbox"
+                        id="sort-quantity"
+                        value="products_number"
+                        v-model="sortProductsParamsField"
+                      />
+                      <label for="sort-quantity">Quantity</label>
+                    </div>
                   </div>
-                  <div class="radio-field">
-                    <input
-                      type="radio"
-                      id="sort-quantity"
-                      name="sortby"
-                      value="products_number"
-                      v-model="sortProductsParamsField"
-                    />
-                    <label for="sort-quantity">Quantity</label>
-                  </div>
-                </div>
-              </div>
+
 
               <div class="filter-form-button">
                 <button
@@ -172,7 +175,7 @@
             class="no-products-message"
             v-if="!isLoading && products.length === 0"
           >
-            <p>No products found in this category.</p>
+            <p>No products found.</p>
           </div>
 
           <div class="products-grid" v-if="!isLoading">

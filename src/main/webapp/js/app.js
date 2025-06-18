@@ -25,6 +25,11 @@ let app = Vue.createApp(
           category_number: null
         },
 
+        currentCategory: {
+          category_name: ''
+        },
+
+
         newProduct: {
           UPC: null,
           selling_price: null,
@@ -45,7 +50,8 @@ let app = Vue.createApp(
         productStatus: null,
         totalPieces: 0,
         isUPCFiltered: false,
-        sortProductsParamsField: null,
+        sortProductsParamsField: [],
+        productTypeFilter: null,
 
         newCustomer: {
           card_number: null,
@@ -131,7 +137,7 @@ let app = Vue.createApp(
     watch: {
       currentProduct(newVal) {
         if (newVal) {
-          document.title = `${newVal.name} - Zlagoda`
+          document.title = `${newVal.product.product_name} - Zlagoda`
         }
       },
       currentCustomer(newVal) {
@@ -479,6 +485,12 @@ let app = Vue.createApp(
           console.error("Could not load customers:", error)
         }
       },
+
+      formatCustomerName(customer) {
+        const patronymic = customer.cust_patronymic ? ` ${customer.cust_patronymic}` : ''
+        return `${customer.cust_surname} ${customer.cust_name}${patronymic}`
+      },
+
       async loadChecks() {
         try {
           const response = await fetch("../checks.json")
@@ -589,7 +601,7 @@ let app = Vue.createApp(
       async sortCategories() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/categories?sort=category_name')
+          const response = await fetch('http://localhost:8090/category/filter')
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
@@ -701,66 +713,61 @@ let app = Vue.createApp(
         }
       },
       async applyProductFilters() {
-        try {
-          this.isLoading = true
+  try {
+        this.isLoading = true;
 
-          const categorySelect = document.getElementById('category-select')
-          const fromDateInput = document.getElementById('from-date')
-          const toDateInput = document.getElementById('to-date')
-          const showPromotionalCheckbox = document.getElementById('show-promotional')
-          const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
+        const categorySelect = document.getElementById('category-select');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
 
-          let categoryName = null
-          const categoryNumber = categorySelect ? categorySelect.value : null
-          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
-          }
-          const fromDate = fromDateInput ? fromDateInput.value : null
-          const toDate = toDateInput ? toDateInput.value : null
-          const showPromotional = showPromotionalCheckbox ? showPromotionalCheckbox.checked : false
-          const showNonPromotional = showNonPromotionalCheckbox ? showNonPromotionalCheckbox.checked : false
-
-          const params = new URLSearchParams()
-
-          if (categoryNumber) {
-            params.append('category_name', categoryName)
-          }
-
-          if (fromDate) params.append('from_date', fromDate)
-          if (toDate) params.append('to_date', toDate)
-          if (showPromotional) params.append('show_promotional', showPromotional)
-          if (showNonPromotional) params.append('show_non_promotional', showNonPromotional)
-          if (this.sortProductsParamsField) params.append('sort', "product." + this.sortProductsParamsField)
-
-          if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/products/filter?${params.toString()}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            })
-
-            if (!response.ok) {
-              throw new Error(`Failed to filter products. Status: ${response.status}`)
-            }
-
-            const data = await response.json()
-            this.products = data
-            this.filtersApplied = true
-            this.currentCategory = categoryName
-          } else {
-            await this.loadProducts()
-            this.filtersApplied = false
-            this.totalPieces = 0
-            this.currentCategory = null
-          }
-        } catch (error) {
-          console.error('Error applying filters to products:', error)
-          alert('Failed to apply filters to products. Please try again.')
-        } finally {
-          this.isLoading = false
+        let categoryName = null;
+        const categoryNumber = categorySelect ? categorySelect.value : null;
+        if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+          categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
         }
-      },
+
+        const fromDate = fromDateInput?.value || null;
+        const toDate = toDateInput?.value || null;
+        const productType = this.productTypeFilter;
+
+        const params = new URLSearchParams();
+
+        if (categoryNumber) params.append('category', categoryName);
+        if (fromDate) params.append('from_date', fromDate);
+        if (toDate) params.append('to_date', toDate);
+        if (productType === 'promotional') params.append('promotional', true);
+        else if (productType === 'non-promotional') params.append('promotional', false);
+
+        if (this.sortProductsParamsField?.length > 0) {
+          this.sortProductsParamsField.forEach(field => {
+            params.append('sortBy', field); // якщо бекенд очікує ?sort=product_name&sort=products_number
+          });
+        }
+
+        const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to filter products. Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.products = data;
+        this.totalPieces = data.total_pieces || 0;
+        this.filtersApplied = true;
+        this.currentCategory = { category_name: categoryName };
+      } catch (error) {
+        console.error('Error applying filters to products:', error);
+        alert('Failed to apply filters to products. Please try again.');
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
       clearProductFilters() {
         const categorySelect = document.getElementById('category-select')
         const fromDateInput = document.getElementById('from-date')
@@ -777,7 +784,41 @@ let app = Vue.createApp(
 
         this.loadProducts()
         this.filtersApplied = false
-        this.currentCategory = null
+        this.totalPieces = 0
+        this.currentProduct = null
+        this.isUPCFiltered = false
+      },
+      async applyProductSort() {
+        try {
+          if (!this.sortProductsParamsField) {
+            return
+          }
+
+          const params = new URLSearchParams()
+          params.append('sort_by', this.sortParams.field)
+          params.append('order', this.sortParams.direction)
+
+          const response = await fetch(`http://localhost:8090/product/sorted?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch sorted products')
+          }
+
+          this.isLoading = true
+          this.products = await response.json()
+          this.showSort = false
+
+        } catch (error) {
+          console.error('Sorting error:', error)
+          alert('Failed to apply sorting. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
       },
 
       goToAddCustomer() {

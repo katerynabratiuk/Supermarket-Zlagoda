@@ -12,12 +12,13 @@ import java.util.List;
 @Repository
 public class CategoryRepositoryImpl implements CategoryRepository {
 
-    private static final String GET_ALL = "SELECT * FROM Category ORDER BY category_name";
+    private static final String GET_ALL = "SELECT * FROM Category";
     private static final String CREATE = "INSERT INTO Category(category_name) VALUES (?)";
     private static final String UPDATE = "UPDATE Category SET category_name=? WHERE category_number=?";
     private static final String DELETE = "DELETE FROM Category WHERE category_number=?";
     private static final String FIND_BY_ID = "SELECT * FROM Category WHERE category_number=?";
     private static final String FIND_BY_NAME = "SELECT * FROM Category WHERE category_name ILIKE ?";
+
 
     private final DBConnection dbConnection;
 
@@ -46,6 +47,26 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         }
     }
 
+    @Override
+    public List<Category> filter() {
+        List<Category> res = new ArrayList<>();
+
+        try (Connection connection = dbConnection.getConnection()){
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery(GET_ALL + " ORDER BY category_name");
+
+            while(results.next())
+            {
+                Category category = extractCategoryFromResultSet(results);
+                res.add(category);
+            }
+            return res;
+        }
+        catch (SQLException e)
+        {
+            throw new DataAccessException("Failed to find all categories", e);
+        }
+    }
 
     @Override
     public Category findById(Integer id) {

@@ -13,6 +13,7 @@ import java.util.List;
 public class CustomerCardRepositoryImpl implements CustomerCardRepository {
 
     private static final String GET_ALL = "SELECT * FROM Customer_card";
+    private static final String GET_ALL_SORTED = "SELECT * FROM Customer_card";
     private static final String CREATE = "INSERT INTO Customer_card VALUES (?,?,?,?,?,?,?,?,?)";
     private static final String UPDATE = "UPDATE Customer_card SET cust_surname=?, cust_name=?, cust_patronymic=?, " +
             "phone_number=?, city=?, street=?, zip_code=?, percent=? WHERE card_number=?";

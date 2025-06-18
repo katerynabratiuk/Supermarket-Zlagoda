@@ -45,4 +45,8 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Integer id) {
         categoryRepository.delete(id);
     }
+
+    public List<Category> filter() {
+        return categoryRepository.filter();
+    }
 }
