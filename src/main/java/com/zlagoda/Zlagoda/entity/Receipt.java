@@ -9,32 +9,34 @@ import java.util.ArrayList;
 
 public class Receipt {
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Check number cannot be null!")
+    @NotBlank(message = "Check number cannot be blank!")
     @JsonProperty("check_number")
     private String checkNumber;
 
-    @NotNull
+    @NotNull(message = "Employee cannot be null!")
     @JsonProperty("employee")
     private Employee employee;
 
     @JsonProperty("customer_card")
     private CustomerCard card;
 
-    @NotNull
-    @PastOrPresent
+    @NotNull(message = "Date of print cannot be null!")
+    @PastOrPresent(message = "Date of print cannot be later than today!")
     @JsonProperty("print_date")
     private LocalDate printDate;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Total sum cannot be null!")
+    @Positive(message = "Total sum must be a positive value!")
     @DecimalMin(value = "0", inclusive = false)
+    @DecimalMax(value = "9999999999999.9999", message = "Total sum cannot be more than 999999999999.9999")
     @JsonProperty("sum_total")
     private BigDecimal sumTotal;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "VAT cannot be null!")
+    @Positive(message = "VAT must be a positive value!")
     @JsonProperty("vat")
+    @DecimalMax(value = "9999999999999.9999", message = "VAT cannot be more than 999999999999.9999")
     private BigDecimal vat;
 
     @NotNull

@@ -11,8 +11,8 @@ public class Category{
     private Integer number;
 
     @JsonProperty("category_name")
-    @NotNull
-    @Size(min=3, max=50)
+    @NotNull(message = "Category name cannot be null!")
+    @Size(max = 50, message = "Category name cannot be more than 50 characters long!")
     private String name;
 
     public Category() {

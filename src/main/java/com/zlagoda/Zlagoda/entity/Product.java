@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class Product {
 
@@ -11,8 +12,9 @@ public class Product {
     @JsonProperty("id_product")
     private Integer id;
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Product name cannot be null!")
+    @NotBlank(message = "Product name cannot be blank!")
+    @Size(max = 50, message = "Product name cannot be more than 50 characters long!")
     @JsonProperty("product_name")
     private String name;
 
@@ -21,8 +23,9 @@ public class Product {
     @JsonProperty("category")
     private Category category;
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Characteristics cannot be null!")
+    @NotBlank(message = "Characteristics cannot be blank!")
+    @Size(max = 100, message = "Characteristics cannot be more than 100 characters long!")
     @JsonProperty("description")
     private String characteristics;
 

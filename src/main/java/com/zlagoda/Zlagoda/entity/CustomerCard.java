@@ -11,40 +11,47 @@ public class CustomerCard {
     private String cardNumber;
 
     @NotNull
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
+            message = "Surname does not meet requirements!")
+    @Size(max = 50, message = "Surname cannot be more than 50 characters!")
     @JsonProperty("cust_surname")
     private String surname;
 
     @NotNull
-    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$")
+    @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
+            message = "Name does not meet requirements!")
+    @Size(max = 50, message = "Name cannot be more than 50 characters!")
     @JsonProperty("cust_name")
     private String name;
 
     @JsonProperty("cust_patronymic")
+    @Size(max = 50, message = "Patronymic cannot be more than 50 characters!")
     private String patronymic;
 
     @NotNull
-    //@Pattern(regexp = "(\\+)?[0-9]{10}")
+    @Pattern(regexp = "^\\+380\\d{9}$", message = "Number must start with +380 and consist of digits!")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    //@Size(min=2, max=50)
-    //@Pattern(regexp = "^\\s*[a-zA-Z][0-9a-zA-Z][0-9a-zA-Z '-.=#/]*$\n")
+    @NotNull(message = "City cannot be null!")
+    @Size(max=50, message = "City must be between 2 and 50 characters!")
     //@JsonProperty("city")
     private String city;
 
-    //@Size(min=2, max=50)
-    //@NotBlank
+    @NotNull(message = "Street cannot be null!")
+    @Size(max=50)
     //@JsonProperty("street")
     private String street;
 
-    //@Size(min = 5, max = 5)
-    //@NotBlank
+    @NotNull(message = "Zip code cannot be null!")
+    @Size(min = 5, max = 9, message = "Zip code must be between 5 and 9 characters!")
+    @Pattern(regexp = "^\\d+$", message = "Zip code must contain numbers only!")
+    @NotBlank(message = "Zip code cannot be blank!")
     @JsonProperty("zip_code")
     private String zipCode;
 
-    @PositiveOrZero
-    @Max(15)
+    @PositiveOrZero(message = "Discount cannot be negative!")
+    @Max(value = 15, message = "Max percent is 15!")
     @JsonProperty("percent")
     private Integer percent;
 

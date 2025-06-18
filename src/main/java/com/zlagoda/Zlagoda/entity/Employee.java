@@ -11,21 +11,25 @@ import java.time.temporal.ChronoUnit;
 public class Employee {
 
     @JsonProperty("id_employee")
+    @Size(max = 10, message = "ID cannot be more than 10 characters long!")
     private String id;
 
     @NotNull(message = "Name cannot be null!")
+    @Size(max = 50, message = "Name cannot be more than 50 characters long!")
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
              message = "Name does not meet requirements!")
     @JsonProperty("empl_name")
     private String name;
 
     @NotNull(message = "Surname cannot be null!")
+    @Size(max = 50, message = "Surname cannot be more than 50 characters long!")
     @Pattern(regexp = "^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$",
             message = "Surname does not meet requirements!")
     @JsonProperty("empl_surname")
     private String surname;
 
     @JsonProperty("empl_patronymic")
+    @Size(max = 50, message = "Patronymic cannot be more than 50 characters long!")
     private String patronymic;
 
     @NotNull(message = "Role cannot be null!")
@@ -35,6 +39,7 @@ public class Employee {
 
     @NotNull(message = "Salary cannot be null!")
     @Positive(message = "Salary must be a positive number!")
+    @DecimalMax(value = "9999999999999.9999", message = "Salary must be less than or equal to 9999999999999.9999!")
     @JsonProperty("salary")
     private BigDecimal salary;
 
@@ -49,17 +54,17 @@ public class Employee {
     private LocalDate dateOfStart;
 
     @NotNull(message = "Phone number cannot be null!")
-    @Pattern(regexp = "^\\+380\\d{9}$")
+    @Pattern(regexp = "^\\+380\\d{9}$", message = "Number must start with +380 and consist of digits!")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
     @NotNull(message = "City cannot be null!")
-    @Size(min=2, max=50, message = "City must be between 2 and 50 characters!")
+    @Size(max=50, message = "City name must be between 2 and 50 characters!")
     @JsonProperty("city")
     private String city;
 
     @NotNull(message = "Street cannot be null!")
-    @Size(min=2, max=50)
+    @Size(max=50, message = "Street name must be between 2 and 50 characters!")
     @JsonProperty("street")
     private String street;
 

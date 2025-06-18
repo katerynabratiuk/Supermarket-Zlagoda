@@ -15,12 +15,15 @@ public class Sale {
     @JsonProperty("receipt")
     private Receipt receipt;
 
-    @Positive()
-    @Min(1)
+    @Positive(message = "Product number must be a positive value!")
+    @Min(value = 1, message = "There must be at least one product!")
     @JsonProperty("product_number")
     private Integer productNum;
 
+    @NotNull(message = "Selling price cannot be null!")
+    @Positive(message = "Selling price must be a positive value!")
     @DecimalMin(value="0", inclusive = false)
+    @DecimalMax(value = "9999999999999.9999", message = "Salary must be less than or equal to 9999999999999.9999!")
     @JsonProperty("selling_price")
     private BigDecimal selling_price;
 

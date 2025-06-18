@@ -1,26 +1,27 @@
 package com.zlagoda.Zlagoda.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public class StoreProduct {
 
-    @NotNull
+    @NotNull(message = "UPC cannot be null!")
+    @Size(max = 12, message = "UPC cannot be more then 12 characters long!")
     @JsonProperty("UPC")
     private String UPC;
 
     @JsonProperty("UPC_prom")
+    @Size(max = 12, message = "UPC cannot be more then 12 characters long!")
     private String UPC_prom;
 
-    @NotNull
+    @NotNull(message = "Product cannot be null!")
     @JsonProperty("product")
     private Product product;
 
     @DecimalMin(value="0", inclusive = false)
+    @DecimalMax(value="999999999.9999", message = "Selling price cannot be more than 999999999999.9999")
     @JsonProperty("selling_price")
     private BigDecimal sellingPrice;
 
@@ -28,11 +29,11 @@ public class StoreProduct {
     @JsonProperty("new_price")
     private BigDecimal newPrice;
 
-    @Min(1)
+    @Min(value = 1, message = "There must be at least one product!")
     @JsonProperty("products_number")
     private Integer productsNumber;
 
-    @NotNull
+    @NotNull()
     @JsonProperty("promotional_product")
     private boolean isPromotional;
 
