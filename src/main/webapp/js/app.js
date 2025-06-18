@@ -740,7 +740,7 @@ let app = Vue.createApp(
 
         if (this.sortProductsParamsField?.length > 0) {
           this.sortProductsParamsField.forEach(field => {
-            params.append('sortBy', field); // якщо бекенд очікує ?sort=product_name&sort=products_number
+            params.append('sortBy', field);
           });
         }
 
@@ -1119,12 +1119,12 @@ let app = Vue.createApp(
           const sortBySurname = sortSurnameCheckbox ? sortSurnameCheckbox.checked : false
 
           const params = new URLSearchParams()
-          if (showCashiers) params.append('show_cashiers', showCashiers)
-          if (showManagers) params.append('show_managers', showManagers)
-          if (sortBySurname) params.append('sort', sortBySurname)
+          if (showCashiers) params.append('cashier', showCashiers)
+          if (showManagers) params.append('manager', showManagers)
+          if (sortBySurname) params.append('sortBy', 'name')
 
           if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/employees/filter?${params.toString()}`, {
+            const response = await fetch(`http://localhost:8090/employee/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json'

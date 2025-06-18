@@ -21,8 +21,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-    public List<Employee> filterEmployee(Boolean manager, Boolean cashier) {
-        return employeeRepository.filter(manager, cashier);
+    public List<Employee> filterEmployee(Boolean manager, Boolean cashier, List<String> sortBy) {
+        return employeeRepository.filter(manager, cashier, sortBy);
     }
 
 

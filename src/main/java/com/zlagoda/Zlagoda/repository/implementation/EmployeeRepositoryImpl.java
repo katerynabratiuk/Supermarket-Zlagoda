@@ -28,32 +28,56 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
-    public List<Employee> filter(Boolean manager, Boolean cashier) {
-        if ((manager != null && cashier != null && manager && cashier) ||
-                (manager == null && cashier == null)) {
-            return this.findAll();
-        } else {
-            List<Employee> res = new ArrayList<>();
-            String role = Boolean.TRUE.equals(manager) ? "Manager" : "Cashier";
+    public List<Employee> filter(Boolean manager, Boolean cashier, List<String> sortBy) {
+        List<Employee> res = new ArrayList<>();
 
-            try (Connection connection = dbConnection.getConnection()) {
+        StringBuilder query = new StringBuilder("SELECT * FROM Employee ");
+        List<Object> params = new ArrayList<>();
 
-                PreparedStatement stmt = connection.prepareStatement(GET_ALL + " WHERE empl_role = ?;");
-                stmt.setString(1, role);
-                ResultSet results = stmt.executeQuery();
+        if (Boolean.TRUE.equals(manager)) {
+            query.append("WHERE empl_role = ?");
+            params.add("Manager");
+        } else if (Boolean.TRUE.equals(cashier)) {
+            query.append("WHERE empl_role = ?");
+            params.add("Cashier");
+        }
 
-                while (results.next()) {
-                    Employee empl = extractEmployeeFromResultSet(results);
-                    res.add(empl);
+        if (sortBy != null && !sortBy.isEmpty()) {
+            query.append(" ORDER BY ");
+            for (int i = 0; i < sortBy.size(); i++) {
+                if (i > 0) query.append(", ");
+                switch (sortBy.get(i)) {
+                    case "name":
+                        query.append("empl_surname, empl_name, empl_patronymic");
+                        break;
+                    default:
+                        break;
                 }
+            }
+        } else {
+            query.append(" ORDER BY is_active DESC");
+        }
 
-            } catch (SQLException e) {
-                throw new DataAccessException("Failed to find employees", e);
+
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
             }
 
-            return res;
+            ResultSet results = stmt.executeQuery();
+            while (results.next()) {
+                res.add(extractEmployeeFromResultSet(results));
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to filter employees", e);
         }
+
+        return res;
     }
+
 
 
     @Override

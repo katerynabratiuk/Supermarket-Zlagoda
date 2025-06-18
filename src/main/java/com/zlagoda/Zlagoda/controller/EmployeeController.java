@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.service.implementation.EmployeeServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,10 +39,15 @@ public class EmployeeController {
 
     @GetMapping("/filter")
     public List<Employee> filterProducts(
-            @RequestParam(defaultValue = "false") Boolean manager,
-            @RequestParam(defaultValue = "false") Boolean cashier
+            @RequestParam(required = false) Boolean manager,
+            @RequestParam(required = false) Boolean cashier,
+            @RequestParam(required = false) String sortBy
     ) {
-        return employeeService.filterEmployee(manager, cashier);
+        List<String> sortParams = new ArrayList<>();
+        if (sortBy != null && !sortBy.isBlank()) {
+            sortParams.add(sortBy);
+        }
+        return employeeService.filterEmployee(manager, cashier, sortParams);
     }
 
     @PostMapping()
