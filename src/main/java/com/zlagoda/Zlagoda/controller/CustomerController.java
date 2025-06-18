@@ -27,12 +27,6 @@ public class CustomerController {
         return customerService.findAll();
     }
 
-    @GetMapping("/by-percentage/{percentage}")
-    public @ResponseBody List<CustomerCard> getCustomersByPercent(@PathVariable Integer percentage)
-    {
-        return customerService.findByPercentage(percentage);
-    }
-
     @GetMapping("/by-name/{name}")
     public @ResponseBody List<CustomerCard> getCustomersByName(@PathVariable String name)
     {
