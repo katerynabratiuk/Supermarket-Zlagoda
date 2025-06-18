@@ -171,7 +171,6 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
         if (sortParams != null && !sortParams.isEmpty()) {
             query.append(" ORDER BY ");
             for (int i = 0; i < sortParams.size(); i++) {
-                System.out.println("HERE");
                 if (i > 0) query.append(", ");
                 switch (sortParams.get(i)) {
                     case "name":
