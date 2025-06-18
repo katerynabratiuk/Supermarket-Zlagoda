@@ -595,7 +595,7 @@ let app = Vue.createApp(
       async sortCategories() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/categories?sort=category_name')
+          const response = await fetch('http://localhost:8090/category/filter')
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }

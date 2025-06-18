@@ -1,6 +1,7 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.entity.Category;
+import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.service.implementation.CategoryServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +41,11 @@ public class CategoryController {
         categoryService.delete(id);
     }
 
+
+    @GetMapping("/filter")
+    public List<Category> filterProducts(
+    ) {
+        return categoryService.filter();
+    }
 
 }
