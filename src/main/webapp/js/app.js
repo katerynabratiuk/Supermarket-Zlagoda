@@ -824,7 +824,7 @@ let app = Vue.createApp(
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.currentCustomer),
+            //body: JSON.stringify(this.currentCustomer),
           })
 
           if (response.ok) {
@@ -866,9 +866,6 @@ let app = Vue.createApp(
             }
           );
 
-            if (!response.ok) {
-              throw new Error(`Failed to filter customers. Status: ${response.status}`)
-            }
           if (!response.ok) {
             throw new Error(`Failed to load customers. Status: ${response.status}`);
           }
