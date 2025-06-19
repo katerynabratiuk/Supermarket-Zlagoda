@@ -48,7 +48,7 @@ let app = Vue.createApp(
             product_name: '',
             description: '',
           },
-          UPC_prom:null,
+          UPC_prom: null,
           products_number: 0,
           new_price: null,
         },
@@ -132,24 +132,24 @@ let app = Vue.createApp(
       },
       subtotal() {
         return this.newCheck.sales.reduce((total, sale) => {
-          return total + (sale.selling_price * sale.quantity);
-        }, 0);
+          return total + (sale.selling_price * sale.quantity)
+        }, 0)
       },
 
       discountPercent() {
-        return this.currentCustomer?.percent || 0;
+        return this.currentCustomer?.percent || 0
       },
 
       vatAmount() {
-        return this.subtotal * 0.2; // 20% від subtotal
+        return this.subtotal * 0.2 // 20% від subtotal
       },
 
       discountAmount() {
-        return (this.subtotal + this.vatAmount) * (this.discountPercent / 100);
+        return (this.subtotal + this.vatAmount) * (this.discountPercent / 100)
       },
 
       totalAfterDiscount() {
-        return (this.subtotal + this.vatAmount) - this.discountAmount;
+        return (this.subtotal + this.vatAmount) - this.discountAmount
       },
       filteredEmployees() {
         if (!this.search) {
@@ -160,12 +160,12 @@ let app = Vue.createApp(
           const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase()
           const surName = `${employee.empl_surname}`.toLowerCase()
           return (
-              employee.id_employee.toLowerCase().includes(q) ||
-              surName.includes(q)
-              // ||
-              // employee.empl_role.toLowerCase().includes(q) ||
-              // employee.city.toLowerCase().includes(q) ||
-              // employee.phone_number.toLowerCase().includes(q)
+            employee.id_employee.toLowerCase().includes(q) ||
+            surName.includes(q)
+            // ||
+            // employee.empl_role.toLowerCase().includes(q) ||
+            // employee.city.toLowerCase().includes(q) ||
+            // employee.phone_number.toLowerCase().includes(q)
           )
         })
       },
@@ -370,7 +370,7 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
-       //return this.customers.find(customer => customer.card_number === id)
+        //return this.customers.find(customer => customer.card_number === id)
       },
       async getCheckById(id) {
         try {
@@ -777,30 +777,28 @@ let app = Vue.createApp(
         }
       },
       async applyProductFilters() {
-  try {
-        this.isLoading = true
-
-        const categorySelect = document.getElementById('category-select')
-        const fromDateInput = document.getElementById('from-date')
-        const toDateInput = document.getElementById('to-date')
+        try {
+          this.isLoading = true
+          const categorySelect = document.getElementById('category-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
 
           let categoryName = null
-          const categoryNumber = categorySelect ? categorySelect.value : null
-          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+          const categoryNumber = categorySelect?.value
+          if (categorySelect?.options && categorySelect.selectedIndex !== -1) {
             categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
           }
 
-          const fromDate = fromDateInput?.value || null
-          const toDate = toDateInput?.value || null
-          const productType = this.productTypeFilter
-
           const params = new URLSearchParams()
-
           if (categoryNumber) params.append('category', categoryName)
-          if (fromDate) params.append('from_date', fromDate)
-          if (toDate) params.append('to_date', toDate)
-          if (productType === 'promotional') params.append('promotional', true)
-          else if (productType === 'non-promotional') params.append('promotional', false)
+          if (fromDateInput?.value) params.append('from_date', fromDateInput.value)
+          if (toDateInput?.value) params.append('to_date', toDateInput.value)
+
+          if (this.productTypeFilter === 'promotional') {
+            params.append('promotional', true)
+          } else if (this.productTypeFilter === 'non-promotional') {
+            params.append('promotional', false)
+          }
 
           if (this.sortProductsParamsField?.length > 0) {
             this.sortProductsParamsField.forEach(field => {
@@ -825,54 +823,14 @@ let app = Vue.createApp(
           this.totalPieces = data.total_pieces || 0
           this.filtersApplied = true
           this.currentCategory = { category_name: categoryName }
+
         } catch (error) {
           console.error('Error applying filters to products:', error)
           this.showError('Failed to apply filters to products. Please try again.')
         } finally {
           this.isLoading = false
         }
-
-        const fromDate = fromDateInput?.value || null
-        const toDate = toDateInput?.value || null
-        const productType = this.productTypeFilter
-
-        const params = new URLSearchParams()
-
-        if (categoryNumber) params.append('category', categoryName)
-        if (fromDate) params.append('from_date', fromDate)
-        if (toDate) params.append('to_date', toDate)
-        if (productType === 'promotional') params.append('promotional', true)
-        else if (productType === 'non-promotional') params.append('promotional', false)
-
-        if (this.sortProductsParamsField?.length > 0) {
-          this.sortProductsParamsField.forEach(field => {
-            params.append('sortBy', field)
-          })
-        }
-
-        const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to filter products. Status: ${response.status}`)
-        }
-
-        const data = await response.json()
-        this.products = data
-        this.totalPieces = data.total_pieces || 0
-        this.filtersApplied = true
-        this.currentCategory = { category_name: categoryName }
-      } catch (error) {
-        console.error('Error applying filters to products:', error)
-        alert('Failed to apply filters to products. Please try again.')
-      } finally {
-        this.isLoading = false
-      }
-    },
+      },
 
       clearProductFilters() {
         const categorySelect = document.getElementById('category-select')
@@ -945,7 +903,6 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
-<<<<<<< HEAD
       async confirmAndDeleteCustomer() {
         const customerId = this.currentCustomer.card_number
         if (confirm("Are you sure you want to delete this customer?")) {
@@ -972,9 +929,6 @@ let app = Vue.createApp(
         }
       },
 
-=======
-     
->>>>>>> c6abfd5bda9db37790db14f2fefeca3672c036f3
       async applyCustomerFilters() {
         try {
           this.isLoading = true
@@ -1308,19 +1262,16 @@ let app = Vue.createApp(
 
         this.loadEmployees()
         this.filtersApplied = false
-      },
-
+      }
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)
       const categoryName = urlParams.get('category')
-
       const storedToken = localStorage.getItem('authToken')
       if (storedToken) {
         this.token = storedToken
         this.isLoggedIn = true
       }
-
 
       try {
         await this.loadDataForCurrentPage()
@@ -1340,7 +1291,6 @@ let app = Vue.createApp(
           this.currentProduct.prom_base_price = baseProduct.selling_price
         }
       }
-
     }
   }
 )
@@ -1547,11 +1497,11 @@ app.component('custom-error', {
     }
   },
   mounted() {
-    this.show = true;
+    this.show = true
     if (this.duration > 0) {
       setTimeout(() => {
-        this.show = false;
-      }, this.duration);
+        this.show = false
+      }, this.duration)
     }
   },
   template: `
@@ -1562,6 +1512,6 @@ app.component('custom-error', {
       </div>
     </transition>
   `
-});
+})
 
 app.mount("#app")
