@@ -41,8 +41,8 @@ public class Receipt {
 
     @NotNull
     @Size(min = 1)
-    @JsonProperty("products")
-    private ArrayList<StoreProduct> products = new ArrayList<>();
+    @JsonProperty("sales")
+    private ArrayList<Sale> sales = new ArrayList<>();
 
     public Receipt() {}
 
@@ -79,11 +79,6 @@ public class Receipt {
             return this;
         }
 
-        public Builder addProduct(StoreProduct product) {
-            receipt.addProduct(product);
-            return this;
-        }
-
         @Override
         public Receipt build() {
             return receipt;
@@ -97,7 +92,7 @@ public class Receipt {
         this.printDate = printDate;
         this.sumTotal = sumTotal;
         this.vat = sumTotal.multiply(BigDecimal.valueOf(0.2));
-        this.products = new ArrayList<>();
+        this.sales = new ArrayList<>();
     }
 
     public String getCheckNumber() {
@@ -145,12 +140,12 @@ public class Receipt {
         return vat;
     }
 
-    public void addProduct(StoreProduct sp) {
-        products.add(sp);
+    public void setSales(ArrayList<Sale> sales) {
+        this.sales = sales;
     }
 
-    public ArrayList<StoreProduct> getProducts() {
-        return products;
+    public ArrayList<Sale> getProducts() {
+        return sales;
     }
 
     @Override
@@ -162,7 +157,7 @@ public class Receipt {
                 ", printDate=" + printDate +
                 ", sumTotal=" + sumTotal +
                 ", vat=" + vat +
-                ", products=" + products +
+                ", products=" + sales +
                 '}';
     }
 }
