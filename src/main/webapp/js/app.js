@@ -109,6 +109,9 @@ let app = Vue.createApp(
         productsItemsIncrementBy: 15,
         rowsToShowCount: 10,
         rowsIncrementBy: 10,
+
+        search: '',
+        search_result: [],
       }
     },
     computed: {
@@ -139,6 +142,24 @@ let app = Vue.createApp(
       },
       vatAmount() {
         return this.totalAfterDiscount * 0.2
+      },
+      filteredEmployees() {
+        if (!this.search) {
+          return this.employees;
+        }
+        const q = this.search.toLowerCase();
+        return this.employees.filter(employee => {
+          const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase();
+          const surName = `${employee.empl_surname}`.toLowerCase();
+          return (
+              employee.id_employee.toLowerCase().includes(q) ||
+              surName.includes(q)
+              // ||
+              // employee.empl_role.toLowerCase().includes(q) ||
+              // employee.city.toLowerCase().includes(q) ||
+              // employee.phone_number.toLowerCase().includes(q)
+          );
+        });
       },
     },
     watch: {
@@ -907,7 +928,21 @@ let app = Vue.createApp(
         this.loadCustomers()
         this.filtersApplied = false
       },
-
+      async searchEmployees() {
+        if (!this.search) {
+          await this.loadEmployees(); // повернути початковий список
+          return;
+        }
+        try {
+          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`);
+          if (!response.ok) throw new Error("Пошук не вдався");
+          const result = await response.json();
+          this.employees = result;
+        } catch (error) {
+          console.error("Помилка під час пошуку:", error);
+          alert("Сталася помилка при пошуку.");
+        }
+      },
 
       goToAddCheck() {
         window.location.href = 'new-check-page.html'
