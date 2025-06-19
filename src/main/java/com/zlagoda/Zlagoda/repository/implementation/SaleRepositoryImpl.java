@@ -28,6 +28,7 @@ public class SaleRepositoryImpl implements SaleRepository {
                     "JOIN Product ON Store_Product.id_product = Product.id_product " +
                     "WHERE Sale.check_number = ?";
 
+    private static final String CREATE = "INSERT INTO Sale(check_number, UPC, product_number, selling_price) VALUES (?, ?, ?, ?)\n";
 
     private final DBConnection dbConnection;
 
@@ -79,7 +80,18 @@ public class SaleRepositoryImpl implements SaleRepository {
 
     @Override
     public void create(Sale sale) {
-
+        try(Connection connection = dbConnection.getConnection())
+        {
+            PreparedStatement stmt = connection.prepareStatement(CREATE);
+            stmt.setString(1, sale.getCheck().getCheckNumber());
+            stmt.setString(2, sale.getStoreProduct().getUPC());
+            stmt.setInt(3, sale.getProductNum());
+            stmt.setBigDecimal(4, sale.getSelling_price());
+            stmt.executeUpdate();
+        }
+        catch (SQLException e){
+            throw new DataAccessException("Failed to create product", e);
+        }
     }
 
 
