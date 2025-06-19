@@ -374,17 +374,17 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
           return null
         }
-        //return this.customers.find(customer => customer.card_number === id)
+  
       },
       async getCheckById(id) {
         try {
-          const response = await fetch('/api/checks/get', {
+          const response = await fetch(`http://localhost:8090/check/${id}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.token}`
             },
-            body: JSON.stringify({ check_number: id }),
+            // body: JSON.stringify({ check_number: id }),
           })
 
           if (!response.ok) {
@@ -398,7 +398,6 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
           return null
         }
-        // return this.checks.find(check => check.check_number === id)
       },
 
       async loadDataForCurrentPage() {
