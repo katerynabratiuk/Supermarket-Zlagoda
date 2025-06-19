@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.entity.Sale;
 import com.zlagoda.Zlagoda.repository.CheckRepository;
 import com.zlagoda.Zlagoda.repository.SaleRepository;
 import com.zlagoda.Zlagoda.service.CheckService;
+import com.zlagoda.Zlagoda.util.IdGenerator;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -17,10 +18,12 @@ public class CheckServiceImpl implements CheckService {
 
     private final CheckRepository checkRepository;
     private final SaleRepository saleRepository;
+    private final IdGenerator idGenerator;
 
-    public CheckServiceImpl(CheckRepository checkRepository, SaleRepository saleRepository) {
+    public CheckServiceImpl(CheckRepository checkRepository, SaleRepository saleRepository, IdGenerator idGenerator) {
         this.checkRepository = checkRepository;
         this.saleRepository = saleRepository;
+        this.idGenerator = idGenerator;
     }
 
     @Override
@@ -74,7 +77,18 @@ public class CheckServiceImpl implements CheckService {
 
     @Override
     public void create(Receipt receipt) {
+
+        if (receipt.getCheckNumber() == null) {
+            receipt.setCheckNumber(idGenerator.generate(IdGenerator.Option.Check));
+        }
+
         checkRepository.create(receipt);
+
+        for(Sale sale : receipt.getProducts())
+        {
+            sale.setCheck(receipt);
+            this.saleRepository.create(sale);
+        }
     }
 
     @Override
