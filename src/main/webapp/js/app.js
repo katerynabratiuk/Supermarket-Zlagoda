@@ -273,50 +273,50 @@ let app = Vue.createApp(
         }
       },
       async getEmployeeById(id) {
-        // try {
-        //   const response = await fetch('/api/employees/get', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ employeeId: id }),
-        //   })
+        try {
+          const response = await fetch(`http://localhost:8090/employee/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }//,
+            //body: JSON.stringify({ employeeId: id }),
+          })
 
-        //   if (!response.ok) {
-        //     throw new Error(`Failed to fetch employee. Status: ${response.status}`)
-        //   }
-        //   const employee = await response.json()
-        //   return employee
+          if (!response.ok) {
+            throw new Error(`Failed to fetch employee. Status: ${response.status}`)
+          }
+          const employee = await response.json()
+          return employee
 
-        // } catch (error) {
-        //   console.error("An error occurred during fetching employee:", error)
-        //   alert("An unexpected error occurred. Please try again later.")
-        //   return null
-        // }
-        return this.employees.find(employee => employee.id_employee === id)
+        } catch (error) {
+          console.error("An error occurred during fetching employee:", error)
+          alert("An unexpected error occurred. Please try again later.")
+          return null
+        }
+        //return this.employees.find(employee => employee.id_employee === id)
       },
       async getCustomerById(id) {
-        // try {
-        //   const response = await fetch('/api/customers/get', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ customerId: id }),
-        //   })
+        try {
+          const response = await fetch(`http://localhost:8090/customer/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ customerId: id }),
+          })
 
-        //   if (!response.ok) {
-        //     throw new Error(`Failed to fetch customer. Status: ${response.status}`)
-        //   }
-        //   const customer = await response.json()
-        //   return customer
+          if (!response.ok) {
+            throw new Error(`Failed to fetch customer. Status: ${response.status}`)
+          }
+          const customer = await response.json()
+          return customer
 
-        // } catch (error) {
-        //   console.error("An error occurred during fetching customer:", error)
-        //   alert("An unexpected error occurred. Please try again later.")
-        //   return null
-        // }
-        return this.customers.find(customer => customer.card_number === id)
+        } catch (error) {
+          console.error("An error occurred during fetching customer:", error)
+          alert("An unexpected error occurred. Please try again later.")
+          return null
+        }
+       //return this.customers.find(customer => customer.card_number === id)
       },
       async getCheckById(id) {
         // try {
@@ -402,8 +402,8 @@ let app = Vue.createApp(
                 this.currentCheck = check
 
                 const [employee, customer] = await Promise.all([
-                  this.getEmployeeById(check.id_employee),
-                  this.getCustomerById(check.card_number),
+                  this.getEmployeeById(check.employee.id_employee),
+                  this.getCustomerById(check.customer_card.card_number),
                 ])
 
                 this.currentCheck.employeeName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
