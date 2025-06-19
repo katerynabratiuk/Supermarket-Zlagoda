@@ -658,7 +658,7 @@ let app = Vue.createApp(
           console.log("Deletion cancelled by user.")
         }
       },
-            async addNewProduct() {
+      async addNewProduct() {
         try {
           const response = await fetch('http://localhost:8090/product', {
             method: 'POST',
@@ -669,8 +669,8 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            const newProduct = await response.json()
-            this.products.push(newProduct)
+            // const newProduct = await response.json()
+            // this.products.push(newProduct)
             this.newProduct = {
               id: null,
               name: '',
