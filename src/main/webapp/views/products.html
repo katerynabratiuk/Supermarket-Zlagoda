@@ -104,53 +104,52 @@
                 </div>
 
                 <div class="form-label">Show:</div>
-                  <div class="form-field">
-                    <div class="radio-field">
-                      <input
-                        type="radio"
-                        id="show-promotional"
-                        name="show-type"
-                        value="promotional"
-                        v-model="productTypeFilter"
-                      />
-                      <label for="show-promotional">Promotional</label>
-                    </div>
-
-                    <div class="radio-field">
-                      <input
-                        type="radio"
-                        id="show-non-promotional"
-                        name="show-type"
-                        value="non-promotional"
-                        v-model="productTypeFilter"
-                      />
-                      <label for="show-non-promotional">Non-Promotional</label>
-                    </div>
+                <div class="form-field">
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="show-promotional"
+                      name="show-type"
+                      value="promotional"
+                      v-model="productTypeFilter"
+                    />
+                    <label for="show-promotional">Promotional</label>
                   </div>
 
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="show-non-promotional"
+                      name="show-type"
+                      value="non-promotional"
+                      v-model="productTypeFilter"
+                    />
+                    <label for="show-non-promotional">Non-Promotional</label>
+                  </div>
+                </div>
 
                 <div class="form-label">Sort by:</div>
-                  <div class="form-field">
-                    <div class="checkbox-field">
-                      <input
-                        type="checkbox"
-                        id="sort-name"
-                        value="product.product_name"
-                        v-model="sortProductsParamsField"
-                      />
-                      <label for="sort-name">Name</label>
-                    </div>
-                    <div class="checkbox-field">
-                      <input
-                        type="checkbox"
-                        id="sort-quantity"
-                        value="products_number"
-                        v-model="sortProductsParamsField"
-                      />
-                      <label for="sort-quantity">Quantity</label>
-                    </div>
+                <div class="form-field">
+                  <div class="checkbox-field">
+                    <input
+                      type="checkbox"
+                      id="sort-name"
+                      value="product.product_name"
+                      v-model="sortProductsParamsField"
+                    />
+                    <label for="sort-name">Name</label>
                   </div>
-
+                  <div class="checkbox-field">
+                    <input
+                      type="checkbox"
+                      id="sort-quantity"
+                      value="products_number"
+                      v-model="sortProductsParamsField"
+                    />
+                    <label for="sort-quantity">Quantity</label>
+                  </div>
+                </div>
+              </div>
 
               <div class="filter-form-button">
                 <button

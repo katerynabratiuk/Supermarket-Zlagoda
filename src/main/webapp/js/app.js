@@ -194,6 +194,7 @@ let app = Vue.createApp(
           })
 
           const data = await response.json()
+          console.log(data)
 
           if (!response.ok) {
             const status = response.status
@@ -211,11 +212,11 @@ let app = Vue.createApp(
           else {
             console.log('Login successful')
             this.errorMessage = ''
-            window.location.href = 'categories.html'
+            // window.location.href = 'categories.html'
           }
         } catch (error) {
           this.errorMessage = 'Unexpected error during login'
-          console.error('Login error:', error)
+          alert('Login error:', error)
         }
       },
 
