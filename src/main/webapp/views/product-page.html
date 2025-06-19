@@ -108,10 +108,10 @@
                   <div class="product-price">
                     <div
                       class="product-discount"
-                      v-if="currentProduct.promotional_product && !isEditMode"
+                      v-if="currentProduct.promotional_product && currentProduct.prom_base_price && !isEditMode"
                     >
                       <del class="custom-strike product-old-price">
-                        &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
+                        &#x20B4; {{ currentProduct.prom_base_price.toFixed(2) }}
                       </del>
                       <span class="discount"> -20% </span>
                     </div>
@@ -119,13 +119,14 @@
                     <div v-if="!isEditMode">
                       <p>
                         <span v-if="currentProduct.promotional_product">
-                          &#x20B4; {{ currentProduct.new_price.toFixed(2) }}
+                          &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
                         </span>
                         <span v-else>
                           &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
                         </span>
                       </p>
                     </div>
+
 
                     <div v-else>
                       <div class="form-field">
@@ -134,7 +135,7 @@
                         </label>
                         <input
                           id="price"
-                          :value="currentProduct.promotional_product ? currentProduct.new_price : currentProduct.selling_price"
+                          :value="currentProduct.selling_price"
                           @input="handlePriceInput($event, currentProduct.promotional_product)"
                           type="number"
                           min="0"
@@ -209,7 +210,7 @@
                     <label for="upc">UPC of Promotional Product:</label>
                     <input
                       id="upc"
-                      v-model="currentProduct.upc_prom"
+                      v-model="currentProduct.UPC_prom"
                       type="text"
                       class="edit-input"
                       required

@@ -295,5 +295,22 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         }
     }
 
+    @Override
+    public void addPromotional(StoreProduct promoProduct) {
+        promoProduct.setPromotional(true);
+        String nonPromoUPC = promoProduct.getUPC();
+        String promoUPC = promoProduct.getUPC_prom();
+
+        promoProduct.setUPC_prom(nonPromoUPC);
+        promoProduct.setUPC(promoUPC);
+
+        promoProduct.setSellingPrice(
+                promoProduct.getSellingPrice().multiply(BigDecimal.valueOf(0.8))
+        );
+
+        this.create(promoProduct);
+
+    }
+
 
 }

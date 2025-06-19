@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.repository.ProductRepository;
 import com.zlagoda.Zlagoda.repository.StoreProductRepository;
 import com.zlagoda.Zlagoda.service.StoreProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,16 @@ public class StoreProductServiceImpl implements StoreProductService {
     public List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy)
     {
         return storeProductRepository.filter(promotional, category, sortBy);
+
+    }
+
+    public void addPromotional(@Valid StoreProduct promoProduct) {
+
+        storeProductRepository.addPromotional(promoProduct);
+
+    }
+
+    public void deletePromotional(String id) {
 
     }
 }

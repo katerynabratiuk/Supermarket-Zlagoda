@@ -21,6 +21,20 @@ public class ProductController {
 
     private final StoreProductServiceImpl storeProductService;
 
+    @PutMapping()
+    public void updateProduct(@RequestBody @Valid StoreProduct storeProduct)
+    {
+        storeProductService.update(storeProduct);
+    }
+
+
+    @PostMapping("/promotional")
+    public void addPromotionalProduct(@RequestBody @Valid StoreProduct promoProduct) {
+        System.out.println(promoProduct);
+        storeProductService.addPromotional(promoProduct);
+    }
+
+
     public ProductController(StoreProductServiceImpl storeProductService) {
         this.storeProductService = storeProductService;
     }
@@ -49,12 +63,12 @@ public class ProductController {
         storeProductService.create(storeProduct);
     }
 
+
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable String id)
     {
         storeProductService.delete(id);
     }
-
 
     @GetMapping("/filter")
     public List<StoreProduct> filterProducts(

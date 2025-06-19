@@ -42,6 +42,7 @@ let app = Vue.createApp(
             product_name: '',
             description: '',
           },
+          UPC_prom:null,
           products_number: 0,
           new_price: null,
         },
@@ -634,7 +635,7 @@ let app = Vue.createApp(
         window.location.href = 'new-product-page.html'
       },
       async confirmAndDeleteProduct() {
-        const productId = this.currentProduct.id
+        const productId = this.currentProduct.UPC
         if (confirm("Are you sure you want to delete this product?")) {
           try {
             const response = await fetch(`http://localhost:8090/product/${productId}`, {
@@ -657,7 +658,7 @@ let app = Vue.createApp(
           console.log("Deletion cancelled by user.")
         }
       },
-      async addNewProduct() {
+            async addNewProduct() {
         try {
           const response = await fetch('http://localhost:8090/product', {
             method: 'POST',
@@ -694,22 +695,29 @@ let app = Vue.createApp(
       },
       async saveEditProduct() {
         try {
-          const response = await fetch(`http://localhost:8090/product/${this.currentProduct.UPC}`, {
-            method: 'PUT',
+          const isPromotional = this.currentProduct.promotional === true;
+
+          const url = isPromotional
+            ? 'http://localhost:8090/product/promotional' // новий endpoint
+            : `http://localhost:8090/product`;
+          const method = isPromotional ? 'POST' : 'PUT';
+
+          const response = await fetch(url, {
+            method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.currentProduct),
-          })
+          });
 
           if (response.ok) {
-            this.currentEditingItemID = null
-            window.location.href = "products.html"
+            this.currentEditingItemID = null;
+            window.location.href = "products.html";
           } else {
-            console.error("Updating product failed on the server. Status:", response.status)
-            alert("Failed to update product. Please try again.")
+            console.error(`${method} product failed on the server. Status:`, response.status);
+            alert("Failed to save product. Please try again.");
           }
         } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          console.error("An unexpected error occurred during saving:", error);
+          alert("An unexpected error occurred. Please try again later.");
         }
       },
       async applyProductFilters() {
@@ -1177,6 +1185,14 @@ let app = Vue.createApp(
       } finally {
         this.isLoading = false
       }
+
+      if (this.currentProduct && this.currentProduct.promotional_product && this.currentProduct.UPC_prom) {
+        const baseProduct = await this.getProductById(this.currentProduct.UPC_prom)
+        if (baseProduct) {
+          this.currentProduct.prom_base_price = baseProduct.selling_price
+        }
+      }
+
     }
   }
 )
