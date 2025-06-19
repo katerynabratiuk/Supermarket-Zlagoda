@@ -27,7 +27,7 @@ public class CheckRepositoryImpl implements CheckRepository {
                     "FROM Receipt " +
                     "JOIN Sale ON Receipt.check_number = Sale.check_number " +
                     "JOIN Store_Product ON Sale.UPC = Store_Product.UPC " +
-                    "JOIN Product ON Store_Product.id_product = Product.id_product " +
+                    "JOIN Product ON Store_Product.id_product = Product.id_product "+
                     "WHERE Receipt.check_number=?";
 
 
