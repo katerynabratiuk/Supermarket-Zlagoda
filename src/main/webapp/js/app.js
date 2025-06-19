@@ -10,12 +10,11 @@ let app = Vue.createApp(
         token: '',
         isLoggedIn: false,
         user: {
-          userRole: 'Unauthorized',
+          userRole: 'Manager',
           userName: ''
         },
         username: '',
         userPassword: '',
-        errorMassage: '',
 
         productsCategories: [],
         products: [],
@@ -48,7 +47,7 @@ let app = Vue.createApp(
             product_name: '',
             description: '',
           },
-          UPC_prom:null,
+          UPC_prom: null,
           products_number: 0,
           new_price: null,
         },
@@ -116,10 +115,10 @@ let app = Vue.createApp(
     },
     computed: {
       isManager() {
-        return this.user.userRole === "Manager"
+        return this.user.userRole === "MANAGER"
       },
       isCashier() {
-        return this.user.userRole === "Cashier"
+        return this.user.userRole === "CASHIER"
       },
       statusClass() {
         const product = this.currentProduct || this.newProduct
@@ -152,12 +151,12 @@ let app = Vue.createApp(
           const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase()
           const surName = `${employee.empl_surname}`.toLowerCase()
           return (
-              employee.id_employee.toLowerCase().includes(q) ||
-              surName.includes(q)
-              // ||
-              // employee.empl_role.toLowerCase().includes(q) ||
-              // employee.city.toLowerCase().includes(q) ||
-              // employee.phone_number.toLowerCase().includes(q)
+            employee.id_employee.toLowerCase().includes(q) ||
+            surName.includes(q)
+            // ||
+            // employee.empl_role.toLowerCase().includes(q) ||
+            // employee.city.toLowerCase().includes(q) ||
+            // employee.phone_number.toLowerCase().includes(q)
           )
         })
       },
@@ -215,37 +214,65 @@ let app = Vue.createApp(
           const response = await fetch('http://localhost:8090/auth/login', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload)
           })
 
-          const token = await response.json()
-          localStorage.setItem('authToken', token.token)
-          this.token = token.token
-          this.isLoggedIn = true
-
           if (!response.ok) {
             const status = response.status
+            const contentType = response.headers.get('content-type') || ''
+
+            let errorMessage = 'An unknown error occurred'
+            if (contentType.includes('application/json')) {
+              const errorData = await response.json()
+              errorMessage = errorData.message || errorMessage
+            } else {
+              const errorText = await response.text()
+              errorMessage = errorText || errorMessage
+            }
 
             if (status === 401) {
-              this.errorMessage = data.message || 'Incorrect username or password'
+              this.errorMessage = errorMessage || 'Incorrect username or password'
             } else if (status === 404) {
-              this.errorMessage = data.message || 'Username not found'
+              this.errorMessage = errorMessage || 'Username not found'
             } else if (status === 400) {
-              this.errorMessage = data.message || 'Invalid login request'
+              this.errorMessage = errorMessage || 'Invalid login request'
             } else {
-              this.errorMessage = data.message || 'An unknown error occurred'
+              this.errorMessage = errorMessage
             }
+            return
           }
-          else {
-            console.log('Login successful')
-            this.errorMessage = ''
-            window.location.href = 'categories.html'
+
+          const data = await response.json()
+          console.log('Login successful', data)
+          localStorage.setItem('authToken', data.token)
+          this.token = data.token
+          this.isLoggedIn = true
+          this.errorMessage = ''
+
+          const userResponse = await fetch("http://localhost:8090/auth/me", {
+            headers: {
+              "Authorization": "Bearer " + localStorage.getItem("authToken")
+            }
+          })
+          const userData = await userResponse.json()
+          console.log(userData)
+
+          localStorage.setItem('userName', userData.username)
+          localStorage.setItem('userRole', userData.role)
+
+          this.user = {
+            userName: userData.username,
+            userRole: userData.role
           }
+
+          console.log(this.user)
+
+          window.location.href = 'categories.html'
         } catch (error) {
+          console.error('Login error:', error)
           this.errorMessage = 'Unexpected error during login'
-          alert('Login error:', error)
         }
       },
 
@@ -286,6 +313,7 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             }
           })
 
@@ -308,8 +336,8 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-            }//,
-            //body: JSON.stringify({ employeeId: id }),
+              'Authorization': `Bearer ${this.token}`
+            }
           })
 
           if (!response.ok) {
@@ -331,8 +359,8 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
-            //body: JSON.stringify({ customerId: id }),
           })
 
           if (!response.ok) {
@@ -346,7 +374,7 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
           return null
         }
-       //return this.customers.find(customer => customer.card_number === id)
+        //return this.customers.find(customer => customer.card_number === id)
       },
       async getCheckById(id) {
         // try {
@@ -354,6 +382,7 @@ let app = Vue.createApp(
         //     method: 'POST',
         //     headers: {
         //       'Content-Type': 'application/json',
+        //       'Authorization': `Bearer ${this.token}`
         //     },
         //     body: JSON.stringify({ check_number: id }),
         //   })
@@ -472,9 +501,13 @@ let app = Vue.createApp(
       },
       async loadCategories() {
         try {
-          const response = await fetch("http://localhost:8090/category")
+          const response = await fetch("http://localhost:8090/category", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
 
-          if (!response.ok) throw new Error("Fetch categories error! Status: ${response.status}")
+          if (!response.ok) throw new Error(`Fetch categories error! Status: ${response.status}`)
 
           this.productsCategories = await response.json()
         } catch (error) {
@@ -483,7 +516,11 @@ let app = Vue.createApp(
       },
       async loadProducts() {
         try {
-          const response = await fetch("http://localhost:8090/product")
+          const response = await fetch("http://localhost:8090/product", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
           if (!response.ok) throw new Error("Fetch products error: ${response.status}")
 
           this.products = await response.json()
@@ -494,7 +531,11 @@ let app = Vue.createApp(
       async loadProductsByCategory(category_name) {
         this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`)
+          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`, {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
           if (response.ok) {
             this.products = await response.json()
           } else {
@@ -508,7 +549,11 @@ let app = Vue.createApp(
       },
       async loadCustomers() {
         try {
-          const response = await fetch("http://localhost:8090/customer")
+          const response = await fetch("http://localhost:8090/customer", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
           if (!response.ok) throw new Error("Fetch customers error! Status: ${response.status}")
 
           this.customers = await response.json()
@@ -524,8 +569,11 @@ let app = Vue.createApp(
 
       async loadChecks() {
         try {
-          const response = await fetch("http://localhost:8090/check")
-
+          const response = await fetch("http://localhost:8090/check", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
           if (!response.ok) throw new Error("Fetch checks error! Status: ${response.status}")
 
           this.checks = await response.json()
@@ -535,7 +583,11 @@ let app = Vue.createApp(
       },
       async loadEmployees() {
         try {
-          const response = await fetch("http://localhost:8090/employee")
+          const response = await fetch("http://localhost:8090/employee", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
 
           if (!response.ok) throw new Error("Fetch employees error! Status: ${response.status}")
 
@@ -564,6 +616,9 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/category/${categoryId}`, {
               method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
             })
 
             if (response.ok) {
@@ -588,6 +643,7 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCategory),
           })
@@ -614,6 +670,7 @@ let app = Vue.createApp(
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(category),
           })
@@ -670,11 +727,12 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/product/${productId}`, {
               method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
             })
 
             if (response.ok) {
-              this.products = this.products.filter(item => item.id !== productId)
-              this.currentProduct = null
               window.location.href = 'products.html'
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
@@ -694,6 +752,7 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newProduct),
           })
@@ -732,7 +791,10 @@ let app = Vue.createApp(
 
           const response = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            },
             body: JSON.stringify(this.currentProduct),
           })
 
@@ -749,60 +811,61 @@ let app = Vue.createApp(
         }
       },
       async applyProductFilters() {
-  try {
-        this.isLoading = true
+        try {
+          this.isLoading = true
 
-        const categorySelect = document.getElementById('category-select')
-        const fromDateInput = document.getElementById('from-date')
-        const toDateInput = document.getElementById('to-date')
+          const categorySelect = document.getElementById('category-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
 
-        let categoryName = null
-        const categoryNumber = categorySelect ? categorySelect.value : null
-        if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-          categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
-        }
-
-        const fromDate = fromDateInput?.value || null
-        const toDate = toDateInput?.value || null
-        const productType = this.productTypeFilter
-
-        const params = new URLSearchParams()
-
-        if (categoryNumber) params.append('category', categoryName)
-        if (fromDate) params.append('from_date', fromDate)
-        if (toDate) params.append('to_date', toDate)
-        if (productType === 'promotional') params.append('promotional', true)
-        else if (productType === 'non-promotional') params.append('promotional', false)
-
-        if (this.sortProductsParamsField?.length > 0) {
-          this.sortProductsParamsField.forEach(field => {
-            params.append('sortBy', field)
-          })
-        }
-
-        const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
+          let categoryName = null
+          const categoryNumber = categorySelect ? categorySelect.value : null
+          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
           }
-        })
 
-        if (!response.ok) {
-          throw new Error(`Failed to filter products. Status: ${response.status}`)
+          const fromDate = fromDateInput?.value || null
+          const toDate = toDateInput?.value || null
+          const productType = this.productTypeFilter
+
+          const params = new URLSearchParams()
+
+          if (categoryNumber) params.append('category', categoryName)
+          if (fromDate) params.append('from_date', fromDate)
+          if (toDate) params.append('to_date', toDate)
+          if (productType === 'promotional') params.append('promotional', true)
+          else if (productType === 'non-promotional') params.append('promotional', false)
+
+          if (this.sortProductsParamsField?.length > 0) {
+            this.sortProductsParamsField.forEach(field => {
+              params.append('sortBy', field)
+            })
+          }
+
+          const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error(`Failed to filter products. Status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          this.products = data
+          this.totalPieces = data.total_pieces || 0
+          this.filtersApplied = true
+          this.currentCategory = { category_name: categoryName }
+        } catch (error) {
+          console.error('Error applying filters to products:', error)
+          alert('Failed to apply filters to products. Please try again.')
+        } finally {
+          this.isLoading = false
         }
-
-        const data = await response.json()
-        this.products = data
-        this.totalPieces = data.total_pieces || 0
-        this.filtersApplied = true
-        this.currentCategory = { category_name: categoryName }
-      } catch (error) {
-        console.error('Error applying filters to products:', error)
-        alert('Failed to apply filters to products. Please try again.')
-      } finally {
-        this.isLoading = false
-      }
-    },
+      },
 
       clearProductFilters() {
         const categorySelect = document.getElementById('category-select')
@@ -834,14 +897,12 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCustomer),
           })
 
           if (response.ok) {
-            //const newCustomer = await response.json()
-            //this.customers.push(newCustomer)
-            //console.log("New customer added successfully:", newCustomer)
             window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
@@ -852,15 +913,15 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-
       async saveEditCustomer() {
         try {
           const response = await fetch(`http://localhost:8090/customer`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
-            //body: JSON.stringify(this.currentCustomer),
+            body: JSON.stringify(this.currentCustomer),
           })
 
           if (response.ok) {
@@ -875,7 +936,32 @@ let app = Vue.createApp(
           alert("An unexpected error occurred. Please try again later.")
         }
       },
-     
+      async confirmAndDeleteCustomer() {
+        const customerId = this.currentCustomer.card_number
+        if (confirm("Are you sure you want to delete this customer?")) {
+          try {
+            const response = await fetch(`http://localhost:8090/customer/${customerId}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
+            })
+
+            if (response.ok) {
+              window.location.href = 'customers.html'
+            } else {
+              console.error("Deletion failed on the server. Status:", response.status)
+              alert("Failed to delete customer. Please try again.")
+            }
+          } catch (error) {
+            console.error("An unexpected error occurred during deletion:", error)
+            alert("An unexpected error occurred. Please try again later.")
+          }
+        } else {
+          console.log("Deletion cancelled by user.")
+        }
+      },
+
       async applyCustomerFilters() {
         try {
           this.isLoading = true
@@ -898,6 +984,7 @@ let app = Vue.createApp(
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               },
             }
           )
@@ -951,6 +1038,7 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCheck),
           })
@@ -1046,7 +1134,8 @@ let app = Vue.createApp(
             const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               }
             })
 
@@ -1093,7 +1182,10 @@ let app = Vue.createApp(
         try {
           const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            },
             body: JSON.stringify(this.newEmployee),
           })
 
@@ -1113,8 +1205,10 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
               method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
             })
-
             if (response.ok) {
               this.employees = this.employees.filter(item => item.id_employee !== employeeId)
               this.currentEmployee = null
@@ -1137,6 +1231,7 @@ let app = Vue.createApp(
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.currentEmployee),
           })
@@ -1177,7 +1272,8 @@ let app = Vue.createApp(
             const response = await fetch(`http://localhost:8090/employee/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               }
             })
 
@@ -1221,7 +1317,14 @@ let app = Vue.createApp(
         this.token = storedToken
         this.isLoggedIn = true
       }
-
+      const storedUserName = localStorage.getItem('userName')
+      if (storedUserName) {
+        this.user.userName = storedUserName
+      }
+      const storedUserRole = localStorage.getItem('userRole')
+      if (storedUserRole) {
+        this.user.userRole = storedUserRole
+      }
 
       try {
         await this.loadDataForCurrentPage()
@@ -1258,7 +1361,7 @@ app.component("navbar", {
           <h1>Zlagoda</h1>
           <div class="login" ref="loginArea">
             <button class="login-btn" :disable="toggleLoginPopup" @click="login" @mouseover="toggleLoginPopup">
-              <span> {{ loginLabel }} </span>
+              <span> {{ user.userName }} </span>
               <span class="material-symbols-outlined">person</span>
             </button>
           </div>
@@ -1283,7 +1386,7 @@ app.component("navbar", {
           <li>
             <div class="login-label">
               <span>
-                Welcome, {{ user.userName }}!
+                Welcome, {{ user.userName }} !
                </span>
             </div>
           </li>
@@ -1302,7 +1405,7 @@ app.component("navbar", {
         { path: 'employees.html', label: 'Employees' }
       ],
       currentPath: window.location.pathname,
-      showLoginPopup: false,
+      showLoginPopup: false
     }
   },
   computed: {
@@ -1312,9 +1415,9 @@ app.component("navbar", {
     },
     filteredNavItems() {
       switch (this.user.userRole) {
-        case 'Manager':
+        case 'MANAGER':
           return this.navItems
-        case 'Cashier':
+        case 'CASHIER':
           return this.navItems.filter(item =>
             ['categories.html', 'products.html', 'checks.html'].includes(item.path))
         default:
