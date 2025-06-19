@@ -349,27 +349,27 @@ let app = Vue.createApp(
        //return this.customers.find(customer => customer.card_number === id)
       },
       async getCheckById(id) {
-        // try {
-        //   const response = await fetch('/api/checks/get', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ check_number: id }),
-        //   })
+        try {
+          const response = await fetch(`http://localhost:8090/check/${id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            //body: JSON.stringify({ check_number: id }),
+          })
 
-        //   if (!response.ok) {
-        //     throw new Error(`Failed to fetch check. Status: ${response.status}`)
-        //   }
-        //   const check = await response.json()
-        //   return check
+          if (!response.ok) {
+            throw new Error(`Failed to fetch check. Status: ${response.status}`)
+          }
+          const check = await response.json()
+          return check
 
-        // } catch (error) {
-        //   console.error("An error occurred during fetching check:", error)
-        //   alert("An unexpected error occurred. Please try again later.")
-        //   return null
-        // }
-        return this.checks.find(check => check.check_number === id)
+        } catch (error) {
+          console.error("An error occurred during fetching check:", error)
+          alert("An unexpected error occurred. Please try again later.")
+          return null
+        }
+        // return this.checks.find(check => check.check_number === id)
       },
 
       async loadDataForCurrentPage() {
@@ -431,13 +431,13 @@ let app = Vue.createApp(
                 const check = await this.getCheckById(checkId)
                 this.currentCheck = check
 
-                const [employee, customer] = await Promise.all([
-                  this.getEmployeeById(check.employee.id_employee),
-                  this.getCustomerById(check.customer_card.card_number),
-                ])
+                // const [employee, customer] = await Promise.all([
+                //   this.getEmployeeById(check.employee.id_employee),
+                //   this.getCustomerById(check.customer_card.card_number),
+                // ])
 
-                this.currentCheck.employee = employee
-                this.currentCheck.customer_card = customer
+                // this.currentCheck.employee = employee
+                // this.currentCheck.customer_card = customer
               }
               break
 
