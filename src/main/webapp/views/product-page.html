@@ -1,242 +1,249 @@
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" href="../styles/styles.css" />
-      <link rel="stylesheet" href="../styles/navbar.css" />
-      <link rel="stylesheet" href="../styles/footer.css" />
-      <link rel="stylesheet" href="../styles/buttons.css" />
-      <link rel="stylesheet" href="../styles/product-page.css" />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      />
-      <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-    </head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/product-page.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+  </head>
 
-    <body>
-      <div id="app" v-cloak>
-        <header>
-          <navbar :user-role="userRole" />
-        </header>
+  <body>
+    <div id="app" v-cloak>
+      <header>
+        <navbar :user-role="userRole" />
+      </header>
 
-        <main v-if="!isLoading && currentProduct">
-          <div class="product-header">
-            <h2>
-              Products
-              <span class="product-category">
-                | {{ currentProduct.product.category.category_name }}</span
-              >
-            </h2>
-            <edit-button
-              :is-manager="isManager"
-              :is-edit-mode="isEditMode"
-              @toggle="toggleEditMode"
-            ></edit-button>
-          </div>
-
-          <section class="contents">
-            <form
-              action=""
-              class="edit-form"
-              @submit.prevent="saveEditProduct('edit')"
+      <main v-if="!isLoading && currentProduct">
+        <div class="product-header">
+          <h2>
+            Products
+            <span class="product-category">
+              | {{ currentProduct.product.category.category_name }}</span
             >
-              <div class="product-details-upper">
-                <div class="product-image" v-if="!isEditMode">
-                  <img
-                    :src="currentProduct.image"
-                    :alt="currentProduct.product.product_name"
-                  />
-                </div>
-                <div v-else class="edit-product-image">
-                  <input
-                    type="file"
-                    id="image-input"
-                    accept="image/*"
-                    @change="handleImageUpload"
-                  />
-                </div>
+          </h2>
+          <edit-button
+            :is-manager="isManager"
+            :is-edit-mode="isEditMode"
+            @toggle="toggleEditMode"
+          ></edit-button>
+        </div>
 
-                <div class="product-main-info">
-                  <div class="product-name">
-                    <h3 v-if="!isEditMode">
-                      {{ currentProduct.product.product_name }}
-                    </h3>
-                    <div v-else class="form-field">
-                      <label for="product-name">Name:</label>
-                      <input
-                        id="product-name"
-                        maxlength="50"
-                        v-model="currentProduct.product.product_name"
-                        type="text"
-                        class="edit-input"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div class="product-management-info">
-                    <div class="product-id">
-                      <p>UPC: {{ currentProduct.UPC }}</p>
-                    </div>
-
-                    <div class="product-status" :class="statusClass">
-                      <p>
-                        {{ currentProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
-                      </p>
-                    </div>
-
-                    <div v-if="isManager">
-                      <div v-if="!isEditMode">
-                        <p>{{ currentProduct.products_number }} pcs</p>
-                      </div>
-                      <div v-else class="form-field">
-                        <label for="product-count">Count:</label>
-                        <input
-                          id="product-count"
-                          v-model.number="currentProduct.products_number"
-                          type="number"
-                          min="0"
-                          class="edit-input"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="product-price">
-                    <div
-                      class="product-discount"
-                      v-if="currentProduct.promotional_product && currentProduct.prom_base_price && !isEditMode"
-                    >
-                      <del class="custom-strike product-old-price">
-                        &#x20B4; {{ currentProduct.prom_base_price.toFixed(2) }}
-                      </del>
-                      <span class="discount"> -20% </span>
-                    </div>
-
-                    <div v-if="!isEditMode">
-                      <p>
-                        <span v-if="currentProduct.promotional_product">
-                          &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
-                        </span>
-                        <span v-else>
-                          &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
-                        </span>
-                      </p>
-                    </div>
-
-
-                    <div v-else>
-                      <div class="form-field">
-                        <label for="price">
-                          {{ currentProduct.promotional_product ? 'Discounted price:' : 'Price:' }}
-                        </label>
-                        <input
-                          id="price"
-                          :value="currentProduct.selling_price"
-                          @input="handlePriceInput($event, currentProduct.promotional_product)"
-                          type="number"
-                          min="0.1"
-                          max="9999999999999.9999"
-                          step="0.01"
-                          class="edit-input"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        <section class="contents">
+          <form
+            action=""
+            class="edit-form"
+            @submit.prevent="saveEditProduct('edit')"
+          >
+            <div class="product-details-upper">
+              <div class="product-image" v-if="!isEditMode">
+                <img
+                  :src="currentProduct.image"
+                  :alt="currentProduct.product.product_name"
+                />
+              </div>
+              <div v-else class="edit-product-image">
+                <input
+                  :disabled="currentProduct.promotional_product"
+                  type="file"
+                  id="image-input"
+                  accept="image/*"
+                  @change="handleImageUpload"
+                />
               </div>
 
-              <div class="product-details-lower">
-                <section class="characteristics">
-                  <h3 for="characteristics">Characteristics:</h3>
-                  <div v-if="!isEditMode">
-                    <p>{{ currentProduct.product.description }}</p>
-                  </div>
-                  <div v-else>
-                    <textarea
-                      id="characteristics"
-                      v-model="currentProduct.product.description"
-                      class="edit-textarea"
-                      required
-                    ></textarea>
-                  </div>
-                </section>
-
-                <section class="categories">
-                  <h3 for="category">Category:</h3>
-                  <div v-if="!isEditMode">
-                    <p>{{ currentProduct.product.category.category_name }}</p>
-                  </div>
-                  <div v-else>
-                    <select
-                      id="category"
-                      v-model="currentProduct.product.category"
-                      class="edit-dropdown"
-                    >
-                      <option disabled value="">Select category</option>
-                      <option
-                        v-for="category in productsCategories"
-                        :key="category.category_number"
-                        :value="category"
-                      >
-                        {{ category.category_name }}
-                      </option>
-                    </select>
-                  </div>
-                </section>
-
-                <section
-                  v-if="isManager && isEditMode && !currentProduct.promotional_product"
-                  class="promotional"
-                >
-                  <div class="promotional-checkbox">
-                    <h4>Promotional:</h4>
+              <div class="product-main-info">
+                <div class="product-name">
+                  <h3 v-if="!isEditMode">
+                    {{ currentProduct.product.product_name }}
+                  </h3>
+                  <div v-else class="form-field">
+                    <label for="product-name">Name:</label>
                     <input
-                      id="promotional"
-                      type="checkbox"
-                      v-model="currentProduct.promotional"
                       :disabled="currentProduct.promotional_product"
-                    />
-                    <label for="promotional">Yes</label>
-                  </div>
-
-                  <div
-                    v-if="currentProduct.promotional && !currentProduct.promotional_product"
-                  >
-                    <label for="upc">UPC of Promotional Product:</label>
-                    <input
-                      id="upc"
-                      v-model="currentProduct.UPC_prom"
+                      id="product-name"
+                      maxlength="50"
+                      v-model="currentProduct.product.product_name"
                       type="text"
                       class="edit-input"
                       required
                     />
                   </div>
-                </section>
-              </div>
+                </div>
 
-              <div class="buttons-section" v-if="isManager && isEditMode">
-                <button
-                  class="delete-btn"
-                  type="button"
-                  @click="confirmAndDeleteProduct"
+                <div class="product-management-info">
+                  <div class="product-id">
+                    <p>UPC: {{ currentProduct.UPC }}</p>
+                  </div>
+
+                  <div class="product-status" :class="statusClass">
+                    <p>
+                      {{ currentProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
+                    </p>
+                  </div>
+
+                  <div v-if="isManager">
+                    <div v-if="!isEditMode">
+                      <p>{{ currentProduct.products_number }} pcs</p>
+                    </div>
+                    <div v-else class="form-field">
+                      <label for="product-count">Count:</label>
+                      <input
+                        :disabled="currentProduct.promotional_product"
+                        id="product-count"
+                        v-model.number="currentProduct.products_number"
+                        type="number"
+                        min="0"
+                        class="edit-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="product-price">
+                  <div
+                    class="product-discount"
+                    v-if="currentProduct.promotional_product && currentProduct.prom_base_price && !isEditMode"
+                  >
+                    <del class="custom-strike product-old-price">
+                      &#x20B4; {{ currentProduct.prom_base_price.toFixed(2) }}
+                    </del>
+                    <span class="discount"> -20% </span>
+                  </div>
+
+                  <div v-if="!isEditMode">
+                    <p>
+                      <span v-if="currentProduct.promotional_product">
+                        &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
+                      </span>
+                      <span v-else>
+                        &#x20B4; {{ currentProduct.selling_price.toFixed(2) }}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div v-else>
+                    <div class="form-field">
+                      <label for="price">
+                        {{ currentProduct.promotional_product ? 'Discounted price:' : 'Price:' }}
+                      </label>
+                      <input
+                        :disabled="currentProduct.promotional_product"
+                        id="price"
+                        :value="currentProduct.selling_price"
+                        @input="handlePriceInput($event, currentProduct.promotional_product)"
+                        type="number"
+                        min="0.1"
+                        max="9999999999999.9999"
+                        step="0.01"
+                        class="edit-input"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-details-lower">
+              <section class="characteristics">
+                <h3 for="characteristics">Characteristics:</h3>
+                <div v-if="!isEditMode">
+                  <p>{{ currentProduct.product.description }}</p>
+                </div>
+                <div v-else>
+                  <textarea
+                    :disabled="currentProduct.promotional_product"
+                    id="characteristics"
+                    v-model="currentProduct.product.description"
+                    class="edit-textarea"
+                    required
+                  ></textarea>
+                </div>
+              </section>
+
+              <section class="categories">
+                <h3 for="category">Category:</h3>
+                <div v-if="!isEditMode">
+                  <p>{{ currentProduct.product.category.category_name }}</p>
+                </div>
+                <div v-else>
+                  <select
+                    id="category"
+                    v-model="currentProduct.product.category"
+                    class="edit-dropdown"
+                    :disabled="currentProduct.promotional_product"
+                  >
+                    <option disabled value="">Select category</option>
+                    <option
+                      v-for="category in productsCategories"
+                      :key="category.category_number"
+                      :value="category"
+                    >
+                      {{ category.category_name }}
+                    </option>
+                  </select>
+                </div>
+              </section>
+
+              <section
+                v-if="isManager && isEditMode && !currentProduct.promotional_product"
+                class="promotional"
+              >
+                <div class="promotional-checkbox">
+                  <h4>Promotional:</h4>
+                  <input
+                    :disabled="currentProduct.promotional_product"
+                    id="promotional"
+                    type="checkbox"
+                    v-model="currentProduct.promotional"
+                    :disabled="currentProduct.promotional_product"
+                  />
+                  <label for="promotional">Yes</label>
+                </div>
+
+                <div
+                  v-if="currentProduct.promotional && !currentProduct.promotional_product"
                 >
-                  Delete
-                </button>
-                <button class="save-btn" type="sumbit">Save</button>
-              </div>
-            </form>
-          </section>
-        </main>
+                  <label for="upc">UPC of Promotional Product:</label>
+                  <input
+                    :disabled="currentProduct.promotional_product"
+                    id="upc"
+                    v-model="currentProduct.UPC_prom"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
+                </div>
+              </section>
+            </div>
 
-        <custom-footer v-if="!isLoading && currentProduct"></custom-footer>
-      </div>
+            <div class="buttons-section" v-if="isManager && isEditMode">
+              <button
+                class="delete-btn"
+                type="button"
+                @click="confirmAndDeleteProduct"
+              >
+                Delete
+              </button>
+              <button v-if="!currentProduct.promotional" class="save-btn" type="sumbit">Save</button>
+            </div>
+          </form>
+        </section>
+      </main>
 
-      <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-      <script src="../js/app.js"></script>
-    </body>
-  </html>
+      <custom-footer v-if="!isLoading && currentProduct"></custom-footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
+  </body>
+</html>
