@@ -227,7 +227,19 @@ public class CheckRepositoryImpl implements CheckRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractCheckFromResultSet(rs);
+                Receipt receipt = extractCheckFromResultSet(rs);
+
+                Employee empl = receipt.getEmployee();
+                empl.setName(rs.getString("empl_name"));
+                empl.setSurname(rs.getString("empl_surname"));
+                empl.setPatronymic(rs.getString("empl_patronymic"));
+
+                CustomerCard customerCard = receipt.getCard();
+                customerCard.setName(rs.getString("cust_name"));
+                customerCard.setSurname(rs.getString("cust_surname"));
+                customerCard.setPatronymic(rs.getString("cust_patronymic"));
+
+                return receipt;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find receipt by id", e);

@@ -92,22 +92,17 @@
                       :key="index"
                     >
                       <td class="product-upc">
-                        {{ sale.upc }}
+                        {{ sale.store_product.upc }}
                       </td>
                       <td class="product-name">
-                        <a
-                          :href="'product-page.html?upc=' + sale.upc"
-                          class="product-link"
-                        >
-                          {{ sale.store_product.product.product_name }}
-                        </a>
+                        {{ sale.store_product.product.product_name }}
                       </td>
                       <td class="product-price">
                         {{ sale.selling_price.toFixed(2) }}
                       </td>
-                      <td class="product-quantity">{{ sale.quantity }}</td>
+                      <td class="product-quantity">{{ sale.product_number }}</td>
                       <td class="product-total">
-                        {{ (sale.selling_price * sale.quantity).toFixed(2) }}
+                        {{ (sale.selling_price * sale.product_number).toFixed(2) }}
                       </td>
                     </tr>
                   </tbody>
@@ -117,7 +112,7 @@
                   <dl class="check-summary-list">
                     <dt class="check-subtotal">Subtotal:</dt>
                     <dd class="check-subtotal-value">
-                      {{ subtotal.toFixed(2) }}
+                      {{ (currentCheck.sum_total).toFixed(2) }}
                     </dd>
 
                     <dt
@@ -135,7 +130,7 @@
 
                     <dt class="check-total">Total:</dt>
                     <dd class="check-total-value">
-                      <strong>{{ currentCheck.sum_total.toFixed(2) }}</strong>
+                      <strong>{{ (currentCheck.sum_total + currentCheck.vat).toFixed(2)}}</strong>
                     </dd>
 
                     <dt class="check-vat">VAT:</dt>
