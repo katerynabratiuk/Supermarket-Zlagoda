@@ -18,10 +18,7 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
 
       <main v-if="!isLoading && currentProduct">
@@ -237,7 +234,13 @@
               >
                 Delete
               </button>
-              <button v-if="!currentProduct.promotional" class="save-btn" type="sumbit">Save</button>
+              <button
+                v-if="!currentProduct.promotional_product || (currentProduct.promotional && !currentProduct.promotional_product)"
+                class="save-btn"
+                type="sumbit"
+              >
+                Save
+              </button>
             </div>
           </form>
         </section>
