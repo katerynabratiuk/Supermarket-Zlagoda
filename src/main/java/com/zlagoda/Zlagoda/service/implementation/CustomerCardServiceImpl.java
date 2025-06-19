@@ -42,11 +42,35 @@ public class CustomerCardServiceImpl implements CustomerCardService {
         if (card.getCardNumber() == null) {
             card.setCardNumber(idGenerator.generate(IdGenerator.Option.Customer));
         }
+        if (card.getPatronymic() != null && card.getPatronymic().isBlank()) {
+            card.setPatronymic(null);
+        }
+        if (card.getCity() != null && card.getCity().isBlank()) {
+            card.setCity(null);
+        }
+        if (card.getStreet() != null && card.getStreet().isBlank()) {
+            card.setStreet(null);
+        }
+        if (card.getZipCode() != null && card.getZipCode().isBlank()) {
+            card.setZipCode(null);
+        }
         customerCardRepository.create(card);
     }
 
     @Override
     public void update(CustomerCard card) {
+        if (card.getPatronymic() != null && card.getPatronymic().isBlank()) {
+            card.setPatronymic(null);
+        }
+        if (card.getCity() != null && card.getCity().isBlank()) {
+            card.setCity(null);
+        }
+        if (card.getStreet() != null && card.getStreet().isBlank()) {
+            card.setStreet(null);
+        }
+        if (card.getZipCode() != null && card.getZipCode().isBlank()) {
+            card.setZipCode(null);
+        }
         customerCardRepository.update(card);
     }
 
