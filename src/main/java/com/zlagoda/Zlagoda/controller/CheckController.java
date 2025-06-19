@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/check")
 public class CheckController {
 
-    private CheckServiceImpl checkService;
+    private final CheckServiceImpl checkService;
 
     public CheckController(CheckServiceImpl checkService) {
         this.checkService = checkService;
