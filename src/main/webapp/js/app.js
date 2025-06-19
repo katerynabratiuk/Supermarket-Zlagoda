@@ -111,6 +111,8 @@ let app = Vue.createApp(
 
         search: '',
         search_result: [],
+
+        error: null
       }
     },
     computed: {
@@ -307,6 +309,22 @@ let app = Vue.createApp(
         this.rowsToShowCount += this.rowsIncrementBy
       },
 
+      showError(message, options = {}) {
+        this.error = {
+          message,
+          timeout: options.timeout || 6000
+        }
+
+        if (this.error.timeout) {
+          setTimeout(() => {
+            this.error = null
+          }, this.error.timeout)
+        }
+      },
+      dismissError() {
+        this.error = null
+      },
+
       async getProductById(id) {
         try {
           const response = await fetch(`http://localhost:8090/product/${id}`, {
@@ -326,7 +344,7 @@ let app = Vue.createApp(
 
         } catch (error) {
           console.error("An error occurred during fetching product:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
       },
@@ -348,7 +366,7 @@ let app = Vue.createApp(
 
         } catch (error) {
           console.error("An error occurred during fetching employee:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
         //return this.employees.find(employee => employee.id_employee === id)
@@ -371,7 +389,7 @@ let app = Vue.createApp(
 
         } catch (error) {
           console.error("An error occurred during fetching customer:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
   
@@ -395,7 +413,7 @@ let app = Vue.createApp(
 
         } catch (error) {
           console.error("An error occurred during fetching check:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
       },
@@ -626,11 +644,11 @@ let app = Vue.createApp(
               await this.loadCategories()
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete category. Please try again.")
+              this.showError("Failed to delete category. Please try again.")
             }
           } catch (error) {
             console.error("An error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
+            this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
           console.log("Deletion cancelled by user.")
@@ -656,11 +674,11 @@ let app = Vue.createApp(
           }
           else {
             console.error("Adding category failed on the server. Status:", response.status)
-            alert("Failed to add category. Please try again.")
+            this.showError("Failed to add category. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async saveEditCategory(category) {
@@ -678,24 +696,28 @@ let app = Vue.createApp(
             this.currentEditingItemID = null
           } else {
             console.error("Updating category failed on the server. Status:", response.status)
-            alert("Failed to update category. Please try again.")
+            this.showError("Failed to update category. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async sortCategories() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/category/filter')
+          const response = await fetch('http://localhost:8090/category/filter', {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           this.productsCategories = await response.json()
         } catch (error) {
           console.error('Error sorting categories:', error)
-          alert('Failed to sort categories. Please try again.')
+          this.showError('Failed to sort categories. Please try again.')
         } finally {
           this.isLoading = false
         }
@@ -735,11 +757,11 @@ let app = Vue.createApp(
               window.location.href = 'products.html'
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete product. Please try again.")
+              this.showError("Failed to delete product. Please try again.")
             }
           } catch (error) {
             console.error("An error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
+            this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
           console.log("Deletion cancelled by user.")
@@ -772,11 +794,11 @@ let app = Vue.createApp(
             window.location.href = `products.html`
           } else {
             console.error("Adding product failed on the server. Status:", response.status)
-            alert("Failed to add product. Please try again.")
+            this.showError("Failed to add product. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async saveEditProduct() {
@@ -802,11 +824,11 @@ let app = Vue.createApp(
             window.location.href = "products.html"
           } else {
             console.error(`${method} product failed on the server. Status:`, response.status)
-            alert("Failed to save product. Please try again.")
+            this.showError("Failed to save product. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during saving:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async applyProductFilters() {
@@ -860,7 +882,7 @@ let app = Vue.createApp(
           this.currentCategory = { category_name: categoryName }
         } catch (error) {
           console.error('Error applying filters to products:', error)
-          alert('Failed to apply filters to products. Please try again.')
+          this.showError('Failed to apply filters to products. Please try again.')
         } finally {
           this.isLoading = false
         }
@@ -905,11 +927,11 @@ let app = Vue.createApp(
             window.location.href = `customers.html`
           } else {
             console.error("Adding customer failed on the server. Status:", response.status)
-            alert("Failed to add customer. Please try again.")
+            this.showError("Failed to add customer. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async saveEditCustomer() {
@@ -928,11 +950,11 @@ let app = Vue.createApp(
             window.location.href = "customers.html"
           } else {
             console.error("Updating customer failed on the server. Status:", response.status)
-            alert("Failed to update customer. Please try again.")
+            this.showError("Failed to update customer. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async confirmAndDeleteCustomer() {
@@ -950,11 +972,11 @@ let app = Vue.createApp(
               window.location.href = 'customers.html'
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete customer. Please try again.")
+              this.showError("Failed to delete customer. Please try again.")
             }
           } catch (error) {
             console.error("An unexpected error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
+            this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
           console.log("Deletion cancelled by user.")
@@ -996,7 +1018,7 @@ let app = Vue.createApp(
           this.filtersApplied = params.size > 0
         } catch (error) {
           console.error('Error applying filters to customers:', error)
-          alert('Failed to apply filters to customers. Please try again.')
+          this.showError('Failed to apply filters to customers. Please try again.')
         } finally {
           this.isLoading = false
         }
@@ -1024,7 +1046,7 @@ let app = Vue.createApp(
           this.employees = result
         } catch (error) {
           console.error("Помилка під час пошуку:", error)
-          alert("Сталася помилка при пошуку.")
+          this.showError("Сталася помилка при пошуку.")
         }
       },
 
@@ -1049,11 +1071,11 @@ let app = Vue.createApp(
             window.location.href = `check-page.html?id=${newCheck.check_number}`
           } else {
             console.error("Adding check failed on the server. Status:", response.status)
-            alert("Failed to add check. Please try again.")
+            this.showError("Failed to add check. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       addSale() {
@@ -1151,7 +1173,7 @@ let app = Vue.createApp(
           }
         } catch (error) {
           console.error('Error applying filters to checks:', error)
-          alert('Failed to apply filters to checks. Please try again.')
+          this.showError('Failed to apply filters to checks. Please try again.')
         } finally {
           this.isLoading = false
         }
@@ -1191,11 +1213,11 @@ let app = Vue.createApp(
           if (response.ok) {
             window.location.href = `employees.html`
           } else {
-            alert("Failed to add employee. Please try again.")
+            this.showError("Failed to add employee. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during adding:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       async confirmAndDeleteEmployee() {
@@ -1214,11 +1236,11 @@ let app = Vue.createApp(
               window.location.href = 'employees.html'
             } else {
               console.error("Deletion failed on the server. Status:", response.status)
-              alert("Failed to delete employee. Please try again.")
+              this.showError("Failed to delete employee. Please try again.")
             }
           } catch (error) {
             console.error("An unexpected error occurred during deletion:", error)
-            alert("An unexpected error occurred. Please try again later.")
+            this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
           console.log("Deletion cancelled by user.")
@@ -1240,11 +1262,11 @@ let app = Vue.createApp(
             window.location.href = "employees.html"
           } else {
             console.error("Updating employee failed on the server. Status:", response.status)
-            alert("Failed to update employee. Please try again.")
+            this.showError("Failed to update employee. Please try again.")
           }
         } catch (error) {
           console.error("An unexpected error occurred during updating:", error)
-          alert("An unexpected error occurred. Please try again later.")
+          this.showError("An unexpected error occurred. Please try again later.")
         }
       },
       formatEmployeeName(employee) {
@@ -1288,7 +1310,7 @@ let app = Vue.createApp(
           }
         } catch (error) {
           console.error('Error applying filters to employees:', error)
-          alert('Failed to apply filters to employees. Please try again.')
+          this.showError('Failed to apply filters to employees. Please try again.')
         } finally {
           this.isLoading = false
         }
@@ -1385,7 +1407,7 @@ app.component("navbar", {
           <li>
             <div class="login-label">
               <span>
-                Welcome, {{ user.userName }} !
+                Welcome, {{ user.userName }}!
                </span>
             </div>
           </li>
@@ -1530,5 +1552,41 @@ app.component("edit-button", {
     </button>
     `
 })
+
+app.component('custom-error', {
+  props: {
+    message: String,
+    duration: {
+      type: Number,
+      default: 5000
+    }
+  },
+  data() {
+    return {
+      show: false
+    }
+  },
+  methods: {
+    toggleErrorShow() {
+      this.show = !this.show
+    }
+  },
+  mounted() {
+    this.show = true;
+    if (this.duration > 0) {
+      setTimeout(() => {
+        this.show = false;
+      }, this.duration);
+    }
+  },
+  template: `
+    <transition name="error-fade">
+      <div v-if="show" class="custom-error">
+        <div class="message-content">{{ message }}</div>
+        <button class="error-btn" @click="toggleErrorShow"> OK </button>
+      </div>
+    </transition>
+  `
+});
 
 app.mount("#app")

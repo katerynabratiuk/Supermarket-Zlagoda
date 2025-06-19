@@ -1,159 +1,164 @@
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta @harset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" href="../styles/styles.css" />
-      <link rel="stylesheet" href="../styles/navbar.css" />
-      <link rel="stylesheet" href="../styles/footer.css" />
-      <link rel="stylesheet" href="../styles/buttons.css" />
-      <link rel="stylesheet" href="../styles/tables.css" />
-      <link rel="stylesheet" href="../styles/categories.css" />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      />
-      <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-      <title>Categories - Zlagoda</title>
-    </head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta @harset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/categories.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Categories - Zlagoda</title>
+  </head>
 
-    <body>
-      <div id="app" v-cloak>
-        <header class="noPrint">
-          <navbar
-             :user="user"
-             :is-logged-in="isLoggedIn"
-          />
-       </header>
+  <body>
+    <div id="app" v-cloak>
+      <header class="noPrint">
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
+      </header>
 
-        <main>
-          <div class="categories-header noPrint" v-if="!isLoading">
-            <h2>Categories</h2>
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
-            <div class="buttons-container" v-if="isManager">
-              <edit-button
-                type="button"
-                :is-manager="isManager"
-                :is-edit-mode="isEditMode"
-                @toggle="toggleEditMode"
-              >
-              </edit-button>
-              <button type="button" class="sort-btn" @click="sortCategories">Sort</button>
-              <button type="button" class="print-btn" onclick="window.print()">
-                Print
-              </button>
-            </div>
+      <main>
+        <div class="categories-header noPrint" v-if="!isLoading">
+          <h2>Categories</h2>
+
+          <div class="buttons-container" v-if="isManager">
+            <edit-button
+              type="button"
+              :is-manager="isManager"
+              :is-edit-mode="isEditMode"
+              @toggle="toggleEditMode"
+            >
+            </edit-button>
+            <button type="button" class="sort-btn" @click="sortCategories">
+              Sort
+            </button>
+            <button type="button" class="print-btn" onclick="window.print()">
+              Print
+            </button>
           </div>
+        </div>
 
-          <section class="contents noPrint">
-            <ul v-if="!isLoading">
-              <li v-for="item in productsCategories" :key="item.id">
-                <div class="category-item">
-                  <button
-                    type="button"
-                    class="delete-item-btn"
-                    v-if="isManager && isEditMode"
-                    @click="confirmDeleteCategory(item.category_number)"
-                  >
-                    <span class="material-symbols-outlined"> close </span>
+        <section class="contents noPrint">
+          <ul v-if="!isLoading">
+            <li v-for="item in productsCategories" :key="item.id">
+              <div class="category-item">
+                <button
+                  type="button"
+                  class="delete-item-btn"
+                  v-if="isManager && isEditMode"
+                  @click="confirmDeleteCategory(item.category_number)"
+                >
+                  <span class="material-symbols-outlined"> close </span>
+                </button>
+
+                <button
+                  type="button"
+                  class="edit-item-btn"
+                  v-if="isManager && isEditMode"
+                  @click="toggleEdit(item.id)"
+                >
+                  <span class="material-symbols-outlined"> edit </span>
+                </button>
+
+                <form
+                  class="edit-form"
+                  v-if="isManager && isEditMode && currentEditingItemID === item.id"
+                  @submit.prevent="saveEditCategory(item)"
+                >
+                  <input
+                    id="product-category"
+                    v-model="item.category_name"
+                    type="text"
+                    class="edit-input"
+                    required
+                  />
+                  <button type="submit" class="add-new-item-btn">
+                    <span class="material-symbols-outlined">
+                      download_done </span
+                    >Save
                   </button>
+                </form>
 
-                  <button
-                    type="button"
-                    class="edit-item-btn"
-                    v-if="isManager && isEditMode"
-                    @click="toggleEdit(item.id)"
-                  >
-                    <span class="material-symbols-outlined"> edit </span>
-                  </button>
-
-                  <form
-                    class="edit-form"
-                    v-if="isManager && isEditMode && currentEditingItemID === item.id"
-                    @submit.prevent="saveEditCategory(item)"
-                  >
-                    <input
-                      id="product-category"
-                      v-model="item.category_name"
-                      type="text"
-                      class="edit-input"
-                      required
-                    />
-                    <button type="submit" class="add-new-item-btn">
-                      <span class="material-symbols-outlined">
-                        download_done </span
-                      >Save
-                    </button>
-                  </form>
-
-                  <a
+                <a
                   v-else
                   :href="'products.html?category=' + item.category_name"
                 >
                   {{ item.category_name }}
                 </a>
+              </div>
+              <a
+                :href="'products.html?category=' + item.category_name"
+                :title="'View products in ' + item.category_name + ' category'"
+                class="category-arrow"
+                >></a
+              >
+            </li>
+
+            <li v-if="isManager && isEditMode">
+              <form class="edit-form" @submit.prevent="addNewCategory">
+                <div class="category-item">
+                  <input
+                    id="product-category-new"
+                    type="text"
+                    maxlength="50"
+                    v-model="newCategory.category_name"
+                    class="edit-input"
+                    placeholder="Add new category"
+                    required
+                  />
+                  <button type="submit" class="add-new-item-btn">
+                    <span class="material-symbols-outlined"> add_circle </span>
+                    Add New
+                  </button>
                 </div>
-                <a
-                  :href="'products.html?category=' + item.category_name"
-                  :title="'View products in ' + item.category_name + ' category'"
-                  class="category-arrow"
-                  >></a
-                >
-              </li>
+              </form>
+            </li>
+          </ul>
+          <div class="buttons-section noPrint" v-if="isManager && isEditMode">
+            <button
+              type="button"
+              class="save-change-btn"
+              @click="toggleEditMode"
+            >
+              Save
+            </button>
+          </div>
+        </section>
 
-              <li v-if="isManager && isEditMode">
-                <form class="edit-form" @submit.prevent="addNewCategory">
-                  <div class="category-item">
-                    <input
-                      id="product-category-new"
-                      type="text"
-                      maxlength="50"
-                      v-model="newCategory.category_name"
-                      class="edit-input"
-                      placeholder="Add new category"
-                      required
-                    />
-                    <button type="submit" class="add-new-item-btn">
-                      <span class="material-symbols-outlined"> add_circle </span>
-                      Add New
-                    </button>
-                  </div>
-                </form>
-              </li>
-            </ul>
-            <div class="buttons-section noPrint" v-if="isManager && isEditMode">
-              <button
-                type="button"
-                class="save-change-btn"
-                @click="toggleEditMode"
-              >
-                Save
-              </button>
-            </div>
-          </section>
+        <table class="table-section">
+          <thead class="table-headers">
+            <tr>
+              <th>Category number</th>
+              <th>Category name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="category in productsCategories"
+              :key="category.category_name"
+            >
+              <td>{{ category.category_number }}</td>
+              <td>{{ category.category_name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
 
-          <table class="table-section">
-            <thead class="table-headers">
-              <tr>
-                <th>Category number</th>
-                <th>Category name</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="category in productsCategories"
-                :key="category.category_name"
-              >
-                <td>{{ category.category_number }}</td>
-                <td>{{ category.category_name }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </main>
-
-        <custom-footer class="noPrint"></custom-footer>
-      </div>
-    </body>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="../js/app.js"></script>
-  </html>
+      <custom-footer class="noPrint"></custom-footer>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>
