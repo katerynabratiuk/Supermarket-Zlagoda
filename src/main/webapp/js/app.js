@@ -6,7 +6,13 @@ let app = Vue.createApp(
         isEditMode: false,
         showFilter: false,
         isPasswordVisible: false,
-        userRole: 'Manager',
+
+        token: '',
+        isLoggedIn: false,
+        user: {
+          userRole: 'Unauthorized',
+          userName: ''
+        },
         username: '',
         userPassword: '',
         errorMassage: '',
@@ -107,10 +113,10 @@ let app = Vue.createApp(
     },
     computed: {
       isManager() {
-        return this.userRole === "Manager"
+        return this.user.userRole === "Manager"
       },
       isCashier() {
-        return this.userRole === "Cashier"
+        return this.user.userRole === "Cashier"
       },
       statusClass() {
         const product = this.currentProduct || this.newProduct
@@ -193,8 +199,10 @@ let app = Vue.createApp(
             body: JSON.stringify(payload)
           })
 
-          const data = await response.json()
-          console.log(data)
+          const token = await response.json()
+          localStorage.setItem('authToken', token.token)
+          this.token = token.token
+          this.isLoggedIn = true
 
           if (!response.ok) {
             const status = response.status
@@ -212,7 +220,7 @@ let app = Vue.createApp(
           else {
             console.log('Login successful')
             this.errorMessage = ''
-            // window.location.href = 'categories.html'
+            window.location.href = 'categories.html'
           }
         } catch (error) {
           this.errorMessage = 'Unexpected error during login'
@@ -1175,6 +1183,13 @@ let app = Vue.createApp(
       const urlParams = new URLSearchParams(window.location.search)
       const categoryName = urlParams.get('category')
 
+      const storedToken = localStorage.getItem('authToken');
+      if (storedToken) {
+        this.token = storedToken
+        this.isLoggedIn = true
+      }
+
+
       try {
         await this.loadDataForCurrentPage()
         if (categoryName) {
@@ -1199,7 +1214,7 @@ let app = Vue.createApp(
 )
 
 app.component("navbar", {
-  props: ["userRole"],
+  props: ["user", "isLoggedIn"],
   template: `
     <div class="nav-wrapper">
       <nav class="top-nav">
@@ -1208,11 +1223,11 @@ app.component("navbar", {
             <img src="../images/logo-white.svg" alt="Zlagoda logo">
           </div>
           <h1>Zlagoda</h1>
-          <div class="login">
-            <button class="login-btn" @click="loginPageDirect">
-              {{ loginLabel }}
-             </button>
-            <span class="material-symbols-outlined">person</span>
+          <div class="login" ref="loginArea">
+            <button class="login-btn" @click="login" @mouseover="toggleLoginPopup">
+              <span> {{ loginLabel }} </span>
+              <span class="material-symbols-outlined">person</span>
+            </button>
           </div>
         </div>
       </nav>
@@ -1230,18 +1245,17 @@ app.component("navbar", {
       </nav>
     </div>
     
-    <div class="login-popup">
+    <div class="login-popup" v-if="showLoginPopup && isLoggedIn" @mouseleave="toggleLoginPopup">
         <ul class="account-options">
           <li>
             <div class="login-label">
               <span>
-                {{ loginLabel }}
+                Welcome, {{ user.userName }}!
                </span>
-            <span class="material-symbols-outlined">person</span>
             </div>
           </li>
           <li><a href="">My Profile</a></li>
-          <li><a href="">Logout</a></li>
+          <li><a href="index.html" @click="logout" >Logout</a></li>
         </ul>
     </div>
     `,
@@ -1255,15 +1269,16 @@ app.component("navbar", {
         { path: 'employees.html', label: 'Employees' }
       ],
       currentPath: window.location.pathname,
+      showLoginPopup: false,
     }
   },
   computed: {
     loginLabel() {
-      if (this.userRole === "Unauthorized") return "Log in"
-      return this.userRole
+      if (!this.isLoggedIn) return "Log in"
+      return "Some name";
     },
     filteredNavItems() {
-      switch (this.userRole) {
+      switch (this.user.userRole) {
         case 'Manager':
           return this.navItems
         case 'Cashier':
@@ -1291,11 +1306,25 @@ app.component("navbar", {
       }
       return currentPage === path || (currentPage in pathDict & path === pathDict[currentPage])
     },
-    loginPageDirect() {
-      // if (this.userRole === "Unauthorized") {
+    toggleLoginPopup() {
+      this.showLoginPopup = !this.showLoginPopup;
+    },
+    login() {
       window.location.href = "index.html"
-      // }
+    },
+    logout() {
+      localStorage.removeItem('authToken')
+      this.token = ''
+      this.user = {
+        userName: '',
+        userRole: 'Unnauthorized'
+      }
+      this.isLoggedIn = false
+      window.location.href = 'index.html'
     }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside);
   }
 })
 

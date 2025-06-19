@@ -21,11 +21,10 @@
       <div id="app" v-cloak>
         <header class="noPrint">
           <navbar
-            :user-role="userRole"
-            :is-manager="isManager"
-            :is-cashier="isCashier"
+             :user="user"
+             :is-logged-in="isLoggedIn"
           />
-        </header>
+       </header>
 
         <main>
           <div class="categories-header noPrint" v-if="!isLoading">
