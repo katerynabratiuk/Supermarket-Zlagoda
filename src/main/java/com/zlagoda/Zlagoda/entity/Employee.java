@@ -310,9 +310,11 @@ public class Employee {
 
     public void setEmplUsername(String empl_username) { this.empl_username = empl_username; }
 
-    public boolean getIsActive() { return isActive; }
+    public boolean getIsActive() {
+        return Boolean.TRUE.equals(isActive);
+    }
 
-    public void setIsActive(boolean isActive) { this.isActive = isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
     @Override
     public String toString() {
