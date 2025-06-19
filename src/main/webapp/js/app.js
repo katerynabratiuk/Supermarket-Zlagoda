@@ -494,7 +494,7 @@ let app = Vue.createApp(
 
       async loadChecks() {
         try {
-          const response = await fetch("../checks.json")
+          const response = await fetch("http://localhost:8090/check")
 
           if (!response.ok) throw new Error("Fetch checks error! Status: ${response.status}")
 

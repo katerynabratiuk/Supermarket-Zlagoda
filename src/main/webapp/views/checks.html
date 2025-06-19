@@ -76,8 +76,8 @@
                     <option selected disabled value="">Select Employee</option>
                     <option
                       v-for="employee in employees"
-                      :key="employee.id_employee"
-                      :value="employee.id_employee"
+                      :key="employee.employee.id_employee"
+                      :value="employee.employee.id_employee"
                       :data-name="formatEmployeeName(employee)"
                     >
                       {{ formatEmployeeName(employee) }}
@@ -179,20 +179,21 @@
                     <td class="cashier">
                       <a
                         v-if="isManager"
-                        :href="'employee-page.html?id=' + check.id_employee"
+                        :href="'employee-page.html?id=' + check.employee.id_employee"
                       >
-                        {{ check.id_employee }}
+                        {{ check.employee.id_employee }}
                       </a>
-                      <span v-else> {{ check.id_employee }} </span>
+                      <span v-else> {{ check.employee.id_employee }} </span>
                     </td>
                     <td class="customer">
                       <a
-                        v-if="isManager"
-                        :href="'customer-page.html?id=' + check.card_number"
+                        v-if="isManager && check.customer"
+                        :href="'customer-page.html?id=' + check.customer_card.card_number"
                       >
-                        {{ check.card_number }}
+                        {{ check.customer_card.card_number }}
                       </a>
-                      <span v-else> {{ check.card_number }} </span>
+                      <span v-else-if="check.customer_card"> {{ check.customer_card.card_number }} </span>
+                      <span v-else> — </span>
                     </td>
                     <td class="total-price">{{ check.sum_total.toFixed(2) }}</td>
                   </tr>
