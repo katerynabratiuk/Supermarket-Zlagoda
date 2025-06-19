@@ -145,12 +145,12 @@ let app = Vue.createApp(
       },
       filteredEmployees() {
         if (!this.search) {
-          return this.employees;
+          return this.employees
         }
-        const q = this.search.toLowerCase();
+        const q = this.search.toLowerCase()
         return this.employees.filter(employee => {
-          const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase();
-          const surName = `${employee.empl_surname}`.toLowerCase();
+          const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase()
+          const surName = `${employee.empl_surname}`.toLowerCase()
           return (
               employee.id_employee.toLowerCase().includes(q) ||
               surName.includes(q)
@@ -158,8 +158,8 @@ let app = Vue.createApp(
               // employee.empl_role.toLowerCase().includes(q) ||
               // employee.city.toLowerCase().includes(q) ||
               // employee.phone_number.toLowerCase().includes(q)
-          );
-        });
+          )
+        })
       },
     },
     watch: {
@@ -699,8 +699,6 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
-            // const newProduct = await response.json()
-            // this.products.push(newProduct)
             this.newProduct = {
               id: null,
               name: '',
@@ -725,61 +723,61 @@ let app = Vue.createApp(
       },
       async saveEditProduct() {
         try {
-          const isPromotional = this.currentProduct.promotional === true;
+          const isPromotional = this.currentProduct.promotional === true
 
           const url = isPromotional
-            ? 'http://localhost:8090/product/promotional' // новий endpoint
-            : `http://localhost:8090/product`;
-          const method = isPromotional ? 'POST' : 'PUT';
+            ? 'http://localhost:8090/product/promotional'
+            : `http://localhost:8090/product`
+          const method = isPromotional ? 'POST' : 'PUT'
 
           const response = await fetch(url, {
             method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.currentProduct),
-          });
+          })
 
           if (response.ok) {
-            this.currentEditingItemID = null;
-            window.location.href = "products.html";
+            this.currentEditingItemID = null
+            window.location.href = "products.html"
           } else {
-            console.error(`${method} product failed on the server. Status:`, response.status);
-            alert("Failed to save product. Please try again.");
+            console.error(`${method} product failed on the server. Status:`, response.status)
+            alert("Failed to save product. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during saving:", error);
-          alert("An unexpected error occurred. Please try again later.");
+          console.error("An unexpected error occurred during saving:", error)
+          alert("An unexpected error occurred. Please try again later.")
         }
       },
       async applyProductFilters() {
   try {
-        this.isLoading = true;
+        this.isLoading = true
 
-        const categorySelect = document.getElementById('category-select');
-        const fromDateInput = document.getElementById('from-date');
-        const toDateInput = document.getElementById('to-date');
+        const categorySelect = document.getElementById('category-select')
+        const fromDateInput = document.getElementById('from-date')
+        const toDateInput = document.getElementById('to-date')
 
-        let categoryName = null;
-        const categoryNumber = categorySelect ? categorySelect.value : null;
+        let categoryName = null
+        const categoryNumber = categorySelect ? categorySelect.value : null
         if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-          categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
+          categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
         }
 
-        const fromDate = fromDateInput?.value || null;
-        const toDate = toDateInput?.value || null;
-        const productType = this.productTypeFilter;
+        const fromDate = fromDateInput?.value || null
+        const toDate = toDateInput?.value || null
+        const productType = this.productTypeFilter
 
-        const params = new URLSearchParams();
+        const params = new URLSearchParams()
 
-        if (categoryNumber) params.append('category', categoryName);
-        if (fromDate) params.append('from_date', fromDate);
-        if (toDate) params.append('to_date', toDate);
-        if (productType === 'promotional') params.append('promotional', true);
-        else if (productType === 'non-promotional') params.append('promotional', false);
+        if (categoryNumber) params.append('category', categoryName)
+        if (fromDate) params.append('from_date', fromDate)
+        if (toDate) params.append('to_date', toDate)
+        if (productType === 'promotional') params.append('promotional', true)
+        else if (productType === 'non-promotional') params.append('promotional', false)
 
         if (this.sortProductsParamsField?.length > 0) {
           this.sortProductsParamsField.forEach(field => {
-            params.append('sortBy', field);
-          });
+            params.append('sortBy', field)
+          })
         }
 
         const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
@@ -787,22 +785,22 @@ let app = Vue.createApp(
           headers: {
             'Content-Type': 'application/json'
           }
-        });
+        })
 
         if (!response.ok) {
-          throw new Error(`Failed to filter products. Status: ${response.status}`);
+          throw new Error(`Failed to filter products. Status: ${response.status}`)
         }
 
-        const data = await response.json();
-        this.products = data;
-        this.totalPieces = data.total_pieces || 0;
-        this.filtersApplied = true;
-        this.currentCategory = { category_name: categoryName };
+        const data = await response.json()
+        this.products = data
+        this.totalPieces = data.total_pieces || 0
+        this.filtersApplied = true
+        this.currentCategory = { category_name: categoryName }
       } catch (error) {
-        console.error('Error applying filters to products:', error);
-        alert('Failed to apply filters to products. Please try again.');
+        console.error('Error applying filters to products:', error)
+        alert('Failed to apply filters to products. Please try again.')
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     },
 
@@ -880,17 +878,17 @@ let app = Vue.createApp(
      
       async applyCustomerFilters() {
         try {
-          this.isLoading = true;
+          this.isLoading = true
 
-          const discountSelect = document.getElementById('discount-select');
-          const discountPercent = discountSelect ? discountSelect.value : null;
-          const sortNameCheckbox = document.getElementById('sort-name');
-          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false;
+          const discountSelect = document.getElementById('discount-select')
+          const discountPercent = discountSelect ? discountSelect.value : null
+          const sortNameCheckbox = document.getElementById('sort-name')
+          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false
 
-          const params = new URLSearchParams();
+          const params = new URLSearchParams()
 
-          if (discountPercent) params.append('percentage', discountPercent);
-          if (sortByName) params.append('sortBy', 'name');
+          if (discountPercent) params.append('percentage', discountPercent)
+          if (sortByName) params.append('sortBy', 'name')
 
           const response = await fetch(
             params.size > 0
@@ -902,19 +900,19 @@ let app = Vue.createApp(
                 'Content-Type': 'application/json',
               },
             }
-          );
+          )
 
           if (!response.ok) {
-            throw new Error(`Failed to load customers. Status: ${response.status}`);
+            throw new Error(`Failed to load customers. Status: ${response.status}`)
           }
 
-          this.customers = await response.json();
-          this.filtersApplied = params.size > 0;
+          this.customers = await response.json()
+          this.filtersApplied = params.size > 0
         } catch (error) {
-          console.error('Error applying filters to customers:', error);
-          alert('Failed to apply filters to customers. Please try again.');
+          console.error('Error applying filters to customers:', error)
+          alert('Failed to apply filters to customers. Please try again.')
         } finally {
-          this.isLoading = false;
+          this.isLoading = false
         }
       },
 
@@ -930,17 +928,17 @@ let app = Vue.createApp(
       },
       async searchEmployees() {
         if (!this.search) {
-          await this.loadEmployees(); // повернути початковий список
-          return;
+          await this.loadEmployees()
+          return
         }
         try {
-          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`);
-          if (!response.ok) throw new Error("Пошук не вдався");
-          const result = await response.json();
-          this.employees = result;
+          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`)
+          if (!response.ok) throw new Error("Пошук не вдався")
+          const result = await response.json()
+          this.employees = result
         } catch (error) {
-          console.error("Помилка під час пошуку:", error);
-          alert("Сталася помилка при пошуку.");
+          console.error("Помилка під час пошуку:", error)
+          alert("Сталася помилка при пошуку.")
         }
       },
 
@@ -1218,7 +1216,7 @@ let app = Vue.createApp(
       const urlParams = new URLSearchParams(window.location.search)
       const categoryName = urlParams.get('category')
 
-      const storedToken = localStorage.getItem('authToken');
+      const storedToken = localStorage.getItem('authToken')
       if (storedToken) {
         this.token = storedToken
         this.isLoggedIn = true
@@ -1259,7 +1257,7 @@ app.component("navbar", {
           </div>
           <h1>Zlagoda</h1>
           <div class="login" ref="loginArea">
-            <button class="login-btn" @click="login" @mouseover="toggleLoginPopup">
+            <button class="login-btn" :disable="toggleLoginPopup" @click="login" @mouseover="toggleLoginPopup">
               <span> {{ loginLabel }} </span>
               <span class="material-symbols-outlined">person</span>
             </button>
@@ -1310,7 +1308,7 @@ app.component("navbar", {
   computed: {
     loginLabel() {
       if (!this.isLoggedIn) return "Log in"
-      return "Some name";
+      return "Some name"
     },
     filteredNavItems() {
       switch (this.user.userRole) {
@@ -1342,7 +1340,7 @@ app.component("navbar", {
       return currentPage === path || (currentPage in pathDict & path === pathDict[currentPage])
     },
     toggleLoginPopup() {
-      this.showLoginPopup = !this.showLoginPopup;
+      this.showLoginPopup = !this.showLoginPopup
     },
     login() {
       window.location.href = "index.html"
@@ -1359,7 +1357,7 @@ app.component("navbar", {
     }
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside)
   }
 })
 

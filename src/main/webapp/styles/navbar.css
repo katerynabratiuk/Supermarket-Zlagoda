@@ -109,6 +109,7 @@ header {
     position: absolute;
     z-index: 1;
     right: 0;
+    width: 250px;
     background-color: #4A5759;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     margin: 0 60px;
