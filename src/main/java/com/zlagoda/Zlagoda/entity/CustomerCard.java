@@ -44,9 +44,7 @@ public class CustomerCard {
     private String street;
 
     @NotNull(message = "Zip code cannot be null!")
-    @Size(min = 5, max = 9, message = "Zip code must be between 5 and 9 characters!")
-    @Pattern(regexp = "^\\d+$", message = "Zip code must contain numbers only!")
-    @NotBlank(message = "Zip code cannot be blank!")
+    @Size(max = 9, message = "Zip code cannot be more than 9 characters long!")
     @JsonProperty("zip_code")
     private String zipCode;
 
@@ -118,10 +116,15 @@ public class CustomerCard {
     }
 
     @AssertTrue()
-    @Transient
     public boolean isPatronymicValid() {
         return patronymic == null || patronymic.isBlank()
                 || patronymic.matches("^[A-Z][a-z]{1,49}(?:-[A-Z][a-z]{1,49})*$");
+    }
+
+    @AssertTrue()
+    public boolean isZipCodeValid() {
+        return zipCode == null || zipCode.isBlank()
+                || zipCode.matches("^[0-9]{5,9}$");
     }
 
     public CustomerCard(String cardNumber, String surname, String name, String phoneNumber, Integer percent) {
@@ -131,6 +134,7 @@ public class CustomerCard {
         this.phoneNumber = phoneNumber;
         this.percent = percent;
     }
+
 
     public CustomerCard(String cardNumber, String surname, String name, String patronymic,
                         String phoneNumber, String city, String street, String zipCode, Integer percent) {
