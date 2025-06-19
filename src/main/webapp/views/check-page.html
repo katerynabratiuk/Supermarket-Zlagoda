@@ -37,25 +37,33 @@
 
                   <dt>Cashier:</dt>
                   <dd>
+                    {{ currentCheck.employee.id_employee}} |
                     <a
                       class="employee-link"
-                      :href="'employee-page.html?id=' + currentCheck.id_employee"
+                      :href="'employee-page.html?id=' + currentCheck.employee.id_employee"
                     >
-                      {{ currentCheck.employeeName }}
+                    {{ currentCheck.employee.empl_surname }} 
+                    {{ currentCheck.employee.empl_name }} 
+                    {{ currentCheck.employee.empl_patronymic }}
                     </a>
+
                   </dd>
 
                   <dt>Customer:</dt>
-                  <dd>
-                    <a
-                      v-if="currentCheck.card_number"
-                      class="customer-link"
-                      :href="'customer-page.html?id=' + currentCheck.card_number"
-                    >
-                      {{ currentCheck.customerName }}
-                    </a>
-                    <span v-else>No customer</span>
-                  </dd>
+                    <dd>
+                      <template v-if="currentCheck.customer_card">
+                        {{ currentCheck.customer_card.card_number }} | 
+                        <a
+                          class="customer-link"
+                          :href="'customer-page.html?id=' + currentCheck.customer_card.card_number"
+                        >
+                        {{ currentCheck.customer_card.cust_surname }}
+                        {{ currentCheck.customer_card.cust_name }} 
+                        {{ currentCheck.customer_card.cust_patronymic }} 
+                        </a>
+                      </template>
+                      <span v-else>No customer</span>
+                    </dd>
                 </dl>
               </div>
             </div>
@@ -88,7 +96,7 @@
                           :href="'product-page.html?upc=' + sale.upc"
                           class="product-link"
                         >
-                          {{ sale.product_name }}
+                          {{ sale.store_product.product.product_name }}
                         </a>
                       </td>
                       <td class="product-price">

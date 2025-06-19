@@ -187,7 +187,7 @@
                     </td>
                     <td class="customer">
                       <a
-                        v-if="isManager && check.customer"
+                        v-if="check.customer_card"
                         :href="'customer-page.html?id=' + check.customer_card.card_number"
                       >
                         {{ check.customer_card.card_number }}
