@@ -20,4 +20,14 @@ public class CheckController {
 
     private CheckServiceImpl checkService;
 
+    public CheckController(CheckServiceImpl checkService) {
+        this.checkService = checkService;
+    }
+
+    @GetMapping()
+    public List<Receipt> getAll()
+    {
+        return checkService.findAll();
+    }
+
 }
