@@ -130,18 +130,24 @@ let app = Vue.createApp(
       },
       subtotal() {
         return this.newCheck.sales.reduce((total, sale) => {
-          return total + (sale.selling_price * sale.quantity)
-        }, 0)
+          return total + (sale.selling_price * sale.quantity);
+        }, 0);
       },
+
       discountPercent() {
-        return this.currentCustomer?.percent || 0
+        return this.currentCustomer?.percent || 0;
       },
-      totalAfterDiscount() {
-        const discount = this.discountPercent / 100
-        return this.subtotal * (1 - discount)
-      },
+
       vatAmount() {
-        return this.totalAfterDiscount * 0.2
+        return this.subtotal * 0.2; // 20% від subtotal
+      },
+
+      discountAmount() {
+        return (this.subtotal + this.vatAmount) * (this.discountPercent / 100);
+      },
+
+      totalAfterDiscount() {
+        return (this.subtotal + this.vatAmount) - this.discountAmount;
       },
       filteredEmployees() {
         if (!this.search) {
