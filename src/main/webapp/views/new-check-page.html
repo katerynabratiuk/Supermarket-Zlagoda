@@ -20,7 +20,10 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar :user-role="userRole" />
+        <navbar
+        :user="user"
+        :is-logged-in="isLoggedIn"
+        />
       </header>
 
       <main v-if="!isLoading">
