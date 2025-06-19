@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,6 +26,30 @@
         :is-logged-in="isLoggedIn"
         />>
       </header>
+=======
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/navbar.css" />
+  <link rel="stylesheet" href="../styles/footer.css" />
+  <link rel="stylesheet" href="../styles/buttons.css" />
+  <link rel="stylesheet" href="../styles/tables.css" />
+  <link rel="stylesheet" href="../styles/employees.css" />
+  <link rel="stylesheet" href="../styles/filters.css" />
+  <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+  />
+  <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+  <title>Employees - Zlagoda</title>
+</head>
+<body>
+<div id="app" v-cloak>
+  <header class="noPrint">
+    <navbar :user-role="userRole" />
+  </header>
+>>>>>>> 476bd1b417890e29847356b4b2b4330df1e9dd32
 
   <main>
     <div class="employees-header noPrint" v-if="!isLoading">
