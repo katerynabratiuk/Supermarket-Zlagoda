@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.entity.Receipt;
 import com.zlagoda.Zlagoda.exception.DataAccessException;
 import com.zlagoda.Zlagoda.repository.CheckRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -18,7 +19,6 @@ public class CheckRepositoryImpl implements CheckRepository {
 
     private static final String GET_ALL = "SELECT * FROM Receipt" ;
     private static final String CREATE = "INSERT INTO Receipt(check_number, id_employee, card_number, print_date, sum_total, vat) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE Receipt SET id_employee=?, card_number=?, print_date=?, total_sum=?, vat=? WHERE check_number=?";
     private static final String DELETE = "DELETE FROM Receipt WHERE check_number=?";
 
     private static final String FIND_BY_ID =
@@ -63,6 +63,7 @@ public class CheckRepositoryImpl implements CheckRepository {
     private static final String FIND_BY_EMPLOYEE_ID = "SELECT Receipt.*" +
             "FROM Employee INNER JOIN Receipt ON Employee.id_employee = Receipt.id_employee " +
             "WHERE id_employee=? AND print_date>? AND print_date<?";
+
 
     private final DBConnection dbConnection;
 
@@ -247,7 +248,7 @@ public class CheckRepositoryImpl implements CheckRepository {
         return null;
     }
 
-
+    @Transactional
     @Override
     public void create(Receipt receipt) {
         try (Connection connection = dbConnection.getConnection();
@@ -275,7 +276,7 @@ public class CheckRepositoryImpl implements CheckRepository {
     @Override
     public void update(Receipt receipt) {
         try (Connection connection = dbConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(UPDATE)) {
+             PreparedStatement stmt = connection.prepareStatement("UPDATE")) {
 
             stmt.setString(1, receipt.getEmployee().getId());
 
