@@ -22,13 +22,13 @@ public class CheckRepositoryImpl implements CheckRepository {
     private static final String DELETE = "DELETE FROM Receipt WHERE check_number=?";
 
     private static final String FIND_BY_ID =
-            "SELECT Receipt.*, Sale.sum_total AS sale_sum, Sale.product_number, " +
-                    "Store_Product.UPC, Store_Product.selling_price, Product.name AS product_name " +
-                    "FROM Receipt " +
-                    "JOIN Sale ON Receipt.check_number = Sale.check_number " +
-                    "JOIN Store_Product ON Sale.UPC = Store_Product.UPC " +
-                    "JOIN Product ON Store_Product.id_product = Product.id_product "+
-                    "WHERE Receipt.check_number=?";
+            "SELECT Receipt.*, " +
+            "Employee.id_employee, Employee.empl_name, Employee.empl_surname, Employee.empl_patronymic, " +
+            "Customer_card.card_number, Customer_card.cust_name, Customer_card.cust_surname, Customer_card.cust_patronymic " +
+            "FROM Receipt "+
+            "JOIN Employee ON Employee.id_employee = Receipt.id_employee " +
+            "JOIN Customer_card ON Customer_card.card_number = Receipt.card_number " +
+            "WHERE Receipt.check_number=?";
 
 
     private static final String FIND_DATE_BETWEEN =
@@ -63,8 +63,6 @@ public class CheckRepositoryImpl implements CheckRepository {
     private static final String FIND_BY_EMPLOYEE_ID = "SELECT Receipt.*" +
             "FROM Employee INNER JOIN Receipt ON Employee.id_employee = Receipt.id_employee " +
             "WHERE id_employee=? AND print_date>? AND print_date<?";
-
-
 
     private final DBConnection dbConnection;
 
@@ -229,7 +227,19 @@ public class CheckRepositoryImpl implements CheckRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractCheckFromResultSet(rs);
+                Receipt receipt = extractCheckFromResultSet(rs);
+
+                Employee empl = receipt.getEmployee();
+                empl.setName(rs.getString("empl_name"));
+                empl.setSurname(rs.getString("empl_surname"));
+                empl.setPatronymic(rs.getString("empl_patronymic"));
+
+                CustomerCard customerCard = receipt.getCard();
+                customerCard.setName(rs.getString("cust_name"));
+                customerCard.setSurname(rs.getString("cust_surname"));
+                customerCard.setPatronymic(rs.getString("cust_patronymic"));
+
+                return receipt;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find receipt by id", e);
@@ -319,6 +329,8 @@ public class CheckRepositoryImpl implements CheckRepository {
 
         receipt.setPrintDate(rs.getDate("print_date").toLocalDate());
         receipt.setSumTotal(rs.getBigDecimal("sum_total"));
+
+
 
         return receipt;
     }
