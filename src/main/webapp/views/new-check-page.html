@@ -139,8 +139,8 @@
                             id="quantity"
                             name="quantity"
                             v-model.number="sale.quantity"
-                            min="0.1"
-                            max="9999999999999.9999"
+                            min="1"
+                            max="100000"
                             required
                           />
                         </td>
@@ -179,7 +179,7 @@
                       </dd>
                       <dt class="check-total">Total:</dt>
                       <dd class="check-total-value">
-                        <strong>{{ totalAfterDiscount.toFixed(2) }}</strong>
+                        <strong>{{totalAfterDiscount.toFixed(2) }}</strong>
                       </dd>
                       <dt class="check-vat">VAT:</dt>
                       <dd class="check-vat-value">
