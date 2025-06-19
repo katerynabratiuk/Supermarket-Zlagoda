@@ -61,4 +61,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void delete(String id) {
         employeeRepository.delete(id);
     }
+
+    @Override
+    public List<Employee> search(String query) {
+        return employeeRepository.search(query);
+    }
 }

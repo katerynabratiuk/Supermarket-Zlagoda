@@ -242,4 +242,31 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 resultSet.getBoolean("is_active")
         );
     }
+
+    private static final String SEARCH = "SELECT * FROM Employee " +
+            "WHERE id_employee ILIKE ? OR empl_surname ILIKE ? OR empl_name ILIKE ?";
+
+    @Override
+    public List<Employee> search(String query) {
+        List<Employee> res = new ArrayList<>();
+
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SEARCH)) {
+
+            String pattern = "%" + query + "%";
+            stmt.setString(1, pattern);
+            stmt.setString(2, pattern);
+            stmt.setString(3, pattern);
+
+            ResultSet results = stmt.executeQuery();
+            while (results.next()) {
+                res.add(extractEmployeeFromResultSet(results));
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to search employees", e);
+        }
+
+        return res;
+    }
 }
