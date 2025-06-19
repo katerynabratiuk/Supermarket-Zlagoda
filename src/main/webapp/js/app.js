@@ -298,11 +298,11 @@ let app = Vue.createApp(
       async getCustomerById(id) {
         try {
           const response = await fetch(`http://localhost:8090/customer/${id}`, {
-            method: 'POST',
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ customerId: id }),
+            //body: JSON.stringify({ customerId: id }),
           })
 
           if (!response.ok) {
@@ -406,8 +406,8 @@ let app = Vue.createApp(
                   this.getCustomerById(check.customer_card.card_number),
                 ])
 
-                this.currentCheck.employeeName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
-                this.currentCheck.customerName = `${customer.cust_surname} ${customer.cust_name} ${customer.cust_patronymic || ''}`
+                this.currentCheck.employee = employee
+                this.currentCheck.customer_card = customer
               }
               break
 
