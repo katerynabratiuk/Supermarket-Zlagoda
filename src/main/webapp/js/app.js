@@ -994,7 +994,7 @@ let app = Vue.createApp(
         if (toDateInput) toDateInput.value = ''
         if (showPromotionalCheckbox) showPromotionalCheckbox.checked = false
         if (showNonPromotionalCheckbox) showNonPromotionalCheckbox.checked = false
-        this.sortProductsParamsField = null
+        this.sortProductsParamsField = []
         this.productTypeFilter = null
 
         this.loadProducts()
