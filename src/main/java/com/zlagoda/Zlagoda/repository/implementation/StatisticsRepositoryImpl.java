@@ -1,9 +1,10 @@
 package com.zlagoda.Zlagoda.repository.implementation;
 
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
-import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
+import com.zlagoda.Zlagoda.dto.stats.EmployeeDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
+import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import org.springframework.stereotype.Repository;
 
@@ -70,6 +71,23 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "    )\n" +
             ");";
 
+    private final String GET_EMPLOYEES_WHO_NEVER_SOLD_CATEGORY =
+            "SELECT DISTINCT Employee.id_employee, Employee.empl_surname, Employee.empl_name\n" +
+            "FROM Employee\n" +
+            "WHERE NOT EXISTS (\n" +
+            "    SELECT 1\n" +
+            "    FROM Receipt\n" +
+            "    WHERE Receipt.id_employee = Employee.id_employee\n" +
+            "      AND NOT EXISTS (\n" +
+            "        SELECT 1\n" +
+            "        FROM Sale\n" +
+            "        JOIN Store_Product ON Sale.UPC = Store_Product.UPC\n" +
+            "        JOIN Product ON Store_Product.id_product = Product.id_product\n" +
+            "        WHERE Sale.check_number = Receipt.check_number\n" +
+            "          AND Product.category_number = ?\n" +
+            "      )\n" +
+            ");";
+
     private final DBConnection dbConnection;
 
 
@@ -79,15 +97,15 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
 
 
     @Override
-    public List<EmployeeCategorySalesDTO> productsSoldByEmployeeByCategory(Integer categoryNumber) {
-        List<EmployeeCategorySalesDTO> res = new ArrayList<>();
+    public List<EmployeeDTO> productsSoldByEmployeeByCategory(Integer categoryNumber) {
+        List<EmployeeDTO> res = new ArrayList<>();
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(GET_PRODUCTS_SOLD_BY_EMPLOYEE_BY_CATEGORY)
         ) {
             stmt.setInt(1, categoryNumber);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    EmployeeCategorySalesDTO dto = new EmployeeCategorySalesDTO();
+                    EmployeeDTO dto = new EmployeeDTO();
                     dto.setIdEmployee(rs.getString("id_employee"));
                     dto.setEmplSurname(rs.getString("empl_surname"));
                     dto.setCategoryName(rs.getString("category_name"));
@@ -138,6 +156,28 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
                 dto.setName(rs.getString("cust_name"));
                 dto.setCardNumber(rs.getString("card_number"));
                 res.add(dto);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
+    @Override
+    public List<Employee> getEmployeesWhoNeverSoldCategory(Integer categoryID) {
+        List<Employee> res = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(GET_EMPLOYEES_WHO_NEVER_SOLD_CATEGORY)
+        ) {
+            stmt.setInt(1, categoryID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Employee empl = new Employee();
+                    empl.setSurname(rs.getString("empl_surname"));
+                    empl.setName(rs.getString("empl_name"));
+                    empl.setId(rs.getString("id_employee"));
+                    res.add(empl);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

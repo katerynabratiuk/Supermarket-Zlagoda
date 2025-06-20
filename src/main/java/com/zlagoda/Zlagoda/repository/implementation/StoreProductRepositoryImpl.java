@@ -66,7 +66,13 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
     private static final String DELETE = "DELETE FROM store_product WHERE upc=?";
 
     private static final String SEARCH_QUERY =
-            "SELECT DISTINCT ON (pr.id_product) sp.*, pr.*, c.*, base.selling_price AS new_price " +
+            "SELECT DISTINCT ON (pr.id_product) " +
+                    "sp.upc, sp.upc_prom, sp.id_product, " +
+                    "COALESCE(base.selling_price, sp.selling_price) AS selling_price, " +
+                    "CASE WHEN sp.promotional_product THEN sp.selling_price ELSE NULL END AS new_price, " +
+                    "sp.products_number, sp.promotional_product, " +
+                    "pr.product_name, pr.characteristics, " +
+                    "c.category_number, c.category_name " +
                     "FROM store_product sp " +
                     "JOIN product pr ON sp.id_product = pr.id_product " +
                     "JOIN category c ON pr.category_number = c.category_number " +

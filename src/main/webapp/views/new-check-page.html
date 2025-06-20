@@ -53,12 +53,12 @@
                       >
                         <option value="" disabled>Select Employee</option>
                         <option
-                          v-for="employee in employees"
-                          :key="employee.id_employee"
-                          :value="employee.id_employee"
+                          v-for="cashier in cashiers"
+                          :key="cashier.id_employee"
+                          :value="cashier.id_employee"
                         >
-                          {{ employee.empl_surname }} {{employee.empl_name }}
-                          {{employee.empl_patronymic }}
+                          {{ cashier.empl_surname }} {{cashier.empl_name }}
+                          {{cashier.empl_patronymic }}
                         </option>
                       </select>
                     </dd>

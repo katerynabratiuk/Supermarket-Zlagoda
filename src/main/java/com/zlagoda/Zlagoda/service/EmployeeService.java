@@ -14,4 +14,5 @@ public interface EmployeeService{
     void delete(String id);
     List<Employee> search(String query);
     List<Employee> filterEmployee(Boolean manager, Boolean cashier, List<String> sortBy);
+    Employee getEmployeeByUsername(String username);
 }

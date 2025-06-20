@@ -269,4 +269,25 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
         return res;
     }
+
+    private static final String FIND_BY_USERNAME = "SELECT * FROM Employee WHERE empl_username = ?";
+
+    @Override
+    public Employee findByUsername(String username) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(FIND_BY_USERNAME)) {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return extractEmployeeFromResultSet(rs);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to find employee by username", e);
+        }
+    }
 }

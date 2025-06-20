@@ -1,8 +1,11 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.entity.Employee;
+import com.zlagoda.Zlagoda.repository.EmployeeRepository;
 import com.zlagoda.Zlagoda.service.implementation.EmployeeServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -32,10 +35,6 @@ public class EmployeeController {
         return employeeService.findById(employeeId);
     }
 
-//    @GetMapping("/by-role/{role}")
-//    public List<Employee> findByRole(@PathVariable String role) {
-//        return employeeService.findByRole(role);
-//    }
 
     @GetMapping("/filter")
     public List<Employee> filterEmployee(
@@ -68,6 +67,12 @@ public class EmployeeController {
     @GetMapping("/search")
     public List<Employee> search(@RequestParam String query) {
         return employeeService.search(query);
+    }
+
+    @GetMapping("/me")
+    public Employee getMyProfile(Authentication authentication) {
+        String username = authentication.getName();
+        return employeeService.getEmployeeByUsername(username);
     }
 }
 
