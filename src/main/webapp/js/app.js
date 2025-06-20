@@ -12,7 +12,7 @@ let app = Vue.createApp(
         token: '',
         isLoggedIn: false,
         user: {
-          userRole: 'MANAGER',
+          userRole: '',
           userName: ''
         },
         username: '',
@@ -127,7 +127,7 @@ let app = Vue.createApp(
         statisticsQueries: [
           {
             label: "Total number of products by each employee sold in the category: ",
-            endpoint: "/api/queries/products-by-category-employee",
+            endpoint: "/stats/productSoldByEmployee/",
             paramName: "category"
           },
           {
@@ -1558,11 +1558,11 @@ let app = Vue.createApp(
               this.showError("Please choose a category.")
               return
             }
-            url += `?category=${encodeURIComponent(this.queryParams.category)}`
+            url += `${encodeURIComponent(this.queryParams.category)}`
           }
           else if (index === 2) {
             if (this.queryParams.city) {
-              url += `?city=${encodeURIComponent(this.queryParams.city)}`
+              url += `${encodeURIComponent(this.queryParams.city)}`
             } else {
               this.showError("Please enter a city.")
               return

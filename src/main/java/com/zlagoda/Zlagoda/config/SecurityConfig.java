@@ -63,7 +63,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/customer/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/check/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/employee/").hasAnyRole( "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/statistics/").hasAnyRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/stats/").hasAnyRole("MANAGER")
+
                       // Modification endpoints
                         .requestMatchers(HttpMethod.POST, "/product/").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.POST, "/category/").hasRole("MANAGER")
