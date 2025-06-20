@@ -260,21 +260,25 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
         // outer sorting
         if (sortBy != null && !sortBy.isEmpty()) {
-            finalQuery.append("ORDER BY ");
-            for (int i = 0; i < sortBy.size(); i++) {
-                if (i > 0) finalQuery.append(", ");
-                switch (sortBy.get(i)) {
+            List<String> validSorts = new ArrayList<>();
+            for (String sort : sortBy) {
+                switch (sort) {
                     case "product.product_name":
-                        finalQuery.append("product_name");
+                        validSorts.add("product_name");
                         break;
-                    case "quantity":
-                        finalQuery.append("products_number");
-                        break;
-                    default:
+                    case "products_number":
+                        validSorts.add("products_number");
                         break;
                 }
             }
+
+            if (!validSorts.isEmpty()) {
+                finalQuery.append("ORDER BY ");
+                finalQuery.append(String.join(", ", validSorts));
+            }
         }
+
+        System.out.println(finalQuery);
 
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(finalQuery.toString())) {
@@ -284,6 +288,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             }
 
             ResultSet rs = stmt.executeQuery();
+            System.out.println(finalQuery);
             List<StoreProduct> result = new ArrayList<>();
             while (rs.next()) {
                 result.add(extractStoreProductProm(rs));
