@@ -98,7 +98,9 @@ public class CheckServiceImpl implements CheckService {
         for (Sale sale : receipt.getProducts()) {
             StoreProduct storeProduct = productRepository.findById(sale.getStoreProduct().getUPC());
             if (storeProduct.getProductsNumber() < sale.getProductNum()) {
-                throw new NotEnoughProductException("Not enough stock for product " + storeProduct.getUPC());
+                throw new NotEnoughProductException("Not enough stock for product " +
+                        storeProduct.getProduct().getName()
+                        + "(" + storeProduct.getUPC()+")" );
             }
         }
 
