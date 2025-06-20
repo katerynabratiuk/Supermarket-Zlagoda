@@ -219,6 +219,8 @@
                     :disabled="currentProduct.promotional_product"
                     id="upc"
                     v-model="currentProduct.UPC_prom"
+                    minlength="12"
+                    maxlength="12"
                     type="text"
                     class="edit-input"
                     required

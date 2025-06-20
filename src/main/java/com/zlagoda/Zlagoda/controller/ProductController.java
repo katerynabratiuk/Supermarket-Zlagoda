@@ -82,4 +82,9 @@ public class ProductController {
         }
         return storeProductService.filter(promotional, category, sortParams);
     }
+
+    @GetMapping("/search")
+    public List<StoreProduct> search(@RequestParam("search") String query) {
+        return storeProductService.findByName(query);
+    }
 }

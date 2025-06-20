@@ -8,12 +8,12 @@ import java.math.BigDecimal;
 public class StoreProduct {
 
     @NotNull(message = "UPC cannot be null!")
-    @Size(max = 12, message = "UPC cannot be more then 12 characters long!")
+    @Size(min = 12, max = 12, message = "UPC must be exactly 12 characters long!")
     @JsonProperty("UPC")
     private String UPC;
 
     @JsonProperty("UPC_prom")
-    @Size(max = 12, message = "UPC cannot be more then 12 characters long!")
+    @Size(min = 12, max = 12, message = "UPC must be exactly 12 characters long!")
     private String UPC_prom;
 
     @NotNull(message = "Product cannot be null!")

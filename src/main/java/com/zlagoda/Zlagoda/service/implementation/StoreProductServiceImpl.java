@@ -34,7 +34,17 @@ public class StoreProductServiceImpl implements StoreProductService {
 
     @Override
     public List<StoreProduct> findByName(String name) {
-        return storeProductRepository.findByName(name);
+        List<StoreProduct> all = storeProductRepository.findByName(name);
+
+        List<StoreProduct> promotional = all.stream()
+                .filter(StoreProduct::isPromotional)
+                .toList();
+
+        if (!promotional.isEmpty()) {
+            return promotional;
+        }
+
+        return all;
     }
 
     @Override
