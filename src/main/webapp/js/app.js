@@ -497,9 +497,6 @@ let app = Vue.createApp(
                 this.currentEmployee = await this.getEmployeeById(employeeId)
               }
               break
-
-            default:
-              console.warn('No data loading defined for page:', page)
           }
         } catch (error) {
           this.showError('Error loading data for page:', page)
@@ -721,13 +718,29 @@ let app = Vue.createApp(
         }
       },
 
-      handlePriceInput(event, isPromotional) {
-        const value = parseFloat(event.target.value) || 0
-        if (isPromotional) {
-          this.currentProduct.new_price = value
-        } else {
-          this.currentProduct.selling_price = value
-        }
+      initPriceInput() {
+        this.priceInput = this.currentProduct.selling_price?.toFixed(4) || '0.0000'
+      },
+
+      handlePriceInput(event) {
+        const input = event.target
+        let value = input.value
+
+        value = value.replace(/[^\d.]/g, '')
+          .replace(/(\..*)\./g, '$1')
+
+        const parts = value.split('.')
+        let wholePart = parts[0].replace(/\D/g, '')
+        let decimalPart = parts[1] || ''
+
+        if (wholePart.length > 9) wholePart = wholePart.slice(0, 9)
+        if (decimalPart.length > 4) decimalPart = decimalPart.slice(0, 4)
+        
+        value = wholePart
+        if (decimalPart) value += '.' + decimalPart
+
+        this.priceInput = value
+        this.currentProduct.selling_price = parseFloat(value) || 0
       },
       handleImageUpload(event) {
         const file = event.target.files[0]
@@ -1193,6 +1206,86 @@ let app = Vue.createApp(
         this.filtersApplied = false
       },
 
+      formatPhoneNumber(event, type) {
+        let value = event.target.value
+
+        if (!value.startsWith('+380')) {
+          value = '+380' + value.replace(/[^\d]/g, '').substring(3)
+        }
+
+        value = '+' + value.substring(1).replace(/[^\d]/g, '')
+
+        if (value.length > 13) {
+          value = value.substring(0, 13)
+        }
+
+        if (type === 'employee') {
+          this.currentEmployee.phone_number = value
+        } else {
+          this.currentCustomer.phone_number = value
+        }
+
+        event.target.value = value
+      },
+
+      initializePhoneNumbers() {
+        if (!this.newEmployee.phone_number?.startsWith('+380')) {
+          this.newEmployee.phone_number = '+380'
+        }
+
+        if (this.currentEmployee && !this.currentEmployee.phone_number?.startsWith('+380')) {
+          this.currentEmployee.phone_number = '+380' +
+            (this.currentEmployee.phone_number?.replace(/[^\d]/g, '') || '').substring(0, 9)
+        }
+
+        if (this.currentCustomer && !this.currentCustomer.phone_number?.startsWith('+380')) {
+          this.currentCustomer.phone_number = '+380' +
+            (this.currentCustomer.phone_number?.replace(/[^\d]/g, '') || '').substring(0, 9)
+        }
+      },
+
+      formatPhoneNumber(event, type) {
+        const input = event.target
+        let value = input.value
+
+        if (!value.startsWith('+380')) {
+          value = '+380' + value.replace(/[^\d]/g, '').substring(3)
+        }
+
+        value = '+' + value.substring(1).replace(/[^\d]/g, '')
+
+        if (value.length > 13) {
+          value = value.substring(0, 13)
+        }
+
+        if (type === 'employee') {
+          if (this.currentEmployee) {
+            this.currentEmployee.phone_number = value
+          } else {
+            this.newEmployee.phone_number = value
+          }
+        } else {
+          if (this.currentCustomer) {
+            this.currentCustomer.phone_number = value
+          } else {
+            this.newCustomer.phone_number = value
+          }
+        }
+
+        input.value = value
+      },
+
+      preventPrefixDeletion(event) {
+        const input = event.target
+        if (
+          (event.key === 'Backspace' || event.key === 'Delete') &&
+          input.selectionStart < 4 &&
+          input.value.startsWith('+380')
+        ) {
+          event.preventDefault()
+        }
+      },
+
       goToAddEmployee() {
         window.location.href = 'new-employee-page.html'
       },
@@ -1339,6 +1432,8 @@ let app = Vue.createApp(
         }
       }
 
+      this.initializePhoneNumbers()
+
       try {
         await this.loadDataForCurrentPage()
         if (categoryName) {
@@ -1431,7 +1526,7 @@ app.component("navbar", {
           return this.navItems
         case 'CASHIER':
           return this.navItems.filter(item =>
-            ['categories.html', 'products.html', 'checks.html'].includes(item.path))
+            ['categories.html', 'products.html', 'checks.html', 'customers.html'].includes(item.path))
         default:
           return this.navItems.filter(item =>
             ['categories.html', 'products.html'].includes(item.path))
@@ -1470,6 +1565,29 @@ app.component("navbar", {
       }
       this.isLoggedIn = false
       window.location.href = 'index.html'
+    },
+    async goToMyProfile() {
+      try {
+        const response = await fetch('http://localhost:8090/auth/me', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`,
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const userData = await response.json()
+
+        if (userData.employeeId) {
+          window.location.href = `employee-page.html?id=${userData.employeeId}`
+        }
+      } catch (error) {
+        this.showError("Failed to load profile. Please try again.")
+      }
     }
   },
   mounted() {

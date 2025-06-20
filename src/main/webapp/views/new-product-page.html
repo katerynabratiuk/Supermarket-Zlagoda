@@ -76,8 +76,7 @@
 
                 <div class="product-status" :class="statusClass">
                   <p>
-                    {{ newProduct.products_number > 0 ? 'In Stock' : 'Out of
-                    Stock' }}
+                    {{ newProduct.products_number > 0 ? 'In Stock' : 'Out of Stock' }}
                   </p>
                 </div>
 
@@ -133,12 +132,13 @@
                   id="category"
                   v-model="newProduct.product.category"
                   class="edit-dropdown"
+                  required
                 >
                   <option disabled value="">Select category</option>
                   <option
                     v-for="category in productsCategories"
                     :key="category.category_number"
-                    :value="category"
+                    :value="category.category_number"
                   >
                     {{ category.category_name }}
                   </option>

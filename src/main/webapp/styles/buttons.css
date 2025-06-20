@@ -156,3 +156,17 @@ select:focus,
 textarea:focus {
   outline: none;
 }
+
+input:invalid, textarea:invalid, select:invalid {
+  border: solid 2px #721919;
+}
+
+label[for]:has(+ input[required]):after,
+label[for]:has(+ select[required]):after,
+label[for]:has(+ textarea[required]):after,
+h3:has(+ input[required]):after,
+h3:has(+ select[required]):after,
+h3:has(+ textarea[required]):after {
+  content: " *";
+  color: #721919;
+}

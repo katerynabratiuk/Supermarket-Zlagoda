@@ -36,12 +36,6 @@
           ></edit-button>
         </div>
 
-        <custom-error
-          v-if="error"
-          :message="error.message"
-          @dismiss="dismissError"
-        ></custom-error>
-
         <section class="contents">
           <form
             action=""
@@ -145,7 +139,7 @@
                         :disabled="currentProduct.promotional_product"
                         id="price"
                         :value="currentProduct.selling_price"
-                        @input="handlePriceInput($event, currentProduct.promotional_product)"
+                        @input="handlePriceInput"
                         type="number"
                         min="0.1"
                         max="9999999999999.9999"
@@ -192,7 +186,8 @@
                     <option
                       v-for="category in productsCategories"
                       :key="category.category_number"
-                      :value="category"
+                      :value="category.category_number"
+                      required
                     >
                       {{ category.category_name }}
                     </option>

@@ -82,7 +82,7 @@
 
             <div class="customer-details-lower">
               <div class="customer-percent form-field">
-                <h4 for="customer-percent">Percent:</h4>
+                <h3 for="customer-percent">Percent:</h3>
                 <select
                   id="customer-percent"
                   name="customer-percen"
@@ -96,22 +96,24 @@
                 </select>
               </div>
               <div class="customer-phone-number form-field">
-                <h4 for="phone_number">Phone number:</h4>
+                <h3 for="phone_number">Phone number:</h3>
                 <input
-                  type="tel"
-                  id="phone_number"
-                  v-model="newCustomer.phone_number"
-                  class="edit-input"
-                  maxlength="13"
-                  minlength="13"
-                  pattern="^\+380\d{9}$"
-                  title="Number must start with +380 and consist of digits"
-                  required
-                />
+                    type="tel"
+                    id="phone_number"
+                    maxlength="13"
+                    minlength="13"
+                    pattern="^\+380\d{9}$"
+                    title="Number must start with +380 and consist of digits"
+                    v-model="newEmployee.phone_number"
+                    @input="formatPhoneNumber($event, 'customer')"
+                    @keydown="preventPrefixDeletion($event)"
+                    class="edit-input"
+                    required
+                  />
               </div>
 
               <div class="customer-address form-field">
-                <h4>Address:</h4>
+                <h3>Address:</h3>
                 <label for="city">City:</label>
                 <input
                   type="text"

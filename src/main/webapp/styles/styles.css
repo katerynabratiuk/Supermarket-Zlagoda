@@ -104,6 +104,22 @@ th {
   background-color: #5a1414;
 }
 
+::-webkit-validation-bubble {
+  background-color: #f8f9fa;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+::-webkit-validation-bubble-arrow {
+  border-color: #dc3545 transparent;
+}
+
+::-webkit-validation-bubble-message {
+  color: #dc3545;
+  font-family: 'Arial', sans-serif;
+}
+
 @media print {
   .noPrint {
     display: none !important;

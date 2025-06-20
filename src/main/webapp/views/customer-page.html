@@ -94,7 +94,7 @@
 
             <div class="customer-details-lower">
               <div class="customer-percent">
-                <h4 for="percent">Percent:</h4>
+                <h3 for="percent">Percent:</h3>
                 <p v-if="!isEditMode">{{ currentCustomer.percent}}%</p>
 
                 <div v-else class="form-field">
@@ -113,7 +113,7 @@
               </div>
 
               <div class="customer-phone-number">
-                <h4 for="phone_number">Phone number:</h4>
+                <h3 for="phone_number">Phone number:</h3>
                 <p v-if="!isEditMode">{{ currentCustomer.phone_number }}</p>
                 <div v-else class="form-field">
                   <input
@@ -126,6 +126,8 @@
                     title="Number must start with +380 and consist of digits"
                     type="tel"
                     v-model="currentCustomer.phone_number"
+                    @input="formatPhoneNumber($event, 'customer')"
+                    @keydown="preventPrefixDeletion($event)"
                   />
                 </div>
               </div>
@@ -134,7 +136,7 @@
                 class="customer-address"
                 v-if="currentCustomer.city || currentCustomer.street || currentCustomer.zipcode"
               >
-                <h4 for="city">Address:</h4>
+                <h3 for="city">Address:</h3>
                 <div v-if="!isEditMode">
                   <p>
                     <span v-if="currentCustomer.city"
