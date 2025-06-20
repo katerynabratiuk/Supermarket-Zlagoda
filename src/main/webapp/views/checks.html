@@ -132,18 +132,26 @@
                   <label for="show-total-sum">Total sum</label>
                 </div>
               </div>
-
               <div class="form-label">Sort by:</div>
-              <div class="checkbox-field">
+              <div class="radio-field">
                 <input
-                  type="checkbox"
-                  id="sort-check-number"
+                  type="radio"
+                  id="sort-date-asc"
                   name="sortby"
-                  value="true"
+                  value="date_asc"
                 />
-                <label for="sort-name">Check number</label>
+                <label for="sort-date-asc">Date (asc)</label>
+
+                <input
+                  type="radio"
+                  id="sort-date-desc"
+                  name="sortby"
+                  value="date_desc"
+                />
+                <label for="sort-date-desc">Date (desc)</label>
               </div>
-            </div>
+              </div>
+
 
             <div class="filter-form-button">
               <button

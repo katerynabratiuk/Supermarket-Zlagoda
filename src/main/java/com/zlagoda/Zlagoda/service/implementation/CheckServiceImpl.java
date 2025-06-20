@@ -104,4 +104,8 @@ public class CheckServiceImpl implements CheckService {
     public void delete(String id) {
         checkRepository.delete(id);
     }
+
+    public List<Receipt> filter(String cashierId, String sortBy, LocalDate from, LocalDate to) {
+        return checkRepository.filter(cashierId, sortBy, from, to);
+    }
 }

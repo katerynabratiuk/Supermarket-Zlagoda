@@ -80,5 +80,17 @@ public class CheckController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/filter")
+    public List<Receipt> filterReceipts(
+            @RequestParam(required = false) String cashierId,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    )
+
+    {
+        return checkService.filter(cashierId, sortBy, from, to);
+    }
+
 
 }
