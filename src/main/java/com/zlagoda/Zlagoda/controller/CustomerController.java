@@ -28,7 +28,7 @@ public class CustomerController {
     }
 
     @GetMapping("/filter")
-    public List<CustomerCard> filerCustomer(
+    public List<CustomerCard> filterCustomer(
             @RequestParam(required = false) Integer percentage,
             @RequestParam(required = false) String sortBy
     ) {
