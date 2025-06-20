@@ -46,6 +46,7 @@ public class CheckController {
         receipt.setCheckNumber(idGenerator.generate(IdGenerator.Option.Check));
         receipt.setPrintDate(LocalDate.parse(dto.getPrintDate()));
         receipt.setSumTotal(dto.getSumTotal());
+        receipt.setVat(dto.getVat());
 
         Employee employee = new Employee();
         employee.setId(String.valueOf(dto.getIdEmployee()));

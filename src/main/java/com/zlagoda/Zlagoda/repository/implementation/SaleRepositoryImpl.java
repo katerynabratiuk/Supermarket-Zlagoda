@@ -70,7 +70,7 @@ public class SaleRepositoryImpl implements SaleRepository {
 
         Sale sale = new Sale();
         sale.setProductNum(rs.getInt("product_number"));
-        sale.setSelling_price(rs.getBigDecimal("sale_price").multiply(BigDecimal.valueOf(sale.getProductNum())));
+        sale.setSelling_price(rs.getBigDecimal("sale_price"));
         sale.setStoreProduct(sp);
 
         return sale;

@@ -85,13 +85,13 @@ public class Receipt {
         }
     }
 
-    public Receipt(String checkNumber, Employee employee, CustomerCard card, LocalDate printDate, BigDecimal sumTotal) {
+    public Receipt(String checkNumber, Employee employee, CustomerCard card, LocalDate printDate, BigDecimal sumTotal, BigDecimal vat) {
         this.checkNumber = checkNumber;
         this.employee = employee;
         this.card = card;
         this.printDate = printDate;
         this.sumTotal = sumTotal;
-        this.vat = sumTotal.multiply(BigDecimal.valueOf(0.2));
+        this.vat = vat;
         this.sales = new ArrayList<>();
     }
 
@@ -138,6 +138,10 @@ public class Receipt {
 
     public BigDecimal getVat() {
         return vat;
+    }
+
+    public void setVat(BigDecimal vat) {
+        this.vat = vat;
     }
 
     public void setSales(ArrayList<Sale> sales) {

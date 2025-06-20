@@ -171,17 +171,11 @@
                       <dd class="check-subtotal-value">
                         {{ subtotal.toFixed(2) }}
                       </dd>
-                      <dt
-                        class="check-discount"
-                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
-                      >
-                        Discount ({{ discountPercent }}%):
+                      <dt class="check-discount" v-if="currentCustomer && currentCustomer.percent">
+                        Discount ({{ currentCustomer.percent }}%):
                       </dt>
-                      <dd
-                        class="check-discount-value"
-                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
-                      >
-                        - {{discountAmount.toFixed(2)}}
+                      <dd class="check-discount-value" v-if="currentCustomer && currentCustomer.percent">
+                        -{{ discountAmount.toFixed(2) }}
                       </dd>
                       <dt class="check-total">Total:</dt>
                       <dd class="check-total-value">

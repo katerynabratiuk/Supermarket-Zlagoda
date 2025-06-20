@@ -24,10 +24,10 @@ public class CheckRepositoryImpl implements CheckRepository {
     private static final String FIND_BY_ID =
             "SELECT Receipt.*, " +
             "Employee.id_employee, Employee.empl_name, Employee.empl_surname, Employee.empl_patronymic, " +
-            "Customer_card.card_number, Customer_card.cust_name, Customer_card.cust_surname, Customer_card.cust_patronymic " +
+            "Customer_card.card_number, Customer_card.percent, Customer_card.cust_name, Customer_card.cust_surname, Customer_card.cust_patronymic " +
             "FROM Receipt "+
             "JOIN Employee ON Employee.id_employee = Receipt.id_employee " +
-            "JOIN Customer_card ON Customer_card.card_number = Receipt.card_number " +
+            "LEFT JOIN Customer_card ON Customer_card.card_number = Receipt.card_number " +
             "WHERE Receipt.check_number=?";
 
 
@@ -235,10 +235,14 @@ public class CheckRepositoryImpl implements CheckRepository {
                 empl.setSurname(rs.getString("empl_surname"));
                 empl.setPatronymic(rs.getString("empl_patronymic"));
 
-                CustomerCard customerCard = receipt.getCard();
-                customerCard.setName(rs.getString("cust_name"));
-                customerCard.setSurname(rs.getString("cust_surname"));
-                customerCard.setPatronymic(rs.getString("cust_patronymic"));
+                if (receipt.getCard() != null)
+                {
+                    CustomerCard customerCard = receipt.getCard();
+                    customerCard.setName(rs.getString("cust_name"));
+                    customerCard.setSurname(rs.getString("cust_surname"));
+                    customerCard.setPatronymic(rs.getString("cust_patronymic"));
+                    customerCard.setPercent(rs.getInt("percent"));
+                }
 
                 return receipt;
             }
@@ -264,6 +268,7 @@ public class CheckRepositoryImpl implements CheckRepository {
             }
             stmt.setDate(4, Date.valueOf(receipt.getPrintDate()));
             stmt.setBigDecimal(5, receipt.getSumTotal());
+            System.out.println(receipt.getVat());
             stmt.setBigDecimal(6, receipt.getVat());
 
             stmt.executeUpdate();
@@ -330,7 +335,7 @@ public class CheckRepositoryImpl implements CheckRepository {
 
         receipt.setPrintDate(rs.getDate("print_date").toLocalDate());
         receipt.setSumTotal(rs.getBigDecimal("sum_total"));
-
+        receipt.setVat(rs.getBigDecimal("vat"));
 
 
         return receipt;

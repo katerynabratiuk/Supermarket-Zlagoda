@@ -70,8 +70,12 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public Receipt findById(String id) {
         Receipt check = checkRepository.findById(id);
-        ArrayList<Sale> sales = (ArrayList<Sale>) saleRepository.findByCheckId(id);
-        check.setSales(sales);
+        if (check != null)
+        {
+
+            ArrayList<Sale> sales = (ArrayList<Sale>) saleRepository.findByCheckId(id);
+            check.setSales(sales);
+        }
         return check;
     }
 

@@ -151,6 +151,7 @@ let app = Vue.createApp(
       totalAfterDiscount() {
         return (this.subtotal - this.discountAmount) + this.vatAmount
       },
+
       filteredEmployees() {
         if (!this.search) {
           return this.employees
@@ -475,6 +476,7 @@ let app = Vue.createApp(
               if (checkId) {
                 const check = await this.getCheckById(checkId)
                 this.currentCheck = check
+                this.currentCustomer = check.customer_card
               }
               break
 
@@ -577,6 +579,7 @@ let app = Vue.createApp(
       async loadChecks() {
         try {
           const response = await fetch("http://localhost:8090/check", {
+            method: 'GET',
             headers: {
               'Authorization': `Bearer ${this.token}`,
               'Content-Type': 'application/json'
