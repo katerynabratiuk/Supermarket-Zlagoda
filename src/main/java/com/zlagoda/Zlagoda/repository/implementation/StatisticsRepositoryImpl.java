@@ -1,6 +1,8 @@
 package com.zlagoda.Zlagoda.repository.implementation;
 
+import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
+import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +30,26 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "GROUP BY e.id_employee, e.empl_surname, cat.category_name, cat.category_number  " +
             "ORDER BY total_products_sold DESC";
 
+    private final String GET_PRODUCTS_SOLD_IN_CITIES_EXCEPT_ONE = "SELECT Customer_Card.city, SUM(Sale.product_number) AS total_amount " +
+            "FROM Sale " +
+            "INNER JOIN Receipt ON Sale.check_number = Receipt.check_number " +
+            "INNER JOIN Customer_Card ON Receipt.card_number = Customer_Card.card_number " +
+            "WHERE Customer_Card.city != ? " +
+            "GROUP BY Customer_Card.city " +
+            "ORDER BY total_amount DESC; ";
+
+    private final String GET_PROMO_ONLY_CUSTOMERS = "SELECT DISTINCT Customer_Card.card_number, Customer_Card.cust_surname, Customer_Card.cust_name\n" +
+            "FROM Customer_Card\n" +
+            "WHERE NOT EXISTS (\n" +
+            "SELECT 1\n" +
+            "FROM Receipt\n" +
+            "WHERE Receipt.card_number = Customer_Card.card_number\n" +
+            "AND NOT EXISTS (\n" +
+            "SELECT 1\n" +
+            "FROM Sale\n" +
+            "INNER JOIN Store_Product ON Sale.UPC = Store_Product.UPC\n" +
+            "WHERE Sale.check_number = Receipt.check_number\n" +
+            "AND Store_Product.promotional_product = True ))";
 
     private final DBConnection dbConnection;
 
@@ -54,6 +76,49 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
                     dto.setTotalProductsSold(rs.getInt("total_products_sold"));
                     res.add(dto);
                 }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
+    @Override
+    public List<CitySalesDTO> getProductsSoldInCitiesExceptOne(String city) {
+        List<CitySalesDTO> res = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(GET_PRODUCTS_SOLD_IN_CITIES_EXCEPT_ONE)
+        ) {
+            stmt.setString(1, city);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    CitySalesDTO dto = new CitySalesDTO
+                    (
+                            rs.getString("city"),
+                            rs.getInt("total_amount")
+                    );
+                    res.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
+    @Override
+    public List<PromoOnlyCustomerDTO> getPromoCustomers() {
+        List<PromoOnlyCustomerDTO> res = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             Statement stmt = connection.createStatement();
+        ) {
+            ResultSet rs = stmt.executeQuery(GET_PROMO_ONLY_CUSTOMERS);
+            while (rs.next()) {
+                PromoOnlyCustomerDTO dto = new PromoOnlyCustomerDTO();
+                dto.setSurname(rs.getString("cust_surname"));
+                dto.setName(rs.getString("cust_name"));
+                dto.setCardNumber(rs.getString("card_number"));
+                res.add(dto);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

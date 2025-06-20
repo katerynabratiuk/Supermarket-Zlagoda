@@ -1,6 +1,8 @@
 package com.zlagoda.Zlagoda.controller;
 
+import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
+import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.service.implementation.StatisticsServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,18 @@ public class StatisticsController {
     public List<EmployeeCategorySalesDTO> productsSoldByEmployee(@PathVariable Integer categoryID)
     {
         return statisticsService.productsSoldByEmployeeByCategory(categoryID);
+    }
+
+    @GetMapping("/productSalesCities/{city}")
+    public List<CitySalesDTO> productSalesCities(@PathVariable String city)
+    {
+        return statisticsService.getProductsSoldInCitiesExceptOne(city);
+    }
+
+    @GetMapping("/promoCustomers")
+    public List<PromoOnlyCustomerDTO> promoCustomers()
+    {
+        return statisticsService.getPromoCustomers();
     }
 
 }
