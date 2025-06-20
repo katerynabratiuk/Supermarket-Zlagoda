@@ -5,13 +5,15 @@ import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.service.implementation.StatisticsServiceImpl;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/stats")
-@CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"})
 public class StatisticsController {
 
     private final StatisticsServiceImpl statisticsService;

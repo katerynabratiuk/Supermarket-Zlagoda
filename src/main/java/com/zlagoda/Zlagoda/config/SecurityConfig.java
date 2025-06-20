@@ -63,7 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/customer/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/check/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/employee/").hasAnyRole( "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/stats/").hasAnyRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/stats/").permitAll()
 
                       // Modification endpoints
                         .requestMatchers(HttpMethod.POST, "/product/").hasRole("MANAGER")
@@ -102,7 +102,7 @@ public class SecurityConfig {
 //
 //        return http.build();
 //    }
-
+//
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        return http
