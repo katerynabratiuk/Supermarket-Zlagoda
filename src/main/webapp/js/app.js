@@ -1126,6 +1126,13 @@ let app = Vue.createApp(
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
           }
+          else{
+            const errorData = await response.json();
+            if (errorData.error) {
+              this.showError(errorData.error);
+            }
+            return
+          }
         } catch (error) {
           this.showError("An unexpected error occurred. Please try again later.")
         }
