@@ -64,8 +64,7 @@ dd {
 }
 
 .customer-link,
-.employee-link,
-.product-name {
+.employee-link{
   text-decoration: underline;
 }
 

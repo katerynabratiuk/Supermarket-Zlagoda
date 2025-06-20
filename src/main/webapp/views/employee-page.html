@@ -18,11 +18,14 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main v-if="!isLoading && currentEmployee">
         <div class="employee-header">
@@ -84,47 +87,51 @@
                 </div>
 
                 <div class="employee-role">
-                      <p v-if="!isEditMode">
-                        Role: {{ currentEmployee.empl_role }}
-                      </p>
-                      <div v-else class="form-field">
-                        <label for="empl_role">Role:</label>
-                        <select
-                          id="empl_role"
-                          v-model="currentEmployee.empl_role"
-                          class="edit-dropdown"
-                          required
-                        >
-                          <option disabled :value="null">Select role</option>
-                          <option value="Cashier">Cashier</option>
-                          <option value="Manager">Manager</option>
-                        </select>
-                      </div>
-                    </div>
+                  <p v-if="!isEditMode">
+                    Role: {{ currentEmployee.empl_role }}
+                  </p>
+                  <div v-else class="form-field">
+                    <label for="empl_role">Role:</label>
+                    <select
+                      id="empl_role"
+                      v-model="currentEmployee.empl_role"
+                      class="edit-dropdown"
+                      required
+                    >
+                      <option disabled :value="null">Select role</option>
+                      <option value="Cashier">Cashier</option>
+                      <option value="Manager">Manager</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div class="employee-status">
-                    <template v-if="!isEditMode">
-                      <p>
-                        Status:
-                        <span :class="{'active-text': currentEmployee.is_active, 'inactive-text': !currentEmployee.is_active}">
-                          {{ currentEmployee.is_active ? 'Active' : 'Inactive' }}
-                        </span>
-                      </p>
-                    </template>
-                    <template v-else>
-                      <div class="form-field">
-                        <label for="is_active_toggle" class="toggle-label">Active:</label>
-                        <label class="toggle-switch">
-                          <input
-                            type="checkbox"
-                            id="is_active_toggle"
-                            v-model="currentEmployee.is_active"
-                          />
-                          <span class="toggle-slider"></span>
-                        </label>
-                      </div>
-                    </template>
-                  </div>
+                  <template v-if="!isEditMode">
+                    <p>
+                      Status:
+                      <span
+                        :class="{'active-text': currentEmployee.is_active, 'inactive-text': !currentEmployee.is_active}"
+                      >
+                        {{ currentEmployee.is_active ? 'Active' : 'Inactive' }}
+                      </span>
+                    </p>
+                  </template>
+                  <template v-else>
+                    <div class="form-field">
+                      <label for="is_active_toggle" class="toggle-label"
+                        >Active:</label
+                      >
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          id="is_active_toggle"
+                          v-model="currentEmployee.is_active"
+                        />
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </template>
+                </div>
               </div>
 
               <div class="employee-id">
@@ -136,7 +143,7 @@
 
             <div class="employee-details-lower">
               <div class="employee-salary">
-                <h4 for="salary">Salary:</h4>
+                <h3 for="salary">Salary:</h3>
                 <p v-if="!isEditMode">
                   {{ currentEmployee.salary.toFixed(2) }} ₴
                 </p>
@@ -155,7 +162,7 @@
               </div>
 
               <div class="employee-date-of-birth">
-                <h4 for="date_of_birth">Date of birth:</h4>
+                <h3 for="date_of_birth">Date of birth:</h3>
                 <p v-if="!isEditMode">{{ currentEmployee.date_of_birth }}</p>
                 <div v-else class="form-field">
                   <input
@@ -169,7 +176,7 @@
               </div>
 
               <div class="employee-date-of-start">
-                <h4 for="date_of_start">Date of start:</h4>
+                <h3 for="date_of_start">Date of start:</h3>
                 <p v-if="!isEditMode">{{ currentEmployee.date_of_start }}</p>
                 <div v-else class="form-field">
                   <input
@@ -183,26 +190,27 @@
               </div>
 
               <div class="employee-phone-number">
-                <h4 for="phone_number">Phone number:</h4>
+                <h3 for="phone_number">Phone number:</h3>
                 <p v-if="!isEditMode">{{ currentEmployee.phone_number }}</p>
                 <div v-else class="form-field">
                   <input
-                          @input="addPlusSign"
-                          class="edit-input"
-                          id="phone_number"
-                          maxlength="13"
-                          minlength="13"
-                          pattern="^\+380\d{9}$"
-                          required
-                          title="Number must start with +380 and consist of digits"
-                          type="tel"
-                          v-model="currentEmployee.phone_number"
+                    class="edit-input"
+                    id="phone_number"
+                    maxlength="13"
+                    minlength="13"
+                    pattern="^\+380\d{9}$"
+                    required
+                    title="Number must start with +380 and consist of digits"
+                    type="tel"
+                    v-model="currentEmployee.phone_number"
+                    @input="formatPhoneNumber($event, 'employee')"
+                    @keydown="preventPrefixDeletion($event)"
                   />
                 </div>
               </div>
 
               <div class="employee-address">
-                <h4 for="city">Address:</h4>
+                <h3 for="city">Address:</h3>
                 <div v-if="!isEditMode">
                   <p>
                     {{ currentEmployee.city }}, {{ currentEmployee.street }}, {{

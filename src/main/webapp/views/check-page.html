@@ -19,11 +19,14 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main v-if="!isLoading && currentCheck">
         <section class="check-details">
@@ -45,28 +48,27 @@
                       class="employee-link"
                       :href="'employee-page.html?id=' + currentCheck.employee.id_employee"
                     >
-                    {{ currentCheck.employee.empl_surname }} 
-                    {{ currentCheck.employee.empl_name }} 
-                    {{ currentCheck.employee.empl_patronymic }}
+                      {{ currentCheck.employee.empl_surname }} {{
+                      currentCheck.employee.empl_name }} {{
+                      currentCheck.employee.empl_patronymic }}
                     </a>
-
                   </dd>
 
                   <dt>Customer:</dt>
-                    <dd>
-                      <template v-if="currentCheck.customer_card">
-                        {{ currentCheck.customer_card.card_number }} | 
-                        <a
-                          class="customer-link"
-                          :href="'customer-page.html?id=' + currentCheck.customer_card.card_number"
-                        >
-                        {{ currentCheck.customer_card.cust_surname }}
-                        {{ currentCheck.customer_card.cust_name }} 
-                        {{ currentCheck.customer_card.cust_patronymic }} 
-                        </a>
-                      </template>
-                      <span v-else>No customer</span>
-                    </dd>
+                  <dd>
+                    <template v-if="currentCheck.customer_card">
+                      {{ currentCheck.customer_card.card_number }} |
+                      <a
+                        class="customer-link"
+                        :href="'customer-page.html?id=' + currentCheck.customer_card.card_number"
+                      >
+                        {{ currentCheck.customer_card.cust_surname }} {{
+                        currentCheck.customer_card.cust_name }} {{
+                        currentCheck.customer_card.cust_patronymic }}
+                      </a>
+                    </template>
+                    <span v-else>No customer</span>
+                  </dd>
                 </dl>
               </div>
             </div>
@@ -91,23 +93,19 @@
                       v-for="(sale, index) in currentCheck.sales"
                       :key="index"
                     >
-                      <td class="product-upc">
-                        {{ sale.upc }}
-                      </td>
+                      <td class="product-upc">{{ sale.store_product.upc }}</td>
                       <td class="product-name">
-                        <a
-                          :href="'product-page.html?upc=' + sale.upc"
-                          class="product-link"
-                        >
-                          {{ sale.store_product.product.product_name }}
-                        </a>
+                        {{ sale.store_product.product.product_name }}
                       </td>
                       <td class="product-price">
                         {{ sale.selling_price.toFixed(2) }}
                       </td>
-                      <td class="product-quantity">{{ sale.quantity }}</td>
+                      <td class="product-quantity">
+                        {{ sale.product_number }}
+                      </td>
                       <td class="product-total">
-                        {{ (sale.selling_price * sale.quantity).toFixed(2) }}
+                        {{ (sale.selling_price * sale.product_number).toFixed(2)
+                        }}
                       </td>
                     </tr>
                   </tbody>
@@ -117,25 +115,29 @@
                   <dl class="check-summary-list">
                     <dt class="check-subtotal">Subtotal:</dt>
                     <dd class="check-subtotal-value">
-                      {{ subtotal.toFixed(2) }}
+                      {{ currentCheck.sales.reduce( (sum, sale) => sum +
+                      sale.selling_price * sale.product_number, 0 ).toFixed(2)
+                      }}
                     </dd>
 
                     <dt
                       class="check-discount"
                       v-if="currentCustomer && currentCustomer.percent"
                     >
-                      Discount:
+                      Discount ({{ currentCustomer.percent }}%):
                     </dt>
                     <dd
                       class="check-discount-value"
                       v-if="currentCustomer && currentCustomer.percent"
                     >
-                      {{ currentCustomer.percent }}%
+                      - {{ ( currentCheck.sales.reduce( (sum, sale) => sum +
+                      sale.selling_price * sale.product_number, 0 ) *
+                      currentCustomer.percent / 100 ).toFixed(2) }}
                     </dd>
 
                     <dt class="check-total">Total:</dt>
                     <dd class="check-total-value">
-                      <strong>{{ currentCheck.sum_total.toFixed(2) }}</strong>
+                      <strong>{{ currentCheck.sum_total.toFixed(2)}}</strong>
                     </dd>
 
                     <dt class="check-vat">VAT:</dt>

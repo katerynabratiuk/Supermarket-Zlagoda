@@ -19,11 +19,14 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main v-if="!isLoading">
         <div class="employee-header">
@@ -85,11 +88,12 @@
                       <option value="Manager">Manager</option>
                     </select>
                   </div>
-
                 </div>
-                
+
                 <div class="employee-is-active form-field">
-                  <label for="is_active_toggle" class="toggle-label" >Active:</label>
+                  <label for="is_active_toggle" class="toggle-label"
+                    >Active:</label
+                  >
                   <label class="toggle-switch">
                     <input
                       type="checkbox"
@@ -99,28 +103,26 @@
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
-
               </div>
             </div>
             <hr />
 
             <div class="employee-details-lower">
               <div class="employee-salary form-field">
-                <h4 for="salary">Salary:</h4>
+                <h3 for="salary">Salary:</h3>
                 <input
                   type="number"
                   id="salary"
-                  step="100"
-                  min="0"
-                  max="999999999999.9999"
-                  v-model.number="newEmployee.salary"
+                  v-model="newEmployee.salary"
                   class="edit-input"
+                  min="0"
+                  step="0.01"
                   required
                 />
               </div>
 
               <div class="employee-date-of-birth form-field">
-                <h4 for="date_of_birth">Date of birth:</h4>
+                <h3 for="date_of_birth">Date of birth:</h3>
                 <input
                   type="date"
                   id="date_of_birth"
@@ -130,9 +132,8 @@
                 />
               </div>
 
-              
               <div class="employee-date-of-start form-field">
-                <h4 for="date_of_start">Date of start:</h4>
+                <h3 for="date_of_start">Date of start:</h3>
                 <input
                   type="date"
                   id="date_of_start"
@@ -143,7 +144,7 @@
               </div>
 
               <div class="employee-phone-number form-field">
-                <h4 for="phone_number">Phone number:</h4>
+                <h3 for="phone_number">Phone number:</h3>
                 <input
                   type="tel"
                   id="phone_number"
@@ -152,13 +153,15 @@
                   pattern="^\+380\d{9}$"
                   title="Number must start with +380 and consist of digits"
                   v-model="newEmployee.phone_number"
-                  class="edit-input"
+                  @input="formatPhoneNumber($event, 'employee')"
+                  @keydown="preventPrefixDeletion($event)"
+                  class="edit-input"  
                   required
                 />
               </div>
 
               <div class="employee-address form-field">
-                <h4>Adress:</h4>
+                <h3>Adress:</h3>
                 <label for="city">City:</label>
                 <input
                   type="text"

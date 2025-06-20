@@ -19,11 +19,14 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main v-if="!isLoading">
         <div class="product-header">
@@ -130,12 +133,13 @@
                   id="category"
                   v-model="newProduct.product.category"
                   class="edit-dropdown"
+                  required
                 >
                   <option disabled value="">Select category</option>
                   <option
                     v-for="category in productsCategories"
                     :key="category.category_number"
-                    :value="category"
+                    :value="category.category_number"
                   >
                     {{ category.category_name }}
                   </option>

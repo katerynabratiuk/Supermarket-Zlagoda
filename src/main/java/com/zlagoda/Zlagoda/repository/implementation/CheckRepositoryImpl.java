@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.entity.Receipt;
 import com.zlagoda.Zlagoda.exception.DataAccessException;
 import com.zlagoda.Zlagoda.repository.CheckRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -18,17 +19,16 @@ public class CheckRepositoryImpl implements CheckRepository {
 
     private static final String GET_ALL = "SELECT * FROM Receipt" ;
     private static final String CREATE = "INSERT INTO Receipt(check_number, id_employee, card_number, print_date, sum_total, vat) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE Receipt SET id_employee=?, card_number=?, print_date=?, total_sum=?, vat=? WHERE check_number=?";
     private static final String DELETE = "DELETE FROM Receipt WHERE check_number=?";
 
     private static final String FIND_BY_ID =
-            "SELECT Receipt.*, Sale.sum_total AS sale_sum, Sale.product_number, " +
-                    "Store_Product.UPC, Store_Product.selling_price, Product.name AS product_name " +
-                    "FROM Receipt " +
-                    "JOIN Sale ON Receipt.check_number = Sale.check_number " +
-                    "JOIN Store_Product ON Sale.UPC = Store_Product.UPC " +
-                    "JOIN Product ON Store_Product.id_product = Product.id_product " +
-                    "WHERE Receipt.check_number=?";
+            "SELECT Receipt.*, " +
+            "Employee.id_employee, Employee.empl_name, Employee.empl_surname, Employee.empl_patronymic, " +
+            "Customer_card.card_number, Customer_card.percent, Customer_card.cust_name, Customer_card.cust_surname, Customer_card.cust_patronymic " +
+            "FROM Receipt "+
+            "JOIN Employee ON Employee.id_employee = Receipt.id_employee " +
+            "LEFT JOIN Customer_card ON Customer_card.card_number = Receipt.card_number " +
+            "WHERE Receipt.check_number=?";
 
 
     private static final String FIND_DATE_BETWEEN =
@@ -63,7 +63,6 @@ public class CheckRepositoryImpl implements CheckRepository {
     private static final String FIND_BY_EMPLOYEE_ID = "SELECT Receipt.*" +
             "FROM Employee INNER JOIN Receipt ON Employee.id_employee = Receipt.id_employee " +
             "WHERE id_employee=? AND print_date>? AND print_date<?";
-
 
 
     private final DBConnection dbConnection;
@@ -229,7 +228,23 @@ public class CheckRepositoryImpl implements CheckRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractCheckFromResultSet(rs);
+                Receipt receipt = extractCheckFromResultSet(rs);
+
+                Employee empl = receipt.getEmployee();
+                empl.setName(rs.getString("empl_name"));
+                empl.setSurname(rs.getString("empl_surname"));
+                empl.setPatronymic(rs.getString("empl_patronymic"));
+
+                if (receipt.getCard() != null)
+                {
+                    CustomerCard customerCard = receipt.getCard();
+                    customerCard.setName(rs.getString("cust_name"));
+                    customerCard.setSurname(rs.getString("cust_surname"));
+                    customerCard.setPatronymic(rs.getString("cust_patronymic"));
+                    customerCard.setPercent(rs.getInt("percent"));
+                }
+
+                return receipt;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find receipt by id", e);
@@ -237,7 +252,7 @@ public class CheckRepositoryImpl implements CheckRepository {
         return null;
     }
 
-
+    @Transactional
     @Override
     public void create(Receipt receipt) {
         try (Connection connection = dbConnection.getConnection();
@@ -253,6 +268,7 @@ public class CheckRepositoryImpl implements CheckRepository {
             }
             stmt.setDate(4, Date.valueOf(receipt.getPrintDate()));
             stmt.setBigDecimal(5, receipt.getSumTotal());
+            System.out.println(receipt.getVat());
             stmt.setBigDecimal(6, receipt.getVat());
 
             stmt.executeUpdate();
@@ -265,7 +281,7 @@ public class CheckRepositoryImpl implements CheckRepository {
     @Override
     public void update(Receipt receipt) {
         try (Connection connection = dbConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(UPDATE)) {
+             PreparedStatement stmt = connection.prepareStatement("UPDATE")) {
 
             stmt.setString(1, receipt.getEmployee().getId());
 
@@ -319,6 +335,8 @@ public class CheckRepositoryImpl implements CheckRepository {
 
         receipt.setPrintDate(rs.getDate("print_date").toLocalDate());
         receipt.setSumTotal(rs.getBigDecimal("sum_total"));
+        receipt.setVat(rs.getBigDecimal("vat"));
+
 
         return receipt;
     }

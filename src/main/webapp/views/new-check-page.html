@@ -26,6 +26,12 @@
         />
       </header>
 
+      <custom-error
+      v-if="error"
+      :message="error.message"
+      @dismiss="dismissError"
+    ></custom-error>
+    
       <main v-if="!isLoading">
         <section class="check-details">
           <div class="check-header">
@@ -139,8 +145,8 @@
                             id="quantity"
                             name="quantity"
                             v-model.number="sale.quantity"
-                            min="0.1"
-                            max="9999999999999.9999"
+                            min="1"
+                            max="100000"
                             required
                           />
                         </td>
@@ -165,25 +171,19 @@
                       <dd class="check-subtotal-value">
                         {{ subtotal.toFixed(2) }}
                       </dd>
-                      <dt
-                        class="check-discount"
-                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
-                      >
-                        Discount:
+                      <dt class="check-discount" v-if="currentCustomer && currentCustomer.percent">
+                        Discount ({{ currentCustomer.percent }}%):
                       </dt>
-                      <dd
-                        class="check-discount-value"
-                        v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
-                      >
-                        {{ discountPercent }}%
+                      <dd class="check-discount-value" v-if="currentCustomer && currentCustomer.percent">
+                        -{{ discountAmount.toFixed(2) }}
                       </dd>
                       <dt class="check-total">Total:</dt>
                       <dd class="check-total-value">
-                        <strong>{{ totalAfterDiscount.toFixed(2) }}</strong>
+                        <strong>{{totalAfterDiscount.toFixed(2) }}</strong>
                       </dd>
                       <dt class="check-vat">VAT:</dt>
                       <dd class="check-vat-value">
-                        {{ vatAmount.toFixed(2) }}
+                        + {{ vatAmount.toFixed(2) }}
                       </dd>
                     </dl>
                   </div>

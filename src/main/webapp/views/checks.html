@@ -20,204 +20,215 @@
   <body>
     <div id="app" v-cloak>
       <header class="noPrint">
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn"></navbar>
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main>
         <div class="checks-header noPrint" v-if="!isLoading">
           <h2>Checks</h2>
+        </div>
 
-          <div class="actions-container">
-            <form class="search-form" action="/search" method="get">
-              <label for="search">Search:</label>
-              <input
-                type="search"
-                id="search"
-                name="search"
-                placeholder="Search"
-              />
-              <button type="submit">
-                <span class="material-symbols-outlined">search</span>
-              </button>
-            </form>
+        <div class="actions-container noPrint">
+          <form class="search-form" action="/search" method="get">
+            <label for="search">Search:</label>
+            <input
+              type="search"
+              id="search"
+              name="search"
+              placeholder="Search"
+            />
+            <button type="submit">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+          </form>
 
-            <div class="buttons-container">
-              <button
-                v-if="isCashier"
-                type="button"
-                class="add-new-btn"
-                @click="goToAddCheck"
-              >
-                Add New
-              </button>
-              <button
-                type="button"
-                class="filter-btn"
-                @click="toggleFilterShow"
-              >
-                Filter
-              </button>
-              <button type="button" class="print-btn" onclick="window.print()">
-                Print
-              </button>
-            </div>
-          </div>
-
-          <div class="filter-block" v-if="showFilter">
-            <form class="filter-form" @submit.prevent="applyCheckFilters">
-              <div class="form-grid">
-                <div class="form-label">Cashier:</div>
-                <div class="form-field">
-                  <select
-                    id="cashier-select"
-                    name="cashier-select"
-                    class="edit-dropdown"
-                  >
-                    <option selected disabled value="">Select Employee</option>
-                    <option
-                      v-for="employee in employees"
-                      :key="employee.employee.id_employee"
-                      :value="employee.employee.id_employee"
-                      :data-name="formatEmployeeName(employee)"
-                    >
-                      {{ formatEmployeeName(employee) }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-label">Date:</div>
-                <div class="form-field date-range">
-                  <div class="date-group">
-                    <label for="from-date">From:</label>
-                    <input
-                      id="from-date"
-                      name="from-date"
-                      type="date"
-                      class="edit-input"
-                    />
-                  </div>
-                  <div class="date-group">
-                    <label for="to-date">To:</label>
-                    <input
-                      id="to-date"
-                      name="to-date"
-                      type="date"
-                      class="edit-input"
-                    />
-                  </div>
-                </div>
-
-                <div class="form-label">Show:</div>
-                <div class="form-field">
-                  <div class="checkbox-field">
-                    <input
-                      id="show-total-sum"
-                      name="show-total-sum"
-                      type="checkbox"
-                      value="Total sum"
-                    />
-                    <label for="show-total-sum">Total sum</label>
-                  </div>
-                </div>
-
-                <div class="form-label">Sort by:</div>
-                <div class="checkbox-field">
-                  <input
-                    type="checkbox"
-                    id="sort-check-number"
-                    name="sortby"
-                    value="true"
-                  />
-                  <label for="sort-name">Check number</label>
-                </div>
-              </div>
-
-              <div class="filter-form-button">
-                <button
-                  type="button"
-                  class="clear-filters-btn"
-                  @click="clearCheckFilters"
-                >
-                  Clear
-                </button>
-                <button type="submit" class="filter-btn">Filter</button>
-              </div>
-            </form>
-          </div>
-
-          <div
-            v-if="filtersApplied && showTotalSumChecked"
-            class="total-sum-message"
-          >
-            Total Sum: {{ totalSum.toFixed(2) }}
-          </div>
-
-          <section class="contents">
-            <div class="table-section" v-if="!isLoading">
-              <table>
-                <thead class="table-headers">
-                  <tr class="table-row">
-                    <th class="check-number">Check Number</th>
-                    <th class="print-date">Print Date</th>
-                    <th class="cashier">Cashier</th>
-                    <th class="customer">Customer</th>
-                    <th class="total-price">Total Price (₴)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    class="table-row"
-                    v-for="check in displayedItems('checks')(checks)"
-                    :key="check.check_number"
-                  >
-                    <td class="check-number">
-                      <a :href="'check-page.html?id=' + check.check_number">
-                        {{ check.check_number }}
-                      </a>
-                    </td>
-                    <td class="print-date">{{ check.print_date }}</td>
-                    <td class="cashier">
-                      <a
-                        v-if="isManager"
-                        :href="'employee-page.html?id=' + check.employee.id_employee"
-                      >
-                        {{ check.employee.id_employee }}
-                      </a>
-                      <span v-else> {{ check.employee.id_employee }} </span>
-                    </td>
-                    <td class="customer">
-                      <a
-                        v-if="check.customer_card"
-                        :href="'customer-page.html?id=' + check.customer_card.card_number"
-                      >
-                        {{ check.customer_card.card_number }}
-                      </a>
-                      <span v-else-if="check.customer_card"> {{ check.customer_card.card_number }} </span>
-                      <span v-else> — </span>
-                    </td>
-                    <td class="total-price">{{ check.sum_total.toFixed(2) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <div
-            class="button-container noPrint"
-            v-if="!isLoading && hasMoreItems('checks')(checks)"
-          >
-            <button class="show-more-btn" @click="showMoreItems('checks')">
-              Show More
+          <div class="buttons-container">
+            <button
+              v-if="isCashier"
+              type="button"
+              class="add-new-btn noPrint"
+              @click="goToAddCheck"
+            >
+              Add New
+            </button>
+            <button
+              type="button"
+              class="filter-btn noPrint"
+              @click="toggleFilterShow"
+              v-if="isManager || isCashier"
+            >
+              Filter
+            </button>
+            <button
+              type="button"
+              class="print-btn noPrint"
+              onclick="window.print()"
+              v-if="isManager"
+            >
+              Print
             </button>
           </div>
+        </div>
+
+        <div class="filter-block noPrint" v-if="showFilter">
+          <form class="filter-form" @submit.prevent="applyCheckFilters">
+            <div class="form-grid">
+              <div class="form-label">Cashier:</div>
+              <div class="form-field">
+                <select
+                  id="cashier-select"
+                  name="cashier-select"
+                  class="edit-dropdown"
+                >
+                  <option selected disabled value="">Select Employee</option>
+                  <option
+                    v-for="employee in employees"
+                    :key="employee.id_employee"
+                    :value="employee.id_employee"
+                    :data-name="formatEmployeeName(employee)"
+                  >
+                    {{ formatEmployeeName(employee) }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-label">Date:</div>
+              <div class="form-field date-range">
+                <div class="date-group">
+                  <label for="from-date">From:</label>
+                  <input
+                    id="from-date"
+                    name="from-date"
+                    type="date"
+                    class="edit-input"
+                  />
+                </div>
+                <div class="date-group">
+                  <label for="to-date">To:</label>
+                  <input
+                    id="to-date"
+                    name="to-date"
+                    type="date"
+                    class="edit-input"
+                  />
+                </div>
+              </div>
+
+              <div class="form-label">Show:</div>
+              <div class="form-field">
+                <div class="checkbox-field">
+                  <input
+                    id="show-total-sum"
+                    name="show-total-sum"
+                    type="checkbox"
+                    value="Total sum"
+                  />
+                  <label for="show-total-sum">Total sum</label>
+                </div>
+              </div>
+
+              <div class="form-label">Sort by:</div>
+              <div class="checkbox-field">
+                <input
+                  type="checkbox"
+                  id="sort-check-number"
+                  name="sortby"
+                  value="true"
+                />
+                <label for="sort-name">Check number</label>
+              </div>
+            </div>
+
+            <div class="filter-form-button">
+              <button
+                type="button"
+                class="clear-filters-btn"
+                @click="clearCheckFilters"
+              >
+                Clear
+              </button>
+              <button type="submit" class="filter-btn">Filter</button>
+            </div>
+          </form>
+        </div>
+
+        <div
+          v-if="filtersApplied && showTotalSumChecked"
+          class="total-sum-message"
+        >
+          Total Sum: {{ totalSum.toFixed(2) }}
+        </div>
+
+        <section class="contents">
+          <div class="table-section" v-if="!isLoading">
+            <table>
+              <thead class="table-headers">
+                <tr class="table-row">
+                  <th class="check-number">Check Number</th>
+                  <th class="print-date">Print Date</th>
+                  <th class="cashier">Cashier</th>
+                  <th class="customer">Customer</th>
+                  <th class="total-price">Total Price (₴)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="table-row"
+                  v-for="check in displayedItems('checks')(checks)"
+                  :key="check.check_number"
+                >
+                  <td class="check-number">
+                    <a :href="'check-page.html?id=' + check.check_number">
+                      {{ check.check_number }}
+                    </a>
+                  </td>
+                  <td class="print-date">{{ check.print_date }}</td>
+                  <td class="cashier">
+                    <a
+                      v-if="isManager"
+                      :href="'employee-page.html?id=' + check.employee.id_employee"
+                    >
+                      {{ check.employee.id_employee }}
+                    </a>
+                    <span v-else> {{ check.employee.id_employee }} </span>
+                  </td>
+                  <td class="customer">
+                    <a
+                      v-if="check.customer_card"
+                      :href="'customer-page.html?id=' + check.customer_card.card_number"
+                    >
+                      {{ check.customer_card.card_number }}
+                    </a>
+                    <span v-else-if="check.customer_card">
+                      {{ check.customer_card.card_number }}
+                    </span>
+                    <span v-else> — </span>
+                  </td>
+                  <td class="total-price">{{ check.sum_total.toFixed(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div
+          class="button-container noPrint"
+          v-if="!isLoading && hasMoreItems('checks')(checks)"
+        >
+          <button class="show-more-btn" @click="showMoreItems('checks')">
+            Show More
+          </button>
         </div>
       </main>
       <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
     </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../js/app.js"></script>
   </body>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="../js/app.js"></script>
 </html>

@@ -22,6 +22,12 @@
             <h1>Zlagoda</h1>
           </div>
 
+          <custom-error
+            v-if="error"
+            :message="error.message"
+            @dismiss="dismissError"
+          ></custom-error>
+
           <div class="login-form">
             <form @submit.prevent="handleLogin">
               <div class="form-group-input">
@@ -66,7 +72,9 @@
           </div>
 
           <div class="continue-without-login">
-            <a href="../views/categories.html" @click="loadCategories">CONTINUE WITHOUT LOGGING IN</a>
+            <a href="../views/categories.html" @click="loadCategories"
+              >CONTINUE WITHOUT LOGGING IN</a
+            >
           </div>
         </div>
       </main>

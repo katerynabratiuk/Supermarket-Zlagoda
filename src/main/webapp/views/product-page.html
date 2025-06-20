@@ -18,10 +18,7 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
 
       <main v-if="!isLoading && currentProduct">
@@ -142,7 +139,7 @@
                         :disabled="currentProduct.promotional_product"
                         id="price"
                         :value="currentProduct.selling_price"
-                        @input="handlePriceInput($event, currentProduct.promotional_product)"
+                        @input="handlePriceInput"
                         type="number"
                         min="0.1"
                         max="9999999999999.9999"
@@ -189,7 +186,8 @@
                     <option
                       v-for="category in productsCategories"
                       :key="category.category_number"
-                      :value="category"
+                      :value="category.category_number"
+                      required
                     >
                       {{ category.category_name }}
                     </option>
@@ -239,7 +237,13 @@
               >
                 Delete
               </button>
-              <button v-if="!currentProduct.promotional" class="save-btn" type="sumbit">Save</button>
+              <button
+                v-if="!currentProduct.promotional_product || (currentProduct.promotional && !currentProduct.promotional_product)"
+                class="save-btn"
+                type="sumbit"
+              >
+                Save
+              </button>
             </div>
           </form>
         </section>
