@@ -32,10 +32,6 @@ public class EmployeeController {
         return employeeService.findById(employeeId);
     }
 
-//    @GetMapping("/by-role/{role}")
-//    public List<Employee> findByRole(@PathVariable String role) {
-//        return employeeService.findByRole(role);
-//    }
 
     @GetMapping("/filter")
     public List<Employee> filterEmployee(
