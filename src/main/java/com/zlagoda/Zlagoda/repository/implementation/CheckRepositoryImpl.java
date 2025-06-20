@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public class CheckRepositoryImpl implements CheckRepository {
 
-    private static final String GET_ALL = "SELECT * FROM Receipt" ;
+    private static final String GET_ALL = "SELECT * FROM Receipt ORDER BY print_date DESC" ;
     private static final String CREATE = "INSERT INTO Receipt(check_number, id_employee, card_number, print_date, sum_total, vat) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String DELETE = "DELETE FROM Receipt WHERE check_number=?";
 
