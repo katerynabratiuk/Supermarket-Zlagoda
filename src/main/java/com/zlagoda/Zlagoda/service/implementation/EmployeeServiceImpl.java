@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.util.IdGenerator;
 import com.zlagoda.Zlagoda.repository.EmployeeRepository;
 import com.zlagoda.Zlagoda.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,5 +66,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Employee> search(String query) {
         return employeeRepository.search(query);
+    }
+
+    public Employee getEmployeeByUsername(String username) {
+        Employee employee = employeeRepository.findByUsername(username);
+        if (employee == null) {
+            throw new UsernameNotFoundException("Employee not found for username: " + username);
+        }
+        return employee;
     }
 }
