@@ -6,6 +6,7 @@ import com.zlagoda.Zlagoda.service.implementation.CategoryServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin(origins = {
@@ -44,8 +45,9 @@ public class CategoryController {
 
     @GetMapping("/filter")
     public List<Category> filterProducts(
+            @RequestParam(required = false) String sortBy
     ) {
-        return categoryService.filter();
+        return categoryService.filter(sortBy);
     }
 
 }

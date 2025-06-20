@@ -1,4 +1,4 @@
-package com.zlagoda.Zlagoda.dto;
+package com.zlagoda.Zlagoda.dto.check;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -733,10 +733,15 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
+      setCategorySort(sortType) {
+      this.categorySortBy = sortType
+      this.sortCategories()
+      },
       async sortCategories() {
         try {
           this.isLoading = true
-          const response = await fetch('http://localhost:8090/category/filter', {
+          const param = this.categorySortBy ? `sortBy=${this.categorySortBy}` : ''
+          const response = await fetch(`http://localhost:8090/category/filter?${param}`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.token}`

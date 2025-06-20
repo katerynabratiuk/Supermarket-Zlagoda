@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CategoryRepository extends GenericRepository<Category,Integer>{
 
-    List<Category> filter();
+    List<Category> filter(String sortBy);
 }

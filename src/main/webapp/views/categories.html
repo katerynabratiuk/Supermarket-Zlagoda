@@ -41,9 +41,26 @@
               @toggle="toggleEditMode"
             >
             </edit-button>
-            <button type="button" class="sort-btn" @click="sortCategories">
-              Sort
-            </button>
+            <div class="form-label">Sort by:</div>
+              <div class="button-sort-group form-field">
+                <button
+                  type="button"
+                  :class="{ active: categorySortBy === 'name_asc' }"
+                  @click="setCategorySort('name_asc')"
+                >A-Z</button>
+                <button
+                  type="button"
+                  :class="{ active: categorySortBy === 'name_desc' }"
+                  @click="setCategorySort('name_desc')"
+                >Z-A</button>
+                <button
+                  type="button"
+                  :class="{ active: categorySortBy === 'popularity' }"
+                  @click="setCategorySort('popularity')"
+                >By Populariry</button>
+              </div>
+
+
             <button type="button" class="print-btn" onclick="window.print()" v-if="isManager">
               Print
             </button>
