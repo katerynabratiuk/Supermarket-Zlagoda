@@ -122,7 +122,7 @@
         <section class="contents">
           <div
             class="no-employees-message"
-            v-if="!isLoading && (search.trim() !== '' || filtersApplied) && filteredEmployees.length === 0"
+            v-if="!isLoading && (search.trim() !== '' || filtersApplied) && employees.length === 0"
           >
             <p>No employees found.</p>
           </div>
