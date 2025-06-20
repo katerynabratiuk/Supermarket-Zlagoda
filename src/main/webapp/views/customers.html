@@ -44,14 +44,14 @@
                   <span class="material-symbols-outlined">search</span>
                 </button>
               </form>
-              <div class="buttons-container" v-if="isManager">
-                <button type="button" class="add-new-btn" @click="goToAddCustomer">
+              <div class="buttons-container" v-if="isManager || isCashier">
+                <button type="button" class="add-new-btn" @click="goToAddCustomer" >
                   Add New
                 </button>
                 <button type="button" class="filter-btn" @click="toggleFilterShow">
                   Filter
                 </button>
-                <button type="button" class="print-btn" onclick="window.print()">
+                <button type="button" class="print-btn" onclick="window.print()" v-if="isManager">
                   Print
                 </button>
               </div>

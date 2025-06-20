@@ -33,7 +33,7 @@
         <div class="categories-header noPrint" v-if="!isLoading">
           <h2>Categories</h2>
 
-          <div class="buttons-container" v-if="isManager">
+          <div class="buttons-container" v-if="isManager || isCashier">
             <edit-button
               type="button"
               :is-manager="isManager"
@@ -44,7 +44,7 @@
             <button type="button" class="sort-btn" @click="sortCategories">
               Sort
             </button>
-            <button type="button" class="print-btn" onclick="window.print()">
+            <button type="button" class="print-btn" onclick="window.print()" v-if="isManager">
               Print
             </button>
           </div>

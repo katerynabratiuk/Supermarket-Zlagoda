@@ -61,6 +61,7 @@
               type="button"
               class="filter-btn noPrint"
               @click="toggleFilterShow"
+              v-if="isManager || isCashier"
             >
               Filter
             </button>
@@ -68,6 +69,7 @@
               type="button"
               class="print-btn noPrint"
               onclick="window.print()"
+              v-if="isManager"
             >
               Print
             </button>
