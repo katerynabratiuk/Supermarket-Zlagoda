@@ -4,12 +4,17 @@ public class EmployeeCategorySalesDTO {
 
     private String idEmployee;
     private String emplSurname;
+    private Integer categoryNumber;
     private String categoryName;
     private int totalProductsSold;
 
-    public EmployeeCategorySalesDTO(String idEmployee, String emplSurname, String categoryName, int totalProductsSold) {
+    public EmployeeCategorySalesDTO() {
+    }
+
+    public EmployeeCategorySalesDTO(String idEmployee, String emplSurname, Integer categoryNumber, String categoryName, Integer categoryId, int totalProductsSold) {
         this.idEmployee = idEmployee;
         this.emplSurname = emplSurname;
+        this.categoryNumber = categoryNumber;
         this.categoryName = categoryName;
         this.totalProductsSold = totalProductsSold;
     }
@@ -30,12 +35,12 @@ public class EmployeeCategorySalesDTO {
         this.emplSurname = emplSurname;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public Integer getCategoryNumber() {
+        return categoryNumber;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryNumber(Integer categoryNumber) {
+        this.categoryNumber = categoryNumber;
     }
 
     public int getTotalProductsSold() {
@@ -44,6 +49,14 @@ public class EmployeeCategorySalesDTO {
 
     public void setTotalProductsSold(int totalProductsSold) {
         this.totalProductsSold = totalProductsSold;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface StatisticsRepository {
 
-    List<EmployeeCategorySalesDTO> productsSoldByEmployeeByCategory(String category_number);
+    List<EmployeeCategorySalesDTO> productsSoldByEmployeeByCategory(Integer category_number);
 }
