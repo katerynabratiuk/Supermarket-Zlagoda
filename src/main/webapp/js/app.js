@@ -23,6 +23,7 @@ let app = Vue.createApp(
         products: [],
         customers: [],
         employees: [],
+        cashiers:[],
         checks: [],
 
         selectedFilter: '',
@@ -127,7 +128,7 @@ let app = Vue.createApp(
         statisticsQueries: [
           {
             label: "Total number of products by each employee sold in the category: ",
-            endpoint: "/stats/productSoldByEmployee/",
+            endpoint: "/stats/productsSoldByEmployee/",
             paramName: "category"
           },
           {
@@ -509,7 +510,7 @@ let app = Vue.createApp(
             case 'checks.html':
               await Promise.all([
                 this.loadChecks(),
-                this.loadEmployees()
+                this.loadCashiers()
               ])
               break
 
@@ -531,7 +532,7 @@ let app = Vue.createApp(
             case 'new-check-page.html':
               await Promise.all([
                 this.loadProducts(),
-                this.loadEmployees(),
+                this.loadCashiers(),
                 this.loadCustomers(),
               ])
               break
@@ -659,6 +660,28 @@ let app = Vue.createApp(
           this.showError("Could not load employees:")
         }
       },
+
+      async loadCashiers() {
+        try {
+          const response = await fetch("http://localhost:8090/employee/filter?cashier=true", {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (!response.ok) {
+            this.showError(`Fetch employees error! Status: ${response.status}`)
+            return
+          }
+
+          this.cashiers = await response.json()
+        } catch (error) {
+          this.showError("Could not load cashiers")
+        }
+      },
+
 
       togglePasswordVisibility() {
         this.isPasswordVisible = !this.isPasswordVisible
