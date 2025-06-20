@@ -10,7 +10,7 @@ let app = Vue.createApp(
         token: '',
         isLoggedIn: false,
         user: {
-          userRole: 'Unauthorized',
+          userRole: 'MANAGER',
           userName: ''
         },
         username: '',
@@ -105,13 +105,20 @@ let app = Vue.createApp(
 
         currentEditingItemID: null,
 
-        productsItemsToShowCount: 15,
-        productsItemsIncrementBy: 15,
+        productsItemsToShowCount: 12,
+        productsItemsIncrementBy: 12,
         rowsToShowCount: 10,
         rowsIncrementBy: 10,
 
         search: '',
         search_result: [],
+
+        productSearchQuery: '',
+        allProducts: [],
+        categoryFilter: '',
+        customerSearchQuery: '',
+        allCustomers: [],
+        discountFilter: null,
 
         error: null
       }
@@ -169,6 +176,47 @@ let app = Vue.createApp(
             // employee.phone_number.toLowerCase().includes(q)
           )
         })
+      },
+
+      filteredCustomers() {
+        let result = this.allCustomers
+        if (this.customerSearchQuery) {
+          const q = this.customerSearchQuery.toLowerCase()
+          result = result.filter(cust => {
+            const fullName = `${cust.cust_surname} ${cust.cust_name} ${cust.cust_patronymic || ''}`.toLowerCase()
+            return fullName.includes(q)
+          })
+        }
+        if (this.discountFilter !== null) {
+          result = result.filter(cust => cust.percent === this.discountFilter)
+        }
+        return result
+      },
+
+      filteredProducts() {
+        let filtered = this.allProducts;
+        if (this.productSearchQuery) {
+          const q = this.productSearchQuery.toLowerCase();
+          filtered = filtered.filter(prod =>
+              prod.product.product_name.toLowerCase().includes(q) ||
+              (prod.product.description || '').toLowerCase().includes(q) ||
+              ((prod.product.category?.category_number?.toString() || '').toLowerCase().includes(q))
+          );
+        }
+        if (this.categoryFilter) {
+          const cat = Number(this.categoryFilter);
+          if (!isNaN(cat)) {
+            filtered = filtered.filter(prod =>
+                prod.product.category?.category_number === cat
+            );
+          }
+        }
+        if (this.productTypeFilter === 'promotional') {
+          filtered = filtered.filter(prod => prod.promotional_product);
+        } else if (this.productTypeFilter === 'non-promotional') {
+          filtered = filtered.filter(prod => !prod.promotional_product);
+        }
+        return filtered;
       },
     },
     watch: {
@@ -530,7 +578,7 @@ let app = Vue.createApp(
           })
           if (!response.ok) this.showError("Fetch products error: ${response.status}")
 
-          this.products = await response.json()
+          this.allProducts = await response.json()
         } catch (error) {
           this.showError("Error loading product:")
         }
@@ -545,7 +593,7 @@ let app = Vue.createApp(
             }
           })
           if (response.ok) {
-            this.products = await response.json()
+            this.allProducts = await response.json()
           } else {
             this.showError("Failed to load products. Status.", response.status)
           }
@@ -565,7 +613,7 @@ let app = Vue.createApp(
           })
           if (!response.ok) this.showError("Fetch customers error! Status: ${response.status}")
 
-          this.customers = await response.json()
+          this.allCustomers = await response.json()
         } catch (error) {
           this.showError("Could not load customers:")
         }
@@ -848,57 +896,57 @@ let app = Vue.createApp(
       },
       async applyProductFilters() {
         try {
-          this.isLoading = true
-          const categorySelect = document.getElementById('category-select')
-          const fromDateInput = document.getElementById('from-date')
-          const toDateInput = document.getElementById('to-date')
+          this.isLoading = true;
 
-          let categoryName = null
-          const categoryNumber = categorySelect?.value
-          if (categorySelect?.options && categorySelect.selectedIndex !== -1) {
-            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
+          const categorySelect = document.getElementById('category-select');
+          const fromDateInput = document.getElementById('from-date');
+          const toDateInput = document.getElementById('to-date');
+
+          let categoryName = null;
+          const categoryNumber = categorySelect ? categorySelect.value : null;
+          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
           }
 
-          const params = new URLSearchParams()
-          if (categoryNumber) params.append('category', categoryName)
-          if (fromDateInput?.value) params.append('from_date', fromDateInput.value)
-          if (toDateInput?.value) params.append('to_date', toDateInput.value)
+          const fromDate = fromDateInput?.value || null;
+          const toDate = toDateInput?.value || null;
+          const productType = this.productTypeFilter;
 
-          if (this.productTypeFilter === 'promotional') {
-            params.append('promotional', true)
-          } else if (this.productTypeFilter === 'non-promotional') {
-            params.append('promotional', false)
-          }
+          const params = new URLSearchParams();
+
+          if (categoryNumber) params.append('category', categoryName);
+          if (fromDate) params.append('from_date', fromDate);
+          if (toDate) params.append('to_date', toDate);
+          if (productType === 'promotional') params.append('promotional', true);
+          else if (productType === 'non-promotional') params.append('promotional', false);
 
           if (this.sortProductsParamsField?.length > 0) {
             this.sortProductsParamsField.forEach(field => {
-              params.append('sortBy', field)
-            })
+              params.append('sortBy', field);
+            });
           }
 
           const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
             method: 'GET',
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${this.token}`
+              'Content-Type': 'application/json'
             }
-          })
+          });
 
           if (!response.ok) {
-            this.showError(`Failed to filter products. Status: ${response.status}`)
+            throw new Error(`Failed to filter products. Status: ${response.status}`);
           }
 
-          const data = await response.json()
-          this.products = data
-          this.totalPieces = data.total_pieces || 0
-          this.filtersApplied = true
-          this.currentCategory = { category_name: categoryName }
-
+          const data = await response.json();
+          this.allProducts = data.products || data;
+          this.totalPieces = data.total_pieces || 0;
+          this.filtersApplied = true;
+          this.currentCategory = { category_name: categoryName };
         } catch (error) {
-          this.showError('Error applying filters to products:')
-          this.showError('Failed to apply filters to products. Please try again.')
+          console.error('Error applying filters to products:', error);
+          alert('Failed to apply filters to products. Please try again.');
         } finally {
-          this.isLoading = false
+          this.isLoading = false;
         }
       },
 
@@ -1029,13 +1077,30 @@ let app = Vue.createApp(
             this.showError(`Failed to load customers. Status: ${response.status}`)
           }
 
-          this.customers = await response.json()
-          this.filtersApplied = params.size > 0
+          const data = await response.json();
+
+          const query = this.allCustomerSearchQuery?.toLowerCase()?.trim() || '';
+          if (query) {
+            this.allCustomers = data.filter(c => {
+              const fullName = `${c.cust_surname} ${c.cust_name} ${c.cust_patronymic || ''}`.toLowerCase();
+              const cardNumber = c.card_number?.toLowerCase() || '';
+              const phone = c.phone_number?.toLowerCase() || '';
+              return (
+                  fullName.includes(query) ||
+                  cardNumber.includes(query) ||
+                  phone.includes(query)
+              );
+            });
+          } else {
+            this.allCustomers = data;
+          }
+
+          this.filtersApplied = params.size > 0;
         } catch (error) {
-          this.showError('Error applying filters to customers:')
-          this.showError('Failed to apply filters to customers. Please try again.')
+          console.error('Error applying filters to customers:', error);
+          alert('Failed to apply filters to customers. Please try again.');
         } finally {
-          this.isLoading = false
+          this.isLoading = false;
         }
       },
 
@@ -1067,6 +1132,45 @@ let app = Vue.createApp(
           this.employees = result
         } catch (error) {
           this.showError("An error happened during search:")
+        }
+      },
+
+      async searchCustomers() {
+        if (!this.allCustomerSearchQuery) {
+          await this.loadCustomers()
+          return
+        }
+
+        try {
+          const response = await fetch(
+              `http://localhost:8090/customer/search?search=${encodeURIComponent(this.customerSearchQuery)}`
+          )
+          if (!response.ok) throw new Error("Search failed")
+
+          const result = await response.json()
+          this.allCustomers = result
+        } catch (error) {
+          console.error("Search error:", error)
+          alert("An error occurred while searching customers.")
+        }
+      },
+
+      async searchProducts() {
+        if (!this.productSearchQuery) {
+          await this.loadProducts();
+          return;
+        }
+
+        try {
+          const response = await fetch(
+              `http://localhost:8090/product/search?search=${encodeURIComponent(this.productSearchQuery)}`
+          );
+          if (!response.ok) throw new Error("Search failed");
+
+          this.allProducts = await response.json();
+        } catch (error) {
+          console.error("Search error:", error);
+          alert("An error occurred during product search.");
         }
       },
 
@@ -1605,7 +1709,7 @@ app.component("custom-footer", {
     `
     <footer>
       <div class="contacts-bar">
-        <p>Copyright &copy 2025 Bratiuk, Tsepkalo, Malii</p>
+        <p>Copyright &copy 2025 Bratiuk, Malii, Tsepkalo</p>
       </div>  
     </footer>
     `
