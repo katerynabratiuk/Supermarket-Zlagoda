@@ -122,6 +122,7 @@ let app = Vue.createApp(
         allCustomers: [],
         discountFilter: null,
         employeeRoleFilter: null,
+        sortByNameCust: false,
 
         error: null
       }
@@ -160,22 +161,6 @@ let app = Vue.createApp(
 
       totalAfterDiscount() {
         return (this.subtotal - this.discountAmount) + this.vatAmount
-      },
-
-
-      filteredCustomers() {
-        let result = this.allCustomers
-        if (this.customerSearchQuery) {
-          const q = this.customerSearchQuery.toLowerCase()
-          result = result.filter(cust => {
-            const fullName = `${cust.cust_surname} ${cust.cust_name} ${cust.cust_patronymic || ''}`.toLowerCase()
-            return fullName.includes(q)
-          })
-        }
-        if (this.discountFilter !== null) {
-          result = result.filter(cust => cust.percent === this.discountFilter)
-        }
-        return result
       },
 
       filteredProducts() {
@@ -1054,60 +1039,20 @@ let app = Vue.createApp(
       },
 
       async applyCustomerFilters() {
+        const params = {};
+        if (this.discountFilter !== null) {
+          params.percentage = this.discountFilter;
+        }
+        if (this.sortByNameCust) {
+          params.sortBy = 'name';
+        }
+
         try {
-          this.isLoading = true
-
-          const discountSelect = document.getElementById('discount-select')
-          const discountPercent = discountSelect ? discountSelect.value : null
-          const sortNameCheckbox = document.getElementById('sort-name')
-          const sortByName = sortNameCheckbox ? sortNameCheckbox.checked : false
-
-          const params = new URLSearchParams()
-
-          if (discountPercent) params.append('percentage', discountPercent)
-          if (sortByName) params.append('sortBy', 'name')
-
-          const response = await fetch(
-            params.size > 0
-              ? `http://localhost:8090/customer/filter?${params.toString()}`
-              : `http://localhost:8090/customer`,
-            {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-              },
-            }
-          )
-
-          if (!response.ok) {
-            this.showError(`Failed to load customers. Status: ${response.status}`)
-          }
-
-          const data = await response.json()
-
-          const query = this.allCustomerSearchQuery?.toLowerCase()?.trim() || ''
-          if (query) {
-            this.allCustomers = data.filter(c => {
-              const fullName = `${c.cust_surname} ${c.cust_name} ${c.cust_patronymic || ''}`.toLowerCase()
-              const cardNumber = c.card_number?.toLowerCase() || ''
-              const phone = c.phone_number?.toLowerCase() || ''
-              return (
-                  fullName.includes(query) ||
-                  cardNumber.includes(query) ||
-                  phone.includes(query)
-              )
-            })
-          } else {
-            this.allCustomers = data
-          }
-
-          this.filtersApplied = params.size > 0
+          const response = await axios.get('http://localhost:8090/customer/filter', { params });
+          this.allCustomers = response.data;
         } catch (error) {
-          console.error('Error applying filters to customers:', error)
-          alert('Failed to apply filters to customers. Please try again.')
-        } finally {
-          this.isLoading = false
+          console.error('Filter failed', error);
+          alert('Filtering customers failed.');
         }
       },
 
@@ -1150,22 +1095,20 @@ let app = Vue.createApp(
       },
 
       async searchCustomers() {
-        if (!this.allCustomerSearchQuery) {
-          await this.loadCustomers()
-          return
+        if (!this.customerSearchQuery || this.customerSearchQuery.trim() === '') {
+          await this.loadCustomers();
+          return;
         }
 
         try {
-          const response = await fetch(
-              `http://localhost:8090/customer/search?search=${encodeURIComponent(this.customerSearchQuery)}`
-          )
-          if (!response.ok) throw new Error("Search failed")
+          const response = await axios.get('http://localhost:8090/customer/search', {
+            params: { search: this.customerSearchQuery }
+          });
 
-          const result = await response.json()
-          this.allCustomers = result
+          this.allCustomers = response.data;
         } catch (error) {
-          console.error("Search error:", error)
-          alert("An error occurred while searching customers.")
+          console.error('Customer search failed:', error);
+          alert('An error occurred while searching for customers.');
         }
       },
 
