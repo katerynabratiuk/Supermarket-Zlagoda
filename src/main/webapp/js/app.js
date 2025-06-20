@@ -128,7 +128,6 @@ let app = Vue.createApp(
           {
             label: "Total number of products by each employee sold in the category: ",
             endpoint: "/stats/productsSoldByEmployee/",
-<<<<<<< HEAD
             paramName: "category",
             headers: ["Employee ID", "Employee Surname", "Category Number", "Category Name", "Total Products Sold"]
           },
@@ -155,26 +154,6 @@ let app = Vue.createApp(
             endpoint: "/stats/loyalCustomers",
             paramName: '',
             headers: ["Employee ID", "Employee Name", "Total Sales"]
-=======
-            paramName: "category"
-          },
-          {
-            label: "The most loyal customers (those who have prodcuct of every categories)",
-            endpoint: "/api/queries/top-employees"
-          },
-          {
-            label: "Total number of products by city purchased by buyers not from city:",
-            endpoint: "/api/queries/customer-purchase-history",
-            paramName: "city"
-          },
-          {
-            label: "Customers without a single non-promotional item in their check",
-            endpoint: "/api/queries/category-sales-overview"
-          },
-          {
-            label: "Employee Sales Performance",
-            endpoint: "/api/queries/employee-sales-performance"
->>>>>>> be82c14ba5181233a370c7c8bbb5ec386b60f6e1
           }
         ],
         queryParams: {
@@ -1140,16 +1119,7 @@ let app = Vue.createApp(
         }
 
         try {
-<<<<<<< HEAD
-          const response = await axios.get('http://localhost:8090/customer/filter', {
-            params,
-            headers: {
-              'Authorization': `Bearer ${this.token}`
-            }
-          })
-=======
           const response = await axios.get('http://localhost:8090/customer/filter', { params })
->>>>>>> be82c14ba5181233a370c7c8bbb5ec386b60f6e1
           this.customers = response.data
         } catch (error) {
           this.showError('Filtering customers failed.')
@@ -1186,11 +1156,7 @@ let app = Vue.createApp(
       },
 
       async searchProducts() {
-<<<<<<< HEAD
-        if (!this.productSearchQuery || this.productSearchQuery.trim() === '') {
-=======
         if (!this.productSearchQuery) {
->>>>>>> be82c14ba5181233a370c7c8bbb5ec386b60f6e1
           await this.loadProducts()
           return
         }
@@ -1232,13 +1198,8 @@ let app = Vue.createApp(
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
           }
-<<<<<<< HEAD
-          else {
-            const errorData = await response.json()
-=======
           else{
             const errorData = await response.json();
->>>>>>> be82c14ba5181233a370c7c8bbb5ec386b60f6e1
             if (errorData.error) {
               this.showError(errorData.error)
             }
@@ -1643,20 +1604,41 @@ let app = Vue.createApp(
 
           const response = await fetch(url, {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${this.token}` }
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
           })
 
-          if (!response.ok) this.showError("Error fetching statistics.")
+          if (!response.ok) {
+            throw new Error("Error fetching statistics.")
+          }
 
           const data = await response.json()
-          this.queryResults = data.results || data
-          this.resultHeaders = data.headers || (this.queryResults[0] ? Object.keys(this.queryResults[0]) : [])
+
+          if (index === 1) {
+            //Process Query 1
+            let extracted = Array.isArray(data) ? data.map(item => ({ "Customer ID": item.card_number ?? "Empty", "Customer Surname": item.cust_surname ?? "Empty", "Customer Name": item.cust_name ?? "Empty", })) : null
+
+            this.queryResults = {
+              ...this.queryResults,
+              [index]: extracted
+            };
+          }
+          else { //All Other
+
+            this.queryResults = {
+              ...this.queryResults,
+              [index]: Array.isArray(data) ? data : [data],
+            }
+          }
+
+
         } catch (error) {
           console.error("Error executing query:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       }
-
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)
