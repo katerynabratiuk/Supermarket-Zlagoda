@@ -1,6 +1,6 @@
 package com.zlagoda.Zlagoda.dto.stats;
 
-public class EmployeeCategorySalesDTO {
+public class EmployeeDTO {
 
     private String idEmployee;
     private String emplSurname;
@@ -8,10 +8,10 @@ public class EmployeeCategorySalesDTO {
     private String categoryName;
     private int totalProductsSold;
 
-    public EmployeeCategorySalesDTO() {
+    public EmployeeDTO() {
     }
 
-    public EmployeeCategorySalesDTO(String idEmployee, String emplSurname, Integer categoryNumber, String categoryName, Integer categoryId, int totalProductsSold) {
+    public EmployeeDTO(String idEmployee, String emplSurname, Integer categoryNumber, String categoryName, Integer categoryId, int totalProductsSold) {
         this.idEmployee = idEmployee;
         this.emplSurname = emplSurname;
         this.categoryNumber = categoryNumber;
@@ -57,6 +57,10 @@ public class EmployeeCategorySalesDTO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public void setName(String emplSurname) {
+
     }
 }
 
