@@ -78,7 +78,7 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public List<StoreProduct> search(@RequestParam("search") String query) {
-        return storeProductService.findByName(query);
+    public List<StoreProduct> searchProducts(@RequestParam("query") String query) {
+        return storeProductService.searchProd(query);
     }
 }

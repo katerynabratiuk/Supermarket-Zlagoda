@@ -12,4 +12,5 @@ public interface StoreProductService{
     void update(StoreProduct storeProduct);
     StoreProduct findById(String id);
     void create(StoreProduct storeProduct);
+    List<StoreProduct> searchProd(String query);
 }

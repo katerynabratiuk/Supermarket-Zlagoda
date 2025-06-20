@@ -192,32 +192,6 @@ let app = Vue.createApp(
       totalAfterDiscount() {
         return (this.subtotal - this.discountAmount) + this.vatAmount
       },
-
-      filteredProducts() {
-        let filtered = this.products
-        if (this.productSearchQuery) {
-          const q = this.productSearchQuery.toLowerCase()
-          filtered = filtered.filter(prod =>
-            prod.product.product_name.toLowerCase().includes(q) ||
-            (prod.product.description || '').toLowerCase().includes(q) ||
-            ((prod.product.category?.category_number?.toString() || '').toLowerCase().includes(q))
-          )
-        }
-        if (this.categoryFilter) {
-          const cat = Number(this.categoryFilter)
-          if (!isNaN(cat)) {
-            filtered = filtered.filter(prod =>
-              prod.product.category?.category_number === cat
-            )
-          }
-        }
-        if (this.productTypeFilter === 'promotional') {
-          filtered = filtered.filter(prod => prod.promotional_product)
-        } else if (this.productTypeFilter === 'non-promotional') {
-          filtered = filtered.filter(prod => !prod.promotional_product)
-        }
-        return filtered
-      },
     },
     watch: {
       currentProduct(newVal) {
@@ -926,54 +900,41 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
+
       async applyProductFilters() {
+        const params = {}
+
+        const categorySelect = document.getElementById('category-select')
+        if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+          const categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
+          if (categoryName) {
+            params.category = categoryName
+          }
+        }
+
+        if (this.productTypeFilter === 'promotional') {
+          params.promotional = true
+        } else if (this.productTypeFilter === 'non-promotional') {
+          params.promotional = false
+        }
+
+        if (this.sortProductsParamsField?.length > 0) {
+          params.sortBy = this.sortProductsParamsField.join(',')
+        }
+
         try {
-          this.isLoading = true
-
-          const categorySelect = document.getElementById('category-select')
-          const fromDateInput = document.getElementById('from-date')
-          const toDateInput = document.getElementById('to-date')
-
-          let categoryName = null
-          const categoryNumber = categorySelect ? categorySelect.value : null
-          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
-          }
-
-          const fromDate = fromDateInput?.value || null
-          const toDate = toDateInput?.value || null
-          const productType = this.productTypeFilter
-
-          const params = new URLSearchParams()
-
-          if (categoryNumber) params.append('category', categoryName)
-          if (fromDate) params.append('from_date', fromDate)
-          if (toDate) params.append('to_date', toDate)
-          if (productType === 'promotional') params.append('promotional', true)
-          else if (productType === 'non-promotional') params.append('promotional', false)
-
-          if (this.sortProductsParamsField?.length > 0) {
-            this.sortProductsParamsField.forEach(field => {
-              params.append('sortBy', field)
-            })
-          }
-
-          const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
-            method: 'GET',
+          const response = await axios.get('http://localhost:8090/product/filter', {
+            params,
             headers: {
+              'Authorization': `Bearer ${this.token}`,
               'Content-Type': 'application/json'
             }
           })
 
-          if (!response.ok) {
-            throw new Error(`Failed to filter products. Status: ${response.status}`)
-          }
-
-          const data = await response.json()
-          this.products = data.products || data
-          this.totalPieces = data.total_pieces || 0
+          this.products = response.data.products || response.data
+          this.totalPieces = response.data.total_pieces || 0
           this.filtersApplied = true
-          this.currentCategory = { category_name: categoryName }
+          this.currentCategory = { category_name: params.category || '' }
         } catch (error) {
           console.error('Error applying filters to products:', error)
           this.showError('Failed to apply filters to products. Please try again.')
@@ -1126,9 +1087,9 @@ let app = Vue.createApp(
       },
 
       async searchProducts() {
-        if (!this.productSearchQuery) {
-          await this.loadProducts()
-          return
+        if (!this.productSearchQuery || this.productSearchQuery.trim() === '') {
+          await this.loadProducts();
+          return;
         }
 
         try {
@@ -1514,30 +1475,26 @@ let app = Vue.createApp(
         this.loadEmployees()
         this.filtersApplied = false
       },
-      async searchEmployees() {
+      searchEmployees() {
         if (!this.search) {
-          this.loadEmployees()
-          return
+          this.loadEmployees();
+          return;
         }
-        try {
-          const response = await fetch(`http://localhost:8090/employee/search?query=${encodeURIComponent(this.search)}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.token}`,
-              'Content-Type': 'application/json'
-            }
-          })
 
-          if (!response.ok) {
-            throw new Error(`Search failed. Status: ${response.status}`)
+        axios.get('http://localhost:8090/employee/search', {
+          params: { query: this.search },
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
           }
-
-          const data = await response.json()
-          this.employees = data
-        } catch (error) {
-          console.error("Search failed", error)
-          this.showError("Employee search failed")
-        }
+        })
+            .then(response => {
+              this.employees = response.data;
+            })
+            .catch(error => {
+              console.error("Search failed", error);
+              this.showError("Employee search failed");
+            });
       },
 
       toggleQuery(index) {

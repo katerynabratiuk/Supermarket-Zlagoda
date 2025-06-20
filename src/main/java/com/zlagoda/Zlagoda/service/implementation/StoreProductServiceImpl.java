@@ -82,4 +82,9 @@ public class StoreProductServiceImpl implements StoreProductService {
     public void deletePromotional(String id) {
 
     }
+
+    @Override
+    public List<StoreProduct> searchProd(String query) {
+        return storeProductRepository.searchProd(query);
+    }
 }
