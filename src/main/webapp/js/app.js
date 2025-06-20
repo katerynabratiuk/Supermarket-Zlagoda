@@ -588,7 +588,7 @@ let app = Vue.createApp(
       async loadProductsByCategory(category_name) {
         this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`, {
+          const response = await fetch(`http://localhost:8090/product/filter?category_name=${category_name}`, {
             headers: {
               'Authorization': `Bearer ${this.token}`,
               'Content-Type': 'application/json'
@@ -1167,6 +1167,13 @@ let app = Vue.createApp(
           if (response.ok) {
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
+          }
+          else{
+            const errorData = await response.json();
+            if (errorData.error) {
+              this.showError(errorData.error);
+            }
+            return
           }
         } catch (error) {
           this.showError("An unexpected error occurred. Please try again later.")
