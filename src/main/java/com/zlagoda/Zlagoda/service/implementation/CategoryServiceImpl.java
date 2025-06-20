@@ -5,6 +5,7 @@ import com.zlagoda.Zlagoda.repository.CategoryRepository;
 import com.zlagoda.Zlagoda.service.CategoryService;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -46,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.delete(id);
     }
 
-    public List<Category> filter() {
-        return categoryRepository.filter();
+    public List<Category> filter(String sortBy) {
+        return categoryRepository.filter(sortBy);
     }
 }
