@@ -196,29 +196,29 @@ let app = Vue.createApp(
       },
 
       filteredProducts() {
-        let filtered = this.allProducts;
+        let filtered = this.allProducts
         if (this.productSearchQuery) {
-          const q = this.productSearchQuery.toLowerCase();
+          const q = this.productSearchQuery.toLowerCase()
           filtered = filtered.filter(prod =>
               prod.product.product_name.toLowerCase().includes(q) ||
               (prod.product.description || '').toLowerCase().includes(q) ||
               ((prod.product.category?.category_number?.toString() || '').toLowerCase().includes(q))
-          );
+          )
         }
         if (this.categoryFilter) {
-          const cat = Number(this.categoryFilter);
+          const cat = Number(this.categoryFilter)
           if (!isNaN(cat)) {
             filtered = filtered.filter(prod =>
                 prod.product.category?.category_number === cat
-            );
+            )
           }
         }
         if (this.productTypeFilter === 'promotional') {
-          filtered = filtered.filter(prod => prod.promotional_product);
+          filtered = filtered.filter(prod => prod.promotional_product)
         } else if (this.productTypeFilter === 'non-promotional') {
-          filtered = filtered.filter(prod => !prod.promotional_product);
+          filtered = filtered.filter(prod => !prod.promotional_product)
         }
-        return filtered;
+        return filtered
       },
     },
     watch: {
@@ -921,34 +921,34 @@ let app = Vue.createApp(
       },
       async applyProductFilters() {
         try {
-          this.isLoading = true;
+          this.isLoading = true
 
-          const categorySelect = document.getElementById('category-select');
-          const fromDateInput = document.getElementById('from-date');
-          const toDateInput = document.getElementById('to-date');
+          const categorySelect = document.getElementById('category-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
 
-          let categoryName = null;
-          const categoryNumber = categorySelect ? categorySelect.value : null;
+          let categoryName = null
+          const categoryNumber = categorySelect ? categorySelect.value : null
           if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
+            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
           }
 
-          const fromDate = fromDateInput?.value || null;
-          const toDate = toDateInput?.value || null;
-          const productType = this.productTypeFilter;
+          const fromDate = fromDateInput?.value || null
+          const toDate = toDateInput?.value || null
+          const productType = this.productTypeFilter
 
-          const params = new URLSearchParams();
+          const params = new URLSearchParams()
 
-          if (categoryNumber) params.append('category', categoryName);
-          if (fromDate) params.append('from_date', fromDate);
-          if (toDate) params.append('to_date', toDate);
-          if (productType === 'promotional') params.append('promotional', true);
-          else if (productType === 'non-promotional') params.append('promotional', false);
+          if (categoryNumber) params.append('category', categoryName)
+          if (fromDate) params.append('from_date', fromDate)
+          if (toDate) params.append('to_date', toDate)
+          if (productType === 'promotional') params.append('promotional', true)
+          else if (productType === 'non-promotional') params.append('promotional', false)
 
           if (this.sortProductsParamsField?.length > 0) {
             this.sortProductsParamsField.forEach(field => {
-              params.append('sortBy', field);
-            });
+              params.append('sortBy', field)
+            })
           }
 
           const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
@@ -956,22 +956,22 @@ let app = Vue.createApp(
             headers: {
               'Content-Type': 'application/json'
             }
-          });
+          })
 
           if (!response.ok) {
-            throw new Error(`Failed to filter products. Status: ${response.status}`);
+            throw new Error(`Failed to filter products. Status: ${response.status}`)
           }
 
-          const data = await response.json();
-          this.allProducts = data.products || data;
-          this.totalPieces = data.total_pieces || 0;
-          this.filtersApplied = true;
-          this.currentCategory = { category_name: categoryName };
+          const data = await response.json()
+          this.allProducts = data.products || data
+          this.totalPieces = data.total_pieces || 0
+          this.filtersApplied = true
+          this.currentCategory = { category_name: categoryName }
         } catch (error) {
-          console.error('Error applying filters to products:', error);
-          alert('Failed to apply filters to products. Please try again.');
+          console.error('Error applying filters to products:', error)
+          alert('Failed to apply filters to products. Please try again.')
         } finally {
-          this.isLoading = false;
+          this.isLoading = false
         }
       },
 
@@ -1102,30 +1102,30 @@ let app = Vue.createApp(
             this.showError(`Failed to load customers. Status: ${response.status}`)
           }
 
-          const data = await response.json();
+          const data = await response.json()
 
-          const query = this.allCustomerSearchQuery?.toLowerCase()?.trim() || '';
+          const query = this.allCustomerSearchQuery?.toLowerCase()?.trim() || ''
           if (query) {
             this.allCustomers = data.filter(c => {
-              const fullName = `${c.cust_surname} ${c.cust_name} ${c.cust_patronymic || ''}`.toLowerCase();
-              const cardNumber = c.card_number?.toLowerCase() || '';
-              const phone = c.phone_number?.toLowerCase() || '';
+              const fullName = `${c.cust_surname} ${c.cust_name} ${c.cust_patronymic || ''}`.toLowerCase()
+              const cardNumber = c.card_number?.toLowerCase() || ''
+              const phone = c.phone_number?.toLowerCase() || ''
               return (
                   fullName.includes(query) ||
                   cardNumber.includes(query) ||
                   phone.includes(query)
-              );
-            });
+              )
+            })
           } else {
-            this.allCustomers = data;
+            this.allCustomers = data
           }
 
-          this.filtersApplied = params.size > 0;
+          this.filtersApplied = params.size > 0
         } catch (error) {
-          console.error('Error applying filters to customers:', error);
-          alert('Failed to apply filters to customers. Please try again.');
+          console.error('Error applying filters to customers:', error)
+          alert('Failed to apply filters to customers. Please try again.')
         } finally {
-          this.isLoading = false;
+          this.isLoading = false
         }
       },
 
@@ -1182,20 +1182,20 @@ let app = Vue.createApp(
 
       async searchProducts() {
         if (!this.productSearchQuery) {
-          await this.loadProducts();
-          return;
+          await this.loadProducts()
+          return
         }
 
         try {
           const response = await fetch(
               `http://localhost:8090/product/search?search=${encodeURIComponent(this.productSearchQuery)}`
-          );
-          if (!response.ok) throw new Error("Search failed");
+          )
+          if (!response.ok) throw new Error("Search failed")
 
-          this.allProducts = await response.json();
+          this.allProducts = await response.json()
         } catch (error) {
-          console.error("Search error:", error);
-          alert("An error occurred during product search.");
+          console.error("Search error:", error)
+          alert("An error occurred during product search.")
         }
       },
 
@@ -1203,8 +1203,8 @@ let app = Vue.createApp(
         window.location.href = 'new-check-page.html'
       },
       async addNewCheck() {
-        this.newCheck.sum_total = this.totalAfterDiscount;
-        this.newCheck.vat = this.vatAmount;
+        this.newCheck.sum_total = this.totalAfterDiscount
+        this.newCheck.vat = this.vatAmount
         try {
           const response = await fetch('http://localhost:8090/check', {
             method: 'POST',
@@ -1268,54 +1268,80 @@ let app = Vue.createApp(
           this.currentCustomer = null
         }
       },
+
       async applyCheckFilters() {
-    try {
-      const cashierSelect = document.getElementById('cashier-select')
-      const fromDateInput = document.getElementById('from-date')
-      const toDateInput = document.getElementById('to-date')
-      const showTotalSumCheckbox = document.getElementById('show-total-sum')
-      const sortByInput = document.querySelector('input[name="sortby"]:checked');
-      const sortBy = sortByInput ? sortByInput.value : null;
+        try {
+          this.isLoading = true
 
-      let cashierId = cashierSelect && cashierSelect.value ? cashierSelect.value : null;
-      const fromDate = fromDateInput ? fromDateInput.value : null
-      const toDate = toDateInput ? toDateInput.value : null
-      const showTotalSum = showTotalSumCheckbox ? showTotalSumCheckbox.checked : false
+          const cashierSelect = document.getElementById('cashier-select')
+          const fromDateInput = document.getElementById('from-date')
+          const toDateInput = document.getElementById('to-date')
+          const showTotalSumCheckbox = document.getElementById('show-total-sum')
+          const sortByInput = document.querySelector('input[name="sortby"]:checked')
+          const sortBy = sortByInput ? sortByInput.value : null
 
-      this.showTotalSumChecked = showTotalSum
+          const cashierId = cashierSelect?.value || null
+          const fromDate = fromDateInput?.value || null
+          const toDate = toDateInput?.value || null
+          const showTotalSum = showTotalSumCheckbox?.checked || false
 
-      const params = new URLSearchParams()
-      if (cashierId) params.append('cashierId', cashierId)
-      if (fromDate) params.append('from', fromDate)
-      if (toDate) params.append('to', toDate)
-      if (sortBy) params.append('sortBy', sortBy)
+          this.showTotalSumChecked = showTotalSum
+          this.totalSum = 0
 
-      if (params.size > 0) {
-        const response = await fetch(`http://localhost:8090/check/filter?${params.toString()}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
+          const params = new URLSearchParams()
+          if (cashierId) params.append('cashierId', cashierId)
+          if (fromDate) params.append('from', fromDate)
+          if (toDate) params.append('to', toDate)
+          if (sortBy) params.append('sortBy', sortBy)
+
+          if (showTotalSum && fromDate && toDate) {
+            const baseUrl = 'http://localhost:8090/api/sales/total'
+            const sumUrl = cashierId
+              ? `${baseUrl}/cashier/${cashierId}?start=${fromDate}&end=${toDate}`
+              : `${baseUrl}/all?start=${fromDate}&end=${toDate}`
+
+            const totalSumResponse = await fetch(sumUrl, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+              }
+            })
+
+            if (!totalSumResponse.ok) {
+              this.showError(`Failed to load total sum. Status: ${totalSumResponse.status}`)
+            } else {
+              const totalSumData = await totalSumResponse.json()
+              this.totalSum = totalSumData.total || 0
+            }
           }
-        })
 
-        if (!response.ok) {
-          this.showError(`Failed to filter checks. Status: ${response.status}`)
+          if (params.size > 0) {
+            const response = await fetch(`http://localhost:8090/check/filter?${params.toString()}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+              }
+            })
+
+            if (!response.ok) {
+              this.showError(`Failed to filter checks. Status: ${response.status}`)
+            } else {
+              const data = await response.json()
+              this.checks = data.checks || data 
+              this.filtersApplied = true
+            }
+          } else {
+            await this.loadChecks()
+            this.filtersApplied = false
+          }
+        } catch (error) {
+          this.showError('Failed to apply filters to checks. Please try again.')
+        } finally {
+          this.isLoading = false
         }
-        this.isLoading = true
-        const data = await response.json()
-        this.checks = data
-        this.filtersApplied = true
-      } else {
-        await this.loadChecks()
-        this.filtersApplied = false
-      }
-    } catch (error) {
-      this.showError('Failed to apply filters to checks. Please try again.')
-    } finally {
-      this.isLoading = false
-    }
-  },
+      },
 
       clearCheckFilters() {
         const cashierSelect = document.getElementById('cashier-select')
