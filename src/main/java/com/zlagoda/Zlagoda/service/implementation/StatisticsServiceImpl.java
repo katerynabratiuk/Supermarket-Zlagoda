@@ -2,6 +2,7 @@ package com.zlagoda.Zlagoda.service.implementation;
 
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
+import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import com.zlagoda.Zlagoda.repository.implementation.StatisticsRepositoryImpl;
 import com.zlagoda.Zlagoda.service.StatisticsService;
@@ -27,5 +28,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     public List<CitySalesDTO> getProductsSoldInCitiesExceptOne(String city) {
         return statisticsRepository.getProductsSoldInCitiesExceptOne(city);
     }
+
+    @Override
+    public List<PromoOnlyCustomerDTO> getPromoOnlyCustomers() {
+        return statisticsRepository.getPromoOnlyCustomers();
+    }
+
 
 }
