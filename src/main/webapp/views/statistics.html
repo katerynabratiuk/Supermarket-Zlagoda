@@ -68,6 +68,7 @@
                     type="text"
                     id="city-input"
                     v-model="queryParams.city"
+                    @change="executeQuery(index)"
                     placeholder="Enter City"
                     class="edit-input"
                   />
@@ -89,13 +90,16 @@
                     <table>
                       <thead>
                         <tr>
-                          <!-- <th v-for="header in resultHeaders" :key="header">
+                          <th v-for="header in resultHeaders" :key="header">
                             {{ header }}
-                          </th> -->
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(row, index) in queryResults" :key="index">
+                        <tr
+                          v-for="(row, index) in queryResults[currentQuery] || []"
+                          :key="index"
+                        >
                           <td v-for="(value, key) in row" :key="key">
                             {{ value }}
                           </td>

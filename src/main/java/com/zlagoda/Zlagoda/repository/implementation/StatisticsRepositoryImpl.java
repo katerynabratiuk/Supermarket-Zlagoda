@@ -53,7 +53,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "AND Store_Product.promotional_product = True ))";
 
     private final String GET_LOYAL_CUSTOMERS =
-            "SELECT cc.card_number, cc.cust_surname\n" +
+            "SELECT cc.card_number, cc.cust_surname, cc.cust_name\n" +
             "FROM customer_card cc\n" +
             "WHERE NOT EXISTS (\n" +
             "    SELECT cat.category_number\n" +
