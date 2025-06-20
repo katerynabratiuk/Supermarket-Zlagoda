@@ -162,32 +162,6 @@ let app = Vue.createApp(
       totalAfterDiscount() {
         return (this.subtotal - this.discountAmount) + this.vatAmount
       },
-
-      filteredProducts() {
-        let filtered = this.allProducts
-        if (this.productSearchQuery) {
-          const q = this.productSearchQuery.toLowerCase()
-          filtered = filtered.filter(prod =>
-              prod.product.product_name.toLowerCase().includes(q) ||
-              (prod.product.description || '').toLowerCase().includes(q) ||
-              ((prod.product.category?.category_number?.toString() || '').toLowerCase().includes(q))
-          )
-        }
-        if (this.categoryFilter) {
-          const cat = Number(this.categoryFilter)
-          if (!isNaN(cat)) {
-            filtered = filtered.filter(prod =>
-                prod.product.category?.category_number === cat
-            )
-          }
-        }
-        if (this.productTypeFilter === 'promotional') {
-          filtered = filtered.filter(prod => prod.promotional_product)
-        } else if (this.productTypeFilter === 'non-promotional') {
-          filtered = filtered.filter(prod => !prod.promotional_product)
-        }
-        return filtered
-      },
     },
     watch: {
       currentProduct(newVal) {
@@ -886,81 +860,38 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
-      async applyProductFilters() {
-        try {
-          this.isLoading = true
 
-          const categorySelect = document.getElementById('category-select')
-          const fromDateInput = document.getElementById('from-date')
-          const toDateInput = document.getElementById('to-date')
+      applyProductFilters() {
+        const params = {};
 
-          let categoryName = null
-          const categoryNumber = categorySelect ? categorySelect.value : null
-          if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-            categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
-          }
-
-          const fromDate = fromDateInput?.value || null
-          const toDate = toDateInput?.value || null
-          const productType = this.productTypeFilter
-
-          const params = new URLSearchParams()
-
-          if (categoryNumber) params.append('category', categoryName)
-          if (fromDate) params.append('from_date', fromDate)
-          if (toDate) params.append('to_date', toDate)
-          if (productType === 'promotional') params.append('promotional', true)
-          else if (productType === 'non-promotional') params.append('promotional', false)
-
-          if (this.sortProductsParamsField?.length > 0) {
-            this.sortProductsParamsField.forEach(field => {
-              params.append('sortBy', field)
-            })
-          }
-
-          const response = await fetch(`http://localhost:8090/product/filter?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-
-          if (!response.ok) {
-            throw new Error(`Failed to filter products. Status: ${response.status}`)
-          }
-
-          const data = await response.json()
-          this.allProducts = data.products || data
-          this.totalPieces = data.total_pieces || 0
-          this.filtersApplied = true
-          this.currentCategory = { category_name: categoryName }
-        } catch (error) {
-          console.error('Error applying filters to products:', error)
-          alert('Failed to apply filters to products. Please try again.')
-        } finally {
-          this.isLoading = false
+        if (this.productTypeFilter === 'promotional') {
+          params.promotional = true;
+        } else if (this.productTypeFilter === 'non-promotional') {
+          params.promotional = false;
         }
-      },
 
-      clearProductFilters() {
-        const categorySelect = document.getElementById('category-select')
-        const fromDateInput = document.getElementById('from-date')
-        const toDateInput = document.getElementById('to-date')
-        const showPromotionalCheckbox = document.getElementById('show-promotional')
-        const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
+        const categorySelect = document.getElementById('category-select');
+        if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
+          const categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
+          if (categoryName) {
+            params.category = categoryName;
+          }
+        }
 
-        if (categorySelect) categorySelect.value = ''
-        if (fromDateInput) fromDateInput.value = ''
-        if (toDateInput) toDateInput.value = ''
-        if (showPromotionalCheckbox) showPromotionalCheckbox.checked = false
-        if (showNonPromotionalCheckbox) showNonPromotionalCheckbox.checked = false
-        this.sortProductsParamsField = null
+        if (this.sortProductsParamsField?.length > 0) {
+          // Передаємо як рядок, розділений комами
+          params.sortBy = this.sortProductsParamsField.join(',');
+        }
 
-        this.loadProducts()
-        this.filtersApplied = false
-        this.totalPieces = 0
-        this.currentProduct = null
-        this.isUPCFiltered = false
+        axios.get('http://localhost:8090/product/filter', { params })
+            .then(response => {
+              this.allProducts = response.data;
+              this.showFilter = false;
+            })
+            .catch(error => {
+              console.error("Filter failed", error);
+              alert("Failed to apply filters to products.");
+            });
       },
 
       goToAddCustomer() {
@@ -1113,21 +1044,20 @@ let app = Vue.createApp(
       },
 
       async searchProducts() {
-        if (!this.productSearchQuery) {
-          await this.loadProducts()
-          return
+        if (!this.productSearchQuery || this.productSearchQuery.trim() === '') {
+          await this.loadProducts();
+          return;
         }
 
         try {
-          const response = await fetch(
-              `http://localhost:8090/product/search?query=${encodeURIComponent(this.productSearchQuery)}`
-          );
-          if (!response.ok) throw new Error("Search failed");
+          const response = await axios.get('http://localhost:8090/product/search', {
+            params: { query: this.productSearchQuery }
+          });
 
-          this.allProducts = await response.json()
+          this.allProducts = response.data;
         } catch (error) {
-          console.error("Search error:", error)
-          alert("An error occurred during product search.")
+          console.error('Product search failed:', error);
+          alert('An error occurred while searching for products.');
         }
       },
 

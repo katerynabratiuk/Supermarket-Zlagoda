@@ -10,6 +10,6 @@ public interface StoreProductRepository extends GenericRepository<StoreProduct, 
     List<StoreProduct> findByCategory(String categoryName);
     List<StoreProduct> findByName(String name);
     List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy);
-
+    List<StoreProduct> searchProd(String query);
     void addPromotional(@Valid StoreProduct promoProduct);
 }

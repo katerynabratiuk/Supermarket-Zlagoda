@@ -77,6 +77,15 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
     private static final String DELETE = "DELETE FROM store_product WHERE upc=?";
 
+    private static final String SEARCH_QUERY =
+            "SELECT DISTINCT ON (pr.id_product) sp.*, pr.*, c.*, base.selling_price AS new_price " +
+                    "FROM store_product sp " +
+                    "JOIN product pr ON sp.id_product = pr.id_product " +
+                    "JOIN category c ON pr.category_number = c.category_number " +
+                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
+                    "WHERE pr.product_name ILIKE ? " +
+                    "ORDER BY pr.id_product, sp.promotional_product DESC";
+
     private final DBConnection dbConnection;
 
     public StoreProductRepositoryImpl(DBConnection dbConnection) {
@@ -317,5 +326,23 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
     }
 
+    @Override
+    public List<StoreProduct> searchProd(String query) {
+        List<StoreProduct> result = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SEARCH_QUERY)) {
+
+            String likeQuery = "%" + query + "%";
+            stmt.setString(1, likeQuery);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                result.add(extractStoreProductProm(rs));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to search store products", e);
+        }
+        return result;
+    }
 
 }
