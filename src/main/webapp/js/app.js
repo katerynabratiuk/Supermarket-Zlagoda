@@ -858,17 +858,23 @@ let app = Vue.createApp(
           })
 
           if (response.ok) {
+            
             this.newProduct = {
-              id: null,
-              name: '',
-              price: null,
+              UPC: null,
+              selling_price: null,
               image: '',
-              category: '',
-              description: '',
-              manufacturer: '',
-              status: 'Out Of Stock',
-              count: 0
-            }
+              product: {
+                category: {
+                  category_number: null,
+                  category_name: ''
+                },
+                product_name: '',
+                description: '',
+              },
+              UPC_prom: null,
+              products_number: 0,
+              new_price: null,
+            },
             console.log("New product added successfully:")
             window.location.href = `products.html`
           } else {
@@ -1258,59 +1264,54 @@ let app = Vue.createApp(
         }
       },
       async applyCheckFilters() {
-        try {
-          const cashierSelect = document.getElementById('cashier-select')
-          const fromDateInput = document.getElementById('from-date')
-          const toDateInput = document.getElementById('to-date')
-          const showTotalSumCheckbox = document.getElementById('show-total-sum')
-          const sortCheckNumberCheckbox = document.getElementById('sort-check-number')
+    try {
+      const cashierSelect = document.getElementById('cashier-select')
+      const fromDateInput = document.getElementById('from-date')
+      const toDateInput = document.getElementById('to-date')
+      const showTotalSumCheckbox = document.getElementById('show-total-sum')
+      const sortByInput = document.querySelector('input[name="sortby"]:checked');
+      const sortBy = sortByInput ? sortByInput.value : null;
 
-          let cashierName = null
-          if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
-            cashierName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
+      let cashierId = cashierSelect && cashierSelect.value ? cashierSelect.value : null;
+      const fromDate = fromDateInput ? fromDateInput.value : null
+      const toDate = toDateInput ? toDateInput.value : null
+      const showTotalSum = showTotalSumCheckbox ? showTotalSumCheckbox.checked : false
+
+      this.showTotalSumChecked = showTotalSum
+
+      const params = new URLSearchParams()
+      if (cashierId) params.append('cashierId', cashierId)
+      if (fromDate) params.append('from', fromDate)
+      if (toDate) params.append('to', toDate)
+      if (sortBy) params.append('sortBy', sortBy)
+
+      if (params.size > 0) {
+        const response = await fetch(`http://localhost:8090/check/filter?${params.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
           }
+        })
 
-          const fromDate = fromDateInput ? fromDateInput.value : null
-          const toDate = toDateInput ? toDateInput.value : null
-          const showTotalSum = showTotalSumCheckbox ? showTotalSumCheckbox.checked : false
-          const sortByCheckNumber = sortCheckNumberCheckbox ? sortCheckNumberCheckbox.checked : false
-
-          this.showTotalSumChecked = showTotalSum
-
-          const params = new URLSearchParams()
-
-          if (cashierName) params.append('empl_name', cashierName)
-          if (fromDate) params.append('from_date', fromDate)
-          if (toDate) params.append('to_date', toDate)
-          if (showTotalSum) params.append('show_total_sum', showTotalSum)
-          if (sortByCheckNumber) params.append('sort', sortByCheckNumber)
-
-          if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-              }
-            })
-
-            if (!response.ok) {
-              this.showError(`Failed to filter checks. Status: ${response.status}`)
-            }
-            this.isLoading = true
-            const data = await response.json()
-            this.checks = data.checks
-            this.filtersApplied = true
-          } else {
-            await this.loadChecks()
-            this.filtersApplied = false
-          }
-        } catch (error) {
-          this.showError('Failed to apply filters to checks. Please try again.')
-        } finally {
-          this.isLoading = false
+        if (!response.ok) {
+          this.showError(`Failed to filter checks. Status: ${response.status}`)
         }
-      },
+        this.isLoading = true
+        const data = await response.json()
+        this.checks = data
+        this.filtersApplied = true
+      } else {
+        await this.loadChecks()
+        this.filtersApplied = false
+      }
+    } catch (error) {
+      this.showError('Failed to apply filters to checks. Please try again.')
+    } finally {
+      this.isLoading = false
+    }
+  },
+
       clearCheckFilters() {
         const cashierSelect = document.getElementById('cashier-select')
         const fromDateInput = document.getElementById('from-date')
