@@ -107,7 +107,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
     }
 
     @Override
-    public List<PromoOnlyCustomerDTO> getPromoOnlyCustomers() {
+    public List<PromoOnlyCustomerDTO> getPromoCustomers() {
         List<PromoOnlyCustomerDTO> res = new ArrayList<>();
         try (Connection connection = dbConnection.getConnection();
              Statement stmt = connection.createStatement();

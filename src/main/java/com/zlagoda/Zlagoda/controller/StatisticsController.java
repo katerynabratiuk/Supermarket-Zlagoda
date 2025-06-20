@@ -35,9 +35,9 @@ public class StatisticsController {
     }
 
     @GetMapping("/promoCustomers")
-    public List<PromoOnlyCustomerDTO> productSalesCities()
+    public List<PromoOnlyCustomerDTO> promoCustomers()
     {
-        return statisticsService.getPromoOnlyCustomers();
+        return statisticsService.getPromoCustomers();
     }
 
 }

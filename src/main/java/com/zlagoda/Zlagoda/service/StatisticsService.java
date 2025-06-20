@@ -10,6 +10,6 @@ public interface StatisticsService {
 
     List<EmployeeCategorySalesDTO> productsSoldByEmployeeByCategory(Integer category_number);
     List<CitySalesDTO> getProductsSoldInCitiesExceptOne(String city);
-    List<PromoOnlyCustomerDTO> getPromoOnlyCustomers();
+    List<PromoOnlyCustomerDTO> getPromoCustomers();
 }
 

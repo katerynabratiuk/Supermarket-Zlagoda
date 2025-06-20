@@ -3,7 +3,6 @@ package com.zlagoda.Zlagoda.service.implementation;
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
-import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import com.zlagoda.Zlagoda.repository.implementation.StatisticsRepositoryImpl;
 import com.zlagoda.Zlagoda.service.StatisticsService;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
-    public List<PromoOnlyCustomerDTO> getPromoOnlyCustomers() {
-        return statisticsRepository.getPromoOnlyCustomers();
+    public List<PromoOnlyCustomerDTO> getPromoCustomers() {
+        return statisticsRepository.getPromoCustomers();
     }
 
 
