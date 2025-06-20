@@ -1252,8 +1252,11 @@ let app = Vue.createApp(
           const sortCheckNumberCheckbox = document.getElementById('sort-check-number')
 
           let cashierName = null
+          let cashierId = null
           if (cashierSelect && cashierSelect.options && cashierSelect.selectedIndex !== -1) {
-            cashierName = cashierSelect.options[cashierSelect.selectedIndex].dataset.name
+            const option = cashierSelect.options[cashierSelect.selectedIndex]
+            cashierName = option.dataset.name
+            cashierId = option.value
           }
 
           const fromDate = fromDateInput ? fromDateInput.value : null
@@ -1262,14 +1265,36 @@ let app = Vue.createApp(
           const sortByCheckNumber = sortCheckNumberCheckbox ? sortCheckNumberCheckbox.checked : false
 
           this.showTotalSumChecked = showTotalSum
+          this.totalSum = 0
 
           const params = new URLSearchParams()
-
           if (cashierName) params.append('empl_name', cashierName)
           if (fromDate) params.append('from_date', fromDate)
           if (toDate) params.append('to_date', toDate)
           if (showTotalSum) params.append('show_total_sum', showTotalSum)
           if (sortByCheckNumber) params.append('sort', sortByCheckNumber)
+
+          if (showTotalSum && fromDate && toDate) {
+            const baseUrl = 'http://localhost:8090/api/sales/total'
+            let sumUrl = cashierId
+              ? `${baseUrl}/cashier/${cashierId}?start=${fromDate}&end=${toDate}`
+              : `${baseUrl}/all?start=${fromDate}&end=${toDate}`
+
+            const totalSumResponse = await fetch(sumUrl, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+              }
+            })
+
+            if (!totalSumResponse.ok) {
+              this.showError(`Failed to load total sum. Status: ${totalSumResponse.status}`)
+            } else {
+              const totalSumData = await totalSumResponse.json()
+              this.totalSum = totalSumData.total || 0
+            }
+          }
 
           if (params.size > 0) {
             const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
@@ -1283,6 +1308,7 @@ let app = Vue.createApp(
             if (!response.ok) {
               this.showError(`Failed to filter checks. Status: ${response.status}`)
             }
+
             this.isLoading = true
             const data = await response.json()
             this.checks = data.checks
