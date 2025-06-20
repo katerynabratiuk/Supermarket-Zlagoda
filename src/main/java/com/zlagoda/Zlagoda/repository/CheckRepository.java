@@ -31,4 +31,5 @@ public interface CheckRepository extends GenericRepository<Receipt,String>{
     // Переглянути список усіх чеків, що створив касир за певний період часу;
     List<Receipt> findByEmployeeId(String employeeId);
 
+    List<Receipt> filter(String cashierId, String sortBy, LocalDate from, LocalDate to);
 }
