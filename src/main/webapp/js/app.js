@@ -12,7 +12,7 @@ let app = Vue.createApp(
         token: '',
         isLoggedIn: false,
         user: {
-          userRole: 'CASHIER',
+          userRole: '',
           userName: ''
         },
         username: '',
@@ -36,7 +36,7 @@ let app = Vue.createApp(
         currentCategory: {
           category_name: ''
         },
-
+        categorySortBy: '',
 
         newProduct: {
           UPC: null,
@@ -122,7 +122,39 @@ let app = Vue.createApp(
         employeeRoleFilter: null,
         sortByNameCust: false,
 
-        error: null
+        error: null,
+
+        statisticsQueries: [
+          {
+            label: "Total number of products by each employee sold in the category: ",
+            endpoint: "/stats/productSoldByEmployee/",
+            paramName: "category"
+          },
+          {
+            label: "The most loyal customers (those who have prodcuct of every categories)",
+            endpoint: "/api/queries/top-employees"
+          },
+          {
+            label: "Total number of products by city purchased by buyers not from city:",
+            endpoint: "/api/queries/customer-purchase-history",
+            paramName: "city"
+          },
+          {
+            label: "Customers without a single non-promotional item in their check",
+            endpoint: "/api/queries/category-sales-overview"
+          },
+          {
+            label: "Employee Sales Performance",
+            endpoint: "/api/queries/employee-sales-performance"
+          }
+        ],
+        queryParams: {
+          category: '',
+          city: ''
+        },
+        currentQuery: null,
+        queryResults: [],
+        resultHeaders: [],
       }
     },
     computed: {
@@ -489,6 +521,8 @@ let app = Vue.createApp(
                 this.currentEmployee = await this.getEmployeeById(employeeId)
               }
               break
+            case 'statistics.html':
+              await this.loadCategories()
           }
         } catch (error) {
           this.showError('Error loading data for page:', page)
@@ -528,7 +562,7 @@ let app = Vue.createApp(
       async loadProductsByCategory(category_name) {
         this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`, {
+          const response = await fetch(`http://localhost:8090/product/filter?category_name=${category_name}`, {
             headers: {
               'Authorization': `Bearer ${this.token}`,
               'Content-Type': 'application/json'
@@ -630,8 +664,11 @@ let app = Vue.createApp(
               this.newCategory = { category_name: '', category_number: null }
               await this.loadCategories()
             } else {
-              this.showError("Deletion failed on the server. Status:", response.status)
-              this.showError("Failed to delete category. Please try again.")
+              if (response.status === 500) {
+                this.showError("Failed to delete category linked to a product.")
+              } else {
+                this.showError("Failed to delete category. Please try again.")
+              }
             }
           } catch (error) {
             this.showError("An error occurred during deletion:")
@@ -768,6 +805,11 @@ let app = Vue.createApp(
               this.currentProduct = null
               window.location.href = 'products.html'
             } else {
+              if (response.status === 500) {
+                this.showError("Server error (500): Internal Server Error occurred during deletion.")
+              } else {
+                this.showError(`Failed to delete product. Status: ${response.status}`)
+              }
               this.showError("Deletion failed on the server. Status:", response.status)
               this.showError("Failed to delete product. Please try again.")
             }
@@ -1086,6 +1128,13 @@ let app = Vue.createApp(
           if (response.ok) {
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
+          }
+          else{
+            const errorData = await response.json();
+            if (errorData.error) {
+              this.showError(errorData.error);
+            }
+            return
           }
         } catch (error) {
           this.showError("An unexpected error occurred. Please try again later.")
@@ -1448,6 +1497,51 @@ let app = Vue.createApp(
             });
       },
 
+      toggleQuery(index) {
+        this.currentQuery = this.currentQuery === index ? null : index;
+        if (this.currentQuery === index && this.queryResults.length == 0) {
+          this.executeQuery(index)
+        }
+      },
+      async executeQuery(index) {
+        this.currentQuery = index
+
+        try {
+          const query = this.statisticsQueries[index]
+          let url = `http://localhost:8090${query.endpoint}`
+
+          if (index === 0) {
+            if (!this.queryParams.category) {
+              this.showError("Please choose a category.")
+              return
+            }
+            url += `${encodeURIComponent(this.queryParams.category)}`
+          }
+          else if (index === 2) {
+            if (this.queryParams.city) {
+              url += `${encodeURIComponent(this.queryParams.city)}`
+            } else {
+              this.showError("Please enter a city.")
+              return
+            }
+          }
+
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${this.token}` }
+          })
+
+          if (!response.ok) throw new Error("Error fetching statistics.")
+
+          const data = await response.json()
+          this.queryResults = data.results || data
+          this.resultHeaders = data.headers || (this.queryResults[0] ? Object.keys(this.queryResults[0]) : [])
+        } catch (error) {
+          console.error("Error executing query:", error)
+          this.showError("An unexpected error occurred. Please try again later.")
+        }
+      }
+
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)
@@ -1547,7 +1641,8 @@ app.component("navbar", {
         { path: 'products.html', label: 'Products' },
         { path: 'customers.html', label: 'Customers' },
         { path: 'checks.html', label: 'Checks' },
-        { path: 'employees.html', label: 'Employees' }
+        { path: 'employees.html', label: 'Employees' },
+        { path: 'statistics.html', label: 'Statistics' }
       ],
       currentPath: window.location.pathname,
       showLoginPopup: false,
@@ -1564,7 +1659,7 @@ app.component("navbar", {
           return this.navItems
         case 'CASHIER':
           return this.navItems.filter(item =>
-            ['categories.html', 'products.html', 'checks.html', 'customers.html'].includes(item.path))
+            ['categories.html', 'products.html', 'checks.html', 'customers.html', 'statistics.html'].includes(item.path))
         default:
           return this.navItems.filter(item =>
             ['categories.html', 'products.html'].includes(item.path))

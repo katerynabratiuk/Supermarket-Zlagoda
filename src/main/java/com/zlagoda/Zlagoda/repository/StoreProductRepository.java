@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface StoreProductRepository extends GenericRepository<StoreProduct, String>{
 
-    List<StoreProduct> findByCategory(String categoryName);
     List<StoreProduct> findByName(String name);
     List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy);
     List<StoreProduct> searchProd(String query);

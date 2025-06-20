@@ -51,12 +51,6 @@ public class ProductController {
         return storeProductService.findById(id);
     }
 
-    @GetMapping("/by-category/{category}")
-    public @ResponseBody List<StoreProduct> getProductsByCategory(@PathVariable String category)
-    {
-        return storeProductService.findByCategory(category);
-    }
-
     @PostMapping()
     public void createProduct(@RequestBody @Valid StoreProduct storeProduct)
     {

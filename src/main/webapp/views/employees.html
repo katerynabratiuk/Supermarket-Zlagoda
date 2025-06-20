@@ -1,123 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles/styles.css" />
-  <link rel="stylesheet" href="../styles/navbar.css" />
-  <link rel="stylesheet" href="../styles/footer.css" />
-  <link rel="stylesheet" href="../styles/buttons.css" />
-  <link rel="stylesheet" href="../styles/tables.css" />
-  <link rel="stylesheet" href="../styles/employees.css" />
-  <link rel="stylesheet" href="../styles/filters.css" />
-  <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-  />
-  <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-  <title>Employees - Zlagoda</title>
-</head>
-<body>
-<div id="app" v-cloak>
-  <header class="noPrint">
-    <navbar
-            :user="user"
-            :is-logged-in="isLoggedIn"></navbar>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/employees.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Employees - Zlagoda</title>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header class="noPrint">
+        <navbar :user="user" :is-logged-in="isLoggedIn"></navbar>
+      </header>
 
-  <main>
-    <div class="employees-header noPrint" v-if="!isLoading">
-      <h2>Employees</h2>
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
-      <div class="actions-container">
-        <form class="search-form" @submit.prevent="searchEmployees">
-          <label for="search">Search:</label>
-          <input
-                  type="search"
-                  id="search"
-                  name="search"
-                  v-model="search"
-                  placeholder="Search"
-          />
-          <button type="submit">
-            <span class="material-symbols-outlined">search</span>
-          </button>
-        </form>
+      <main>
+        <div class="employees-header noPrint" v-if="!isLoading">
+          <h2>Employees</h2>
 
-        <div class="buttons-container" v-if="isManager">
-          <button
-                  type="button"
-                  class="add-new-btn"
-                  @click="goToAddEmployee"
-          >
-            Add New
-          </button>
-          <button
-                  type="button"
-                  class="filter-btn"
-                  @click="toggleFilterShow"
-          >
-            Filter
-          </button>
-          <button type="button" class="print-btn" onclick="window.print()">
-            Print
-          </button>
-        </div>
-      </div>
-
-      <div class="filter-block" v-if="showFilter">
-        <form class="filter-form" @submit.prevent="applyEmployeeFilters">
-          <div class="form-grid">
-            <div class="form-label">Show:</div>
-            <div class="form-field">
-              <div class="radio-field">
-                <input
-                        type="radio"
-                        id="show-cashiers"
-                        name="employee-role"
-                        value="cashier"
-                        v-model="employeeRoleFilter"
-                />
-                <label for="show-cashiers">Cashiers</label>
-              </div>
-              <div class="radio-field">
-                <input
-                        type="radio"
-                        id="show-managers"
-                        name="employee-role"
-                        value="manager"
-                        v-model="employeeRoleFilter"
-                />
-                <label for="show-managers">Managers</label>
-              </div>
-            </div>
-
-
-            <div class="form-label">Sort by:</div>
-            <div class="checkbox-field">
+          <div class="actions-container">
+            <form class="search-form" @submit.prevent="searchEmployees">
+              <label for="search">Search:</label>
               <input
-                      type="checkbox"
-                      id="sort-surname"
-                      name="sortby"
-                      value="true"
+                type="search"
+                id="search"
+                name="search"
+                v-model="search"
+                placeholder="Search"
               />
-              <label for="sort-surname">Name</label>
+              <button type="submit">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+            </form>
+
+            <div class="buttons-container" v-if="isManager">
+              <button
+                type="button"
+                class="add-new-btn"
+                @click="goToAddEmployee"
+              >
+                Add New
+              </button>
+              <button
+                type="button"
+                class="filter-btn"
+                @click="toggleFilterShow"
+              >
+                Filter
+              </button>
+              <button type="button" class="print-btn" onclick="window.print()">
+                Print
+              </button>
             </div>
           </div>
 
-          <div class="filter-form-button">
-            <button
-                    type="button"
-                    class="clear-filters-btn"
-                    @click="clearEmployeeFilters"
-            >
-              Clear
-            </button>
-            <button type="submit" class="filter-btn">Filter</button>
+          <div class="filter-block" v-if="showFilter">
+            <form class="filter-form" @submit.prevent="applyEmployeeFilters">
+              <div class="form-grid">
+                <div class="form-label">Show:</div>
+                <div class="form-field">
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="show-cashiers"
+                      name="employee-role"
+                      value="cashier"
+                      v-model="employeeRoleFilter"
+                    />
+                    <label for="show-cashiers">Cashiers</label>
+                  </div>
+                  <div class="radio-field">
+                    <input
+                      type="radio"
+                      id="show-managers"
+                      name="employee-role"
+                      value="manager"
+                      v-model="employeeRoleFilter"
+                    />
+                    <label for="show-managers">Managers</label>
+                  </div>
+                </div>
+
+                <div class="form-label">Sort by:</div>
+                <div class="checkbox-field">
+                  <input
+                    type="checkbox"
+                    id="sort-surname"
+                    name="sortby"
+                    value="true"
+                  />
+                  <label for="sort-surname">Name</label>
+                </div>
+              </div>
+
+              <div class="filter-form-button">
+                <button
+                  type="button"
+                  class="clear-filters-btn"
+                  @click="clearEmployeeFilters"
+                >
+                  Clear
+                </button>
+                <button type="submit" class="filter-btn">Filter</button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
 
         <section class="contents">
           <div
@@ -143,40 +146,39 @@
                   :class="{ 'inactive-row': !employee.is_active }"
                   v-for="employee in displayedItems('employees')(employees)"
                   :key="employee.id_employee"
-          >
-            <td class="id">{{ employee.id_employee }}</td>
-            <td class="name">
-              <a :href="'employee-page.html?id=' + employee.id_employee">
-                {{ formatEmployeeName(employee) }}
-              </a>
-            </td>
-            <td class="role">{{ employee.empl_role }}</td>
-            <td class="date-of-start">
-              {{ employee.city }}
-              <span v-if="employee.street">,</span> {{employee.street}}
-              <span v-if="employee.zip_code">,</span>{{employee.zip_code}}
-            </td>
-            <td class="phone-number">{{ employee.phone_number }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+                >
+                  <td class="id">{{ employee.id_employee }}</td>
+                  <td class="name">
+                    <a :href="'employee-page.html?id=' + employee.id_employee">
+                      {{ formatEmployeeName(employee) }}
+                    </a>
+                  </td>
+                  <td class="role">{{ employee.empl_role }}</td>
+                  <td class="date-of-start">
+                    {{ employee.city }}
+                    <span v-if="employee.street">,</span> {{employee.street}}
+                    <span v-if="employee.zip_code">,</span>{{employee.zip_code}}
+                  </td>
+                  <td class="phone-number">{{ employee.phone_number }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-    <div
-            class="button-container"
-            v-if="!isLoading && hasMoreItems('employees')(employees)"
-    >
-      <button class="show-more-btn" @click="showMoreItems('employees')">
-        Show More
-      </button>
+        <div
+          class="button-container"
+          v-if="!isLoading && hasMoreItems('employees')(employees)"
+        >
+          <button class="show-more-btn" @click="showMoreItems('employees')">
+            Show More
+          </button>
+        </div>
+      </main>
+
+      <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
     </div>
-  </main>
-
-  <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
-</div>
-</body>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="../js/app.js"></script>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
 </html>
