@@ -1,7 +1,7 @@
 package com.zlagoda.Zlagoda.controller;
 
-import com.zlagoda.Zlagoda.dto.CheckDTO;
-import com.zlagoda.Zlagoda.dto.SaleDTO;
+import com.zlagoda.Zlagoda.dto.check.CheckDTO;
+import com.zlagoda.Zlagoda.dto.check.SaleDTO;
 import com.zlagoda.Zlagoda.entity.*;
 import com.zlagoda.Zlagoda.service.implementation.CheckServiceImpl;
 import com.zlagoda.Zlagoda.util.IdGenerator;
