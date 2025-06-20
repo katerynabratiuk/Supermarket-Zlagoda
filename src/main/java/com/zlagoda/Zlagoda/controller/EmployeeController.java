@@ -38,7 +38,7 @@ public class EmployeeController {
 //    }
 
     @GetMapping("/filter")
-    public List<Employee> filterProducts(
+    public List<Employee> filterEmployee(
             @RequestParam(required = false) Boolean manager,
             @RequestParam(required = false) Boolean cashier,
             @RequestParam(required = false) String sortBy
@@ -63,6 +63,11 @@ public class EmployeeController {
     @DeleteMapping("/{employeeId}")
     public void delete(@PathVariable String employeeId) {
         employeeService.delete(employeeId);
+    }
+
+    @GetMapping("/search")
+    public List<Employee> search(@RequestParam String query) {
+        return employeeService.search(query);
     }
 }
 

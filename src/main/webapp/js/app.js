@@ -119,6 +119,7 @@ let app = Vue.createApp(
         customerSearchQuery: '',
         allCustomers: [],
         discountFilter: null,
+        employeeRoleFilter: null,
 
         error: null
       }
@@ -159,24 +160,6 @@ let app = Vue.createApp(
         return (this.subtotal - this.discountAmount) + this.vatAmount
       },
 
-      filteredEmployees() {
-        if (!this.search) {
-          return this.employees
-        }
-        const q = this.search.toLowerCase()
-        return this.employees.filter(employee => {
-          const fullName = `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`.toLowerCase()
-          const surName = `${employee.empl_surname}`.toLowerCase()
-          return (
-            employee.id_employee.toLowerCase().includes(q) ||
-            surName.includes(q)
-            // ||
-            // employee.empl_role.toLowerCase().includes(q) ||
-            // employee.city.toLowerCase().includes(q) ||
-            // employee.phone_number.toLowerCase().includes(q)
-          )
-        })
-      },
 
       filteredCustomers() {
         let result = this.allCustomers
@@ -1114,25 +1097,32 @@ let app = Vue.createApp(
         this.loadCustomers()
         this.filtersApplied = false
       },
-      async searchEmployees() {
+      searchEmployees() {
         if (!this.search) {
-          await this.loadEmployees()
-          return
+          this.fetchAllEmployees();
+          return;
         }
-        try {
-          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`,
-            {
-              headers: {
-                'Authorization': `Bearer ${this.token}`
-              }
-            }
-          )
-          if (!response.ok) this.showError("Search failed")
-          const result = await response.json()
-          this.employees = result
-        } catch (error) {
-          this.showError("An error happened during search:")
-        }
+
+        axios.get('http://localhost:8090/employee/search', {
+          params: { query: this.search }
+        })
+            .then(response => {
+              this.employees = response.data;
+            })
+            .catch(error => {
+              console.error("Search failed", error);
+              alert("Employee search failed");
+            });
+      },
+
+      fetchAllEmployees() {
+        axios.get("/employee")
+            .then(response => {
+              this.employees = response.data;
+            })
+            .catch(error => {
+              console.error("Failed to fetch employees", error);
+            });
       },
 
       async searchCustomers() {
@@ -1163,7 +1153,7 @@ let app = Vue.createApp(
 
         try {
           const response = await fetch(
-              `http://localhost:8090/product/search?search=${encodeURIComponent(this.productSearchQuery)}`
+              `http://localhost:8090/product/search?query=${encodeURIComponent(this.productSearchQuery)}`
           );
           if (!response.ok) throw new Error("Search failed");
 
@@ -1465,48 +1455,30 @@ let app = Vue.createApp(
       formatEmployeeName(employee) {
         return `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
       },
-      async applyEmployeeFilters() {
-        try {
-          this.isLoading = true
 
-          const showCashiersCheckbox = document.getElementById('show-cashiers')
-          const showManagersCheckbox = document.getElementById('show-managers')
-          const sortSurnameCheckbox = document.getElementById('sort-surname')
-
-          const showCashiers = showCashiersCheckbox ? showCashiersCheckbox.checked : false
-          const showManagers = showManagersCheckbox ? showManagersCheckbox.checked : false
-          const sortBySurname = sortSurnameCheckbox ? sortSurnameCheckbox.checked : false
-
-          const params = new URLSearchParams()
-          if (showCashiers) params.append('cashier', showCashiers)
-          if (showManagers) params.append('manager', showManagers)
-          if (sortBySurname) params.append('sortBy', 'name')
-
-          if (params.size > 0) {
-            const response = await fetch(`http://localhost:8090/employee/filter?${params.toString()}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-              }
-            })
-
-            if (!response.ok) {
-              this.showError(`Failed to filter employees. Status: ${response.status}`)
-            }
-
-            this.employees = await response.json()
-            this.filtersApplied = true
-          } else {
-            await this.loadEmployees()
-            this.filtersApplied = false
-          }
-        } catch (error) {
-          this.showError('Failed to apply filters to employees. Please try again.')
-        } finally {
-          this.isLoading = false
+      applyEmployeeFilters() {
+        const params = {};
+        if (this.employeeRoleFilter === 'cashier') {
+          params.cashier = true;
+        } else if (this.employeeRoleFilter === 'manager') {
+          params.manager = true;
         }
+
+        const sortCheckbox = document.getElementById("sort-surname");
+        if (sortCheckbox && sortCheckbox.checked) {
+          params.sortBy = 'name';
+        }
+
+        axios.get('http://localhost:8090/employee/filter', { params })
+            .then(response => {
+              this.employees = response.data;
+              this.showFilter = false;
+            })
+            .catch(error => {
+              console.error("Filter failed", error);
+            });
       },
+
       clearEmployeeFilters() {
         const showCashiersCheckbox = document.getElementById('show-cashiers')
         const showManagersCheckbox = document.getElementById('show-managers')
@@ -1791,6 +1763,7 @@ app.component('custom-error', {
     }
   },
   mounted() {
+    this.fetchAllEmployees();
     this.show = true
     if (this.duration > 0) {
       setTimeout(() => {
