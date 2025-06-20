@@ -36,6 +36,12 @@
           ></edit-button>
         </div>
 
+        <custom-error
+          v-if="error"
+          :message="error.message"
+          @dismiss="dismissError"
+        ></custom-error>
+
         <section class="contents">
           <form
             action=""

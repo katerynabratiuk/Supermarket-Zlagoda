@@ -57,8 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/me").authenticated()
 
                         .requestMatchers(HttpMethod.GET, "/product/").hasAnyRole("USER", "CASHIER", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/category/").hasAnyRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/category/").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/category/").hasAnyRole("USER")   
                         .requestMatchers(HttpMethod.GET, "/category/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/customer/").hasAnyRole("CASHIER", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/check/").hasAnyRole("CASHIER", "MANAGER")

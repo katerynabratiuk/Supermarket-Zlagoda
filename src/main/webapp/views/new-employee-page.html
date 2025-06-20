@@ -19,11 +19,14 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main v-if="!isLoading">
         <div class="employee-header">
@@ -85,11 +88,12 @@
                       <option value="Manager">Manager</option>
                     </select>
                   </div>
-
                 </div>
-                
+
                 <div class="employee-is-active form-field">
-                  <label for="is_active_toggle" class="toggle-label" >Active:</label>
+                  <label for="is_active_toggle" class="toggle-label"
+                    >Active:</label
+                  >
                   <label class="toggle-switch">
                     <input
                       type="checkbox"
@@ -99,7 +103,6 @@
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
-
               </div>
             </div>
             <hr />
@@ -130,7 +133,6 @@
                 />
               </div>
 
-              
               <div class="employee-date-of-start form-field">
                 <h4 for="date_of_start">Date of start:</h4>
                 <input

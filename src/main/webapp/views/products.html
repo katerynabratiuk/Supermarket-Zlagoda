@@ -20,11 +20,14 @@
   <body>
     <div id="app" v-cloak>
       <header class="noPrint">
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
 
       <main>
         <div class="products-header noPrint" v-if="!isLoading">

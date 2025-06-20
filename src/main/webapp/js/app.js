@@ -118,10 +118,10 @@ let app = Vue.createApp(
     },
     computed: {
       isManager() {
-        return this.user.userRole === "Manager"
+        return this.user.userRole === "MANAGER"
       },
       isCashier() {
-        return this.user.userRole === "Cashier"
+        return this.user.userRole === "CASHIER"
       },
       statusClass() {
         const product = this.currentProduct || this.newProduct
@@ -141,7 +141,7 @@ let app = Vue.createApp(
       },
 
       vatAmount() {
-        return this.subtotal * 0.2 // 20% від subtotal
+        return this.subtotal * 0.2 
       },
 
       discountAmount() {
@@ -218,7 +218,6 @@ let app = Vue.createApp(
           username: this.username,
           password: this.userPassword
         }
-
         try {
           const response = await fetch('http://localhost:8090/auth/login', {
             method: 'POST',
@@ -228,39 +227,64 @@ let app = Vue.createApp(
             body: JSON.stringify(payload)
           })
 
-          const token = await response.json()
-          localStorage.setItem('authToken', token.token)
-          this.token = token.token
-          this.isLoggedIn = true
-
           if (!response.ok) {
             const status = response.status
+            const contentType = response.headers.get('content-type') || ''
+
+            let errorMessage = 'An unknown error occurred'
+            if (contentType.includes('application/json')) {
+              const errorData = await response.json()
+              errorMessage = errorData.message || errorMessage
+            } else {
+              const errorText = await response.text()
+              errorMessage = errorText || errorMessage
+            }
 
             if (status === 401) {
-              this.errorMessage = data.message || 'Incorrect username or password'
+              this.showError('Incorrect username or password')
             } else if (status === 404) {
-              this.errorMessage = data.message || 'Username not found'
+              this.showError('Username not found')
             } else if (status === 400) {
-              this.errorMessage = data.message || 'Invalid login request'
+              this.showError('Invalid login request')
             } else {
-              this.errorMessage = data.message || 'An unknown error occurred'
+              this.showError('An unknown error occurred')
             }
+            return
           }
           else {
-            console.log('Login successful')
-            this.errorMessage = ''
+            const data = await response.json()
+            console.log('Login successful', data)
+            localStorage.setItem('authToken', data.token)
+            this.token = data.token
+            this.isLoggedIn = true
+
+            const userResponse = await fetch("http://localhost:8090/auth/me", {
+              headers: {
+                "Authorization": "Bearer " + localStorage.getItem("authToken")
+              }
+            })
+            const userData = await userResponse.json()
+            console.log(userData)
+
+            localStorage.setItem('userData', JSON.stringify(userData))
+
+            this.user = {
+              userName: userData.username,
+              userRole: userData.role
+            }
             window.location.href = 'categories.html'
           }
         } catch (error) {
-          this.errorMessage = 'Unexpected error during login'
-          alert('Login error:', error)
+          this.showError('Login error:')
+          this.showError('Unexpected error during login')
+          alert('Login error:')
         }
       },
 
       displayedItems(listName) {
         return (array) => {
           if (!array || !Array.isArray(array)) {
-            console.error(`Invalid array passed to displayedItems method: ${listName}`)
+            this.showError(`Invalid array passed to displayedItems method: ${listName}`)
             return []
           }
           if (listName == 'products') {
@@ -310,18 +334,19 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             }
           })
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch product. Status: ${response.status}`)
+            this.showError(`Failed to fetch product. Status: ${response.status}`)
           }
 
           const product = await response.json()
           return product
 
         } catch (error) {
-          console.error("An error occurred during fetching product:", error)
+          this.showError("An error occurred during fetching product:")
           this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
@@ -332,22 +357,21 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-            }//,
-            //body: JSON.stringify({ employeeId: id }),
+              'Authorization': `Bearer ${this.token}`
+            }
           })
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch employee. Status: ${response.status}`)
+            this.showError(`Failed to fetch employee. Status: ${response.status}`)
           }
           const employee = await response.json()
           return employee
 
         } catch (error) {
-          console.error("An error occurred during fetching employee:", error)
+          this.showError("An error occurred during fetching employee:")
           this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
-        //return this.employees.find(employee => employee.id_employee === id)
       },
       async getCustomerById(id) {
         try {
@@ -355,22 +379,21 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
-            //body: JSON.stringify({ customerId: id }),
           })
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch customer. Status: ${response.status}`)
+            this.showError(`Failed to fetch customer. Status: ${response.status}`)
           }
           const customer = await response.json()
           return customer
 
         } catch (error) {
-          console.error("An error occurred during fetching customer:", error)
+          this.showError("An error occurred during fetching customer:")
           this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
-        //return this.customers.find(customer => customer.card_number === id)
       },
       async getCheckById(id) {
         try {
@@ -378,22 +401,20 @@ let app = Vue.createApp(
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
-            //body: JSON.stringify({ check_number: id }),
           })
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch check. Status: ${response.status}`)
+            this.showError(`Failed to fetch check. Status: ${response.status}`)
           }
           const check = await response.json()
           return check
 
         } catch (error) {
-          console.error("An error occurred during fetching check:", error)
           this.showError("An unexpected error occurred. Please try again later.")
           return null
         }
-        // return this.checks.find(check => check.check_number === id)
       },
 
       async loadDataForCurrentPage() {
@@ -454,14 +475,6 @@ let app = Vue.createApp(
               if (checkId) {
                 const check = await this.getCheckById(checkId)
                 this.currentCheck = check
-
-                // const [employee, customer] = await Promise.all([
-                //   this.getEmployeeById(check.employee.id_employee),
-                //   this.getCustomerById(check.customer_card.card_number),
-                // ])
-
-                // this.currentCheck.employee = employee
-                // this.currentCheck.customer_card = customer
               }
               break
 
@@ -489,55 +502,73 @@ let app = Vue.createApp(
               console.warn('No data loading defined for page:', page)
           }
         } catch (error) {
-          console.error('Error loading data for page:', page, error)
+          this.showError('Error loading data for page:', page)
         } finally {
           this.isLoading = false
         }
       },
       async loadCategories() {
         try {
-          const response = await fetch("http://localhost:8090/category")
+          const response = await fetch("http://localhost:8090/category", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
 
-          if (!response.ok) throw new Error("Fetch categories error! Status: ${response.status}")
+          if (!response.ok) this.showError("Fetch categories error! Status: ${response.status}")
 
           this.productsCategories = await response.json()
         } catch (error) {
-          console.error("Could not load categories:", error)
+          this.showError("Could not load categories:")
         }
       },
       async loadProducts() {
         try {
-          const response = await fetch("http://localhost:8090/product")
-          if (!response.ok) throw new Error("Fetch products error: ${response.status}")
+          const response = await fetch("http://localhost:8090/product", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
+          if (!response.ok) this.showError("Fetch products error: ${response.status}")
 
           this.products = await response.json()
         } catch (error) {
-          console.error("Error loading product:", error)
+          this.showError("Error loading product:")
         }
       },
       async loadProductsByCategory(category_name) {
         this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`)
+          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`, {
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
           if (response.ok) {
             this.products = await response.json()
           } else {
-            console.error("Failed to load products. Status.", response.status)
+            this.showError("Failed to load products. Status.", response.status)
           }
         } catch (error) {
-          console.error("Error loading products by category.", error)
+          this.showError("Error loading products by category.")
         } finally {
           this.isLoading = false
         }
       },
       async loadCustomers() {
         try {
-          const response = await fetch("http://localhost:8090/customer")
-          if (!response.ok) throw new Error("Fetch customers error! Status: ${response.status}")
+          const response = await fetch("http://localhost:8090/customer", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          if (!response.ok) this.showError("Fetch customers error! Status: ${response.status}")
 
           this.customers = await response.json()
         } catch (error) {
-          console.error("Could not load customers:", error)
+          this.showError("Could not load customers:")
         }
       },
 
@@ -548,24 +579,34 @@ let app = Vue.createApp(
 
       async loadChecks() {
         try {
-          const response = await fetch("http://localhost:8090/check")
+          const response = await fetch("http://localhost:8090/check", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
 
-          if (!response.ok) throw new Error("Fetch checks error! Status: ${response.status}")
+          if (!response.ok) this.showError(`Fetch checks error! Status: ${response.status}`)
 
           this.checks = await response.json()
         } catch (error) {
-          console.error("Could not load checks:", error)
+          this.showError("Could not load checks:")
         }
       },
       async loadEmployees() {
         try {
-          const response = await fetch("http://localhost:8090/employee")
+          const response = await fetch("http://localhost:8090/employee", {
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
 
-          if (!response.ok) throw new Error("Fetch employees error! Status: ${response.status}")
+          if (!response.ok) this.showError(`Fetch employees error! Status: ${response.status}`)
 
           this.employees = await response.json()
         } catch (error) {
-          console.error("Could not load employees:", error)
+          this.showError("Could not load employees:")
         }
       },
 
@@ -588,6 +629,10 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/category/${categoryId}`, {
               method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${this.token}`,
+                'Content-Type': 'application/json'
+              }
             })
 
             if (response.ok) {
@@ -595,11 +640,11 @@ let app = Vue.createApp(
               this.newCategory = { category_name: '', category_number: null }
               await this.loadCategories()
             } else {
-              console.error("Deletion failed on the server. Status:", response.status)
+              this.showError("Deletion failed on the server. Status:", response.status)
               this.showError("Failed to delete category. Please try again.")
             }
           } catch (error) {
-            console.error("An error occurred during deletion:", error)
+            this.showError("An error occurred during deletion:")
             this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
@@ -612,6 +657,7 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCategory),
           })
@@ -624,11 +670,11 @@ let app = Vue.createApp(
             this.loadCategories()
           }
           else {
-            console.error("Adding category failed on the server. Status:", response.status)
+            this.showError("Adding category failed on the server. Status:", response.status)
             this.showError("Failed to add category. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during adding:", error)
+          this.showError("An unexpected error occurred during adding:")
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -638,6 +684,7 @@ let app = Vue.createApp(
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(category),
           })
@@ -645,11 +692,11 @@ let app = Vue.createApp(
           if (response.ok) {
             this.currentEditingItemID = null
           } else {
-            console.error("Updating category failed on the server. Status:", response.status)
+            this.showError("Updating category failed on the server. Status:", response.status)
             this.showError("Failed to update category. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
+          this.showError("An unexpected error occurred during updating:")
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -658,15 +705,16 @@ let app = Vue.createApp(
           this.isLoading = true
           const response = await fetch('http://localhost:8090/category/filter', {
             headers: {
+              'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.token}`
             }
           })
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+            this.showError(`HTTP error! status: ${response.status}`)
           }
           this.productsCategories = await response.json()
         } catch (error) {
-          console.error('Error sorting categories:', error)
+          this.showError('Error sorting categories:')
           this.showError('Failed to sort categories. Please try again.')
         } finally {
           this.isLoading = false
@@ -698,6 +746,10 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/product/${productId}`, {
               method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+              } 
             })
 
             if (response.ok) {
@@ -705,11 +757,11 @@ let app = Vue.createApp(
               this.currentProduct = null
               window.location.href = 'products.html'
             } else {
-              console.error("Deletion failed on the server. Status:", response.status)
+              this.showError("Deletion failed on the server. Status:", response.status)
               this.showError("Failed to delete product. Please try again.")
             }
           } catch (error) {
-            console.error("An error occurred during deletion:", error)
+            this.showError("An error occurred during deletion:")
             this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
@@ -722,6 +774,7 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newProduct),
           })
@@ -741,11 +794,11 @@ let app = Vue.createApp(
             console.log("New product added successfully:")
             window.location.href = `products.html`
           } else {
-            console.error("Adding product failed on the server. Status:", response.status)
+            this.showError("Adding product failed on the server. Status:", response.status)
             this.showError("Failed to add product. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during adding:", error)
+          this.showError("An unexpected error occurred during adding:")
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -760,7 +813,10 @@ let app = Vue.createApp(
 
           const response = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            },
             body: JSON.stringify(this.currentProduct),
           })
 
@@ -768,11 +824,9 @@ let app = Vue.createApp(
             this.currentEditingItemID = null
             window.location.href = "products.html"
           } else {
-            console.error(`${method} product failed on the server. Status:`, response.status)
             this.showError("Failed to save product. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during saving:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -815,7 +869,7 @@ let app = Vue.createApp(
           })
 
           if (!response.ok) {
-            throw new Error(`Failed to filter products. Status: ${response.status}`)
+            this.showError(`Failed to filter products. Status: ${response.status}`)
           }
 
           const data = await response.json()
@@ -825,7 +879,7 @@ let app = Vue.createApp(
           this.currentCategory = { category_name: categoryName }
 
         } catch (error) {
-          console.error('Error applying filters to products:', error)
+          this.showError('Error applying filters to products:')
           this.showError('Failed to apply filters to products. Please try again.')
         } finally {
           this.isLoading = false
@@ -862,21 +916,20 @@ let app = Vue.createApp(
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCustomer),
           })
 
           if (response.ok) {
-            //const newCustomer = await response.json()
-            //this.customers.push(newCustomer)
-            //console.log("New customer added successfully:", newCustomer)
             window.location.href = `customers.html`
           } else {
-            console.error("Adding customer failed on the server. Status:", response.status)
+            this.showError("Adding customer failed on the server. Status:", response.status)
             this.showError("Failed to add customer. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during adding:", error)
+          console.error(error)
+          this.showError("An unexpected error occurred during adding:")
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -887,19 +940,18 @@ let app = Vue.createApp(
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
-            //body: JSON.stringify(this.currentCustomer),
+            body: JSON.stringify(this.currentCustomer)
           })
 
           if (response.ok) {
             this.currentCustomer = null
             window.location.href = "customers.html"
           } else {
-            console.error("Updating customer failed on the server. Status:", response.status)
             this.showError("Failed to update customer. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -910,6 +962,7 @@ let app = Vue.createApp(
             const response = await fetch(`http://localhost:8090/customer/${customerId}`, {
               method: 'DELETE',
               headers: {
+                'Content-type': 'application/json',
                 'Authorization': `Bearer ${this.token}`
               }
             })
@@ -917,11 +970,11 @@ let app = Vue.createApp(
             if (response.ok) {
               window.location.href = 'customers.html'
             } else {
-              console.error("Deletion failed on the server. Status:", response.status)
+              this.showError("Deletion failed on the server. Status:", response.status)
               this.showError("Failed to delete customer. Please try again.")
             }
           } catch (error) {
-            console.error("An unexpected error occurred during deletion:", error)
+            this.showError("An unexpected error occurred during deletion:")
             this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
@@ -951,18 +1004,19 @@ let app = Vue.createApp(
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               },
             }
           )
 
           if (!response.ok) {
-            throw new Error(`Failed to load customers. Status: ${response.status}`)
+            this.showError(`Failed to load customers. Status: ${response.status}`)
           }
 
           this.customers = await response.json()
           this.filtersApplied = params.size > 0
         } catch (error) {
-          console.error('Error applying filters to customers:', error)
+          this.showError('Error applying filters to customers:')
           this.showError('Failed to apply filters to customers. Please try again.')
         } finally {
           this.isLoading = false
@@ -985,13 +1039,18 @@ let app = Vue.createApp(
           return
         }
         try {
-          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`)
-          if (!response.ok) throw new Error("Пошук не вдався")
+          const response = await fetch(`http://localhost:8090/employee/search?search=${encodeURIComponent(this.search)}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
+            }
+          )
+          if (!response.ok) this.showError("Search failed")
           const result = await response.json()
           this.employees = result
         } catch (error) {
-          console.error("Помилка під час пошуку:", error)
-          this.showError("Сталася помилка при пошуку.")
+          this.showError("An error happened during search:")
         }
       },
 
@@ -1000,25 +1059,20 @@ let app = Vue.createApp(
       },
       async addNewCheck() {
         try {
-          const response = await fetch('...', {
+          const response = await fetch('http://localhost:8090/check', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.newCheck),
           })
 
           if (response.ok) {
-            const newCheck = await response.json()
-            this.checks.push(newCheck)
-            console.log("New check added successfully:", newCheck)
-            window.location.href = `check-page.html?id=${newCheck.check_number}`
-          } else {
-            console.error("Adding check failed on the server. Status:", response.status)
-            this.showError("Failed to add check. Please try again.")
+            console.log("New check added successfully:")
+            window.location.href = 'checks.html'
           }
         } catch (error) {
-          console.error("An unexpected error occurred during adding:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -1047,7 +1101,7 @@ let app = Vue.createApp(
             this.newCheck.sales[index].product_name = ''
           }
         } catch (error) {
-          console.error("Error fetching product:", error)
+          this.showError("Error fetching product:")
           this.newCheck.sales[index].selling_price = 0
           this.newCheck.sales[index].product_name = ''
         }
@@ -1060,7 +1114,7 @@ let app = Vue.createApp(
               this.currentCustomer = customer
             })
             .catch(error => {
-              console.error("Error fetching customer:", error)
+              this.showError("Error fetching customer:")
               this.currentCustomer = null
             })
         } else {
@@ -1099,12 +1153,13 @@ let app = Vue.createApp(
             const response = await fetch(`http://localhost:8090/checks/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               }
             })
 
             if (!response.ok) {
-              throw new Error(`Failed to filter checks. Status: ${response.status}`)
+              this.showError(`Failed to filter checks. Status: ${response.status}`)
             }
             this.isLoading = true
             const data = await response.json()
@@ -1115,7 +1170,6 @@ let app = Vue.createApp(
             this.filtersApplied = false
           }
         } catch (error) {
-          console.error('Error applying filters to checks:', error)
           this.showError('Failed to apply filters to checks. Please try again.')
         } finally {
           this.isLoading = false
@@ -1146,7 +1200,7 @@ let app = Vue.createApp(
         try {
           const response = await fetch('http://localhost:8090/employee', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.token}` },
             body: JSON.stringify(this.newEmployee),
           })
 
@@ -1156,7 +1210,6 @@ let app = Vue.createApp(
             this.showError("Failed to add employee. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during adding:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -1166,6 +1219,10 @@ let app = Vue.createApp(
           try {
             const response = await fetch(`http://localhost:8090/employee/${employeeId}`, {
               method: 'DELETE',
+              headers: {
+                'Content-type': 'application\json',
+                'Authorization': `Bearer ${this.token}`
+              }
             })
 
             if (response.ok) {
@@ -1173,11 +1230,9 @@ let app = Vue.createApp(
               this.currentEmployee = null
               window.location.href = 'employees.html'
             } else {
-              console.error("Deletion failed on the server. Status:", response.status)
-              this.showError("Failed to delete employee. Please try again.")
+              this.showError("Deletion failed on the server. Status:", response.status)
             }
           } catch (error) {
-            console.error("An unexpected error occurred during deletion:", error)
             this.showError("An unexpected error occurred. Please try again later.")
           }
         } else {
@@ -1190,6 +1245,7 @@ let app = Vue.createApp(
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             },
             body: JSON.stringify(this.currentEmployee),
           })
@@ -1198,11 +1254,9 @@ let app = Vue.createApp(
             this.currentEmployee = null
             window.location.href = "employees.html"
           } else {
-            console.error("Updating employee failed on the server. Status:", response.status)
             this.showError("Failed to update employee. Please try again.")
           }
         } catch (error) {
-          console.error("An unexpected error occurred during updating:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
@@ -1230,12 +1284,13 @@ let app = Vue.createApp(
             const response = await fetch(`http://localhost:8090/employee/filter?${params.toString()}`, {
               method: 'GET',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
               }
             })
 
             if (!response.ok) {
-              throw new Error(`Failed to filter employees. Status: ${response.status}`)
+              this.showError(`Failed to filter employees. Status: ${response.status}`)
             }
 
             this.employees = await response.json()
@@ -1245,7 +1300,6 @@ let app = Vue.createApp(
             this.filtersApplied = false
           }
         } catch (error) {
-          console.error('Error applying filters to employees:', error)
           this.showError('Failed to apply filters to employees. Please try again.')
         } finally {
           this.isLoading = false
@@ -1268,9 +1322,21 @@ let app = Vue.createApp(
       const urlParams = new URLSearchParams(window.location.search)
       const categoryName = urlParams.get('category')
       const storedToken = localStorage.getItem('authToken')
+      const storedUser = localStorage.getItem('userData')
+
       if (storedToken) {
         this.token = storedToken
         this.isLoggedIn = true
+      }
+
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          this.user.userName = userData.username
+          this.user.userRole = userData.role
+        } catch (e) {
+          this.showError('Failed to parse user data', e)
+        }
       }
 
       try {
@@ -1280,7 +1346,7 @@ let app = Vue.createApp(
           await this.loadProductsByCategory(categoryName)
         }
       } catch (error) {
-        console.error('Error during mounted lifecycle:', error)
+        this.showError('Error during mounted lifecycle')
       } finally {
         this.isLoading = false
       }
@@ -1357,13 +1423,13 @@ app.component("navbar", {
   computed: {
     loginLabel() {
       if (!this.isLoggedIn) return "Log in"
-      return "Some name"
+      return this.user.userName
     },
     filteredNavItems() {
       switch (this.user.userRole) {
-        case 'Manager':
+        case 'MANAGER':
           return this.navItems
-        case 'Cashier':
+        case 'CASHIER':
           return this.navItems.filter(item =>
             ['categories.html', 'products.html', 'checks.html'].includes(item.path))
         default:

@@ -18,10 +18,7 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
 
       <main v-if="!isLoading && currentCustomer">
@@ -34,12 +31,14 @@
           ></edit-button>
         </div>
 
+        <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
+
         <section class="contents">
-          <form
-            action=""
-            class="edit-form"
-            @submit.prevent="saveEditCustomer"
-          >
+          <form action="" class="edit-form" @submit.prevent="saveEditCustomer">
             <div class="customer-details-upper-wrapper">
               <div class="customer-details-upper">
                 <div class="customer-name">
@@ -118,16 +117,15 @@
                 <p v-if="!isEditMode">{{ currentCustomer.phone_number }}</p>
                 <div v-else class="form-field">
                   <input
-                          @input="addPlusSign"
-                          class="edit-input"
-                          id="phone_number"
-                          maxlength="13"
-                          minlength="13"
-                          pattern="^\+380\d{9}$"
-                          required
-                          title="Number must start with +380 and consist of digits"
-                          type="tel"
-                          v-model="currentCustomer.phone_number"
+                    class="edit-input"
+                    id="phone_number"
+                    maxlength="13"
+                    minlength="13"
+                    pattern="^\+380\d{9}$"
+                    required
+                    title="Number must start with +380 and consist of digits"
+                    type="tel"
+                    v-model="currentCustomer.phone_number"
                   />
                 </div>
               </div>
@@ -185,7 +183,11 @@
             </div>
 
             <div class="buttons-section" v-if="isManager && isEditMode">
-              <button class="delete-btn" type="button" @click="confirmAndDeleteCustomer">
+              <button
+                class="delete-btn"
+                type="button"
+                @click="confirmAndDeleteCustomer"
+              >
                 Delete
               </button>
               <button class="save-btn" type="sumbit">Save</button>
@@ -194,7 +196,7 @@
         </section>
       </main>
 
-      <custom-footer v-if="!isLoading && currentCustomer" ></custom-footer>
+      <custom-footer v-if="!isLoading && currentCustomer"></custom-footer>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>

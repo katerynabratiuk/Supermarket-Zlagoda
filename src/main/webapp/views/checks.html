@@ -26,6 +26,12 @@
         />
       </header>
 
+      <custom-error
+      v-if="error"
+      :message="error.message"
+      @dismiss="dismissError"
+    ></custom-error>
+
       <main>
         <div class="checks-header noPrint" v-if="!isLoading">
           <h2>Checks</h2>

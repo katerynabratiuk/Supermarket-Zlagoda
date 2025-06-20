@@ -19,16 +19,19 @@
   <body>
     <div id="app" v-cloak>
       <header>
-        <navbar
-        :user="user"
-        :is-logged-in="isLoggedIn"
-        />
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
 
       <main v-if="!isLoading">
         <div class="customer-header">
           <h2>New Customer</h2>
         </div>
+
+        <custom-error
+          v-if="error"
+          :message="error.message"
+          @dismiss="dismissError"
+        ></custom-error>
 
         <section class="contents">
           <form action="" class="edit-form" @submit.prevent="addNewCustomer">

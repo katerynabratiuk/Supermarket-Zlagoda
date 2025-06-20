@@ -24,6 +24,12 @@
         />
       </header>
 
+      <custom-error
+      v-if="error"
+      :message="error.message"
+      @dismiss="dismissError"
+    ></custom-error>
+
       <main v-if="!isLoading && currentEmployee">
         <div class="employee-header">
           <h2>Employee</h2>
