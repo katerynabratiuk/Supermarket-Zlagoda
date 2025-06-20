@@ -49,8 +49,8 @@
                 <span class="material-symbols-outlined">search</span>
               </button>
             </form>
-            <div class="buttons-container" v-if="isManager || isCashier">
-              <button class="add-new-btn" @click="goToAddProduct" v-if="isManager">
+            <div class="buttons-container">
+              <button v-if="isManager || isCashier" class="add-new-btn" @click="goToAddProduct" v-if="isManager">
                 Add New
               </button>
               <button
