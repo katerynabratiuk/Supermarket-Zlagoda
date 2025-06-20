@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/statistics.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Employees - Zlagoda</title>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header class="noPrint">
+        <navbar :user="user" :is-logged-in="isLoggedIn"></navbar>
+      </header>
+
+      <custom-error
+        v-if="error"
+        :message="error.message"
+        @dismiss="dismissError"
+      ></custom-error>
+
+      <main>
+        <div class="statistics-header noPrint" v-if="!isLoading">
+          <h2>Statistics</h2>
+        </div>
+
+        <section class="contents">
+          <div class="query-controls">
+            <div
+              class="query-item"
+              v-for="(query, index) in statisticsQueries"
+              :key="index"
+            >
+              <div
+                class="query-header"
+                :class="{ 'active': currentQuery === index }"
+              >
+                <div class="query-label" for="category-select">
+                  {{ query.label }}
+                  <select
+                    v-if="index == 0"
+                    id="category-select"
+                    v-model="queryParams.category"
+                    class="edit-dropdown"
+                    @change="executeQuery(index)"
+                  >
+                    <option value="" disabled>Select Category</option>
+                    <option
+                      v-for="category in productsCategories"
+                      :key="category.category_number"
+                      :value="category.category_name"
+                    >
+                      {{ category.category_name }}
+                    </option>
+                  </select>
+                  <input
+                    v-if="index == 2"
+                    type="text"
+                    id="city-input"
+                    v-model="queryParams.city"
+                    placeholder="Enter City"
+                    class="edit-input"
+                  />
+                </div>
+                <div class="button-container">
+                  <button
+                    class="query-button"
+                    type="button"
+                    @click="toggleQuery(index)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <transition name="expand">
+                <div class="table-container" v-if="currentQuery === index">
+                  <div class="table-section">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th v-for="header in resultHeaders" :key="header">
+                            {{ header }}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(row, index) in queryResults" :key="index">
+                          <td v-for="(value, key) in row" :key="key">
+                            {{ value }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>
