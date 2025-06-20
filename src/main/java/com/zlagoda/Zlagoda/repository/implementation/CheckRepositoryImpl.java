@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public class CheckRepositoryImpl implements CheckRepository {
 
-    private static final String GET_ALL = "SELECT * FROM Receipt" ;
+    private static final String GET_ALL = "SELECT * FROM Receipt ORDER BY print_date DESC " ;
     private static final String CREATE = "INSERT INTO Receipt(check_number, id_employee, card_number, print_date, sum_total, vat) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String DELETE = "DELETE FROM Receipt WHERE check_number=?";
 
@@ -191,6 +191,78 @@ public class CheckRepositoryImpl implements CheckRepository {
             return res;
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find the check", e);
+        }
+    }
+
+    @Override
+    public List<Receipt> filter(String cashierId, String sortBy, LocalDate from, LocalDate to) {
+
+        StringBuilder query = new StringBuilder("SELECT * FROM Receipt ");
+
+        List<Object> parameters = new ArrayList<>();
+        boolean hasWhere = false;
+
+        if (cashierId != null) {
+            query.append("WHERE id_employee = ? ");
+            hasWhere  = true;
+            parameters.add(cashierId);
+        }
+
+        if (from != null) {
+            if (!hasWhere) {
+                query.append("WHERE ");
+                hasWhere = true;
+            } else {
+                query.append("AND ");
+            }
+            query.append("print_date >= ? ");
+            parameters.add(from);
+        }
+
+        if (to != null) {
+            if (!hasWhere) {
+                query.append("WHERE ");
+                hasWhere = true;
+            } else {
+                query.append("AND ");
+            }
+            query.append("print_date <= ? ");
+            parameters.add(to);
+        }
+
+        query.append("ORDER BY print_date ");
+
+        if (sortBy != null)
+        {
+            switch(sortBy){
+                case "date_asc":
+                    query.append("ASC");
+                    break;
+                case "date_desc":
+                    query.append("DESC");
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        System.out.println(query);
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+
+            for (int i = 0; i < parameters.size(); i++) {
+                stmt.setObject(i + 1, parameters.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            List<Receipt> result = new ArrayList<>();
+            while (rs.next()) {
+                result.add(extractCheckFromResultSet(rs));
+            }
+            return result;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to filter StoreProduct", e);
         }
     }
 

@@ -119,21 +119,26 @@
       </div>
     </div>
 
-
-    <section class="contents">
-      <div class="table-section" v-if="!isLoading">
-        <table>
-          <thead class="table-headers">
-          <tr class="table-row">
-            <th class="id">ID</th>
-            <th class="name">Full Name</th>
-            <th class="role">Role</th>
-            <th class="address">Address</th>
-            <th class="phone-number">Phone Number</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
+        <section class="contents">
+          <div
+            class="no-employees-message"
+            v-if="!isLoading && (search.trim() !== '' || filtersApplied) && filteredEmployees.length === 0"
+          >
+            <p>No employees found.</p>
+          </div>
+          <div class="table-section" v-if="!isLoading">
+            <table>
+              <thead class="table-headers">
+                <tr class="table-row">
+                  <th class="id">ID</th>
+                  <th class="name">Full Name</th>
+                  <th class="role">Role</th>
+                  <th class="address">Address</th>
+                  <th class="phone-number">Phone Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
                   class="table-row"
                   :class="{ 'inactive-row': !employee.is_active }"
                   v-for="employee in displayedItems('employees')(employees)"

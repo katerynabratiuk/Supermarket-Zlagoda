@@ -228,7 +228,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
     @Override
     public List<StoreProduct> filter(Boolean promotional, String category, List<String> sortBy) {
-        StringBuilder innerQuery = new StringBuilder(FILTER_QUERY );
+        StringBuilder innerQuery = new StringBuilder(FILTER_QUERY);
 
         List<Object> parameters = new ArrayList<>();
         boolean hasWhere = false;
