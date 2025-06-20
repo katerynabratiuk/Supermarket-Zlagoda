@@ -1,7 +1,6 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.entity.CustomerCard;
-import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.service.implementation.CustomerCardServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,7 @@ public class CustomerController {
     }
 
     @GetMapping("/filter")
-    public List<CustomerCard> filterProducts(
+    public List<CustomerCard> filerCustomer(
             @RequestParam(required = false) Integer percentage,
             @RequestParam(required = false) String sortBy
     ) {
@@ -64,5 +63,10 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable String id) {
         customerService.delete(id);
+    }
+
+    @GetMapping("/search")
+    public List<CustomerCard> search(@RequestParam("search") String query) {
+        return customerService.findByName(query);
     }
 }

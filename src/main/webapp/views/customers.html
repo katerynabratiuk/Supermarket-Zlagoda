@@ -31,9 +31,15 @@
             <h2>Customers</h2>
     
             <div class="actions-container">
-              <form class="search-form" action="/search" method="get">
+              <form class="search-form" @submit.prevent="searchCustomers">
                 <label for="search">Search:</label>
-                <input type="search" id="search" name="search" placeholder="Search" />
+                <input
+                        type="search"
+                        id="search"
+                        v-model="customerSearchQuery"
+                        placeholder="Search"
+                        name="search"
+                />
                 <button type="submit">
                   <span class="material-symbols-outlined">search</span>
                 </button>
@@ -90,24 +96,28 @@
             <div class="table-section" v-if="!isLoading">
               <table>
                 <thead class="table-headers">
-                  <tr class="table-row">
-                    <th class="id">Сard number</th>
-                    <th class="name">Full Name</th>
-                    <th class="phone-number">Phone Number</th>
-                    <th class="percent">Percent (%)</th>
-                  </tr>
+                <tr class="table-row">
+                  <th class="id">Сard number</th>
+                  <th class="name">Full Name</th>
+                  <th class="phone-number">Phone Number</th>
+                  <th class="percent">Percent (%)</th>
+                </tr>
                 </thead>
                 <tbody>
-                  <tr class="table-row" v-for="customer in displayedItems('customers')(customers)" :key="customer.card_number">
-                    <td class="id">{{ customer.card_number }}</td>
-                    <td class="name">
-                      <a :href='"customer-page.html?id=" + customer.card_number'>
-                        {{ formatCustomerName(customer) }}
-                      </a>
-                    </td>
-                    <td class="phone-number">{{ customer.phone_number }}</td>
-                    <td class="percent">{{ customer.percent.toFixed(2) }}</td>
-                  </tr>
+                <tr
+                        class="table-row"
+                        v-for="customer in displayedItems('customers')(filteredCustomers)"
+                        :key="customer.card_number"
+                >
+                  <td class="id">{{ customer.card_number }}</td>
+                  <td class="name">
+                    <a :href="'customer-page.html?id=' + customer.card_number">
+                      {{ formatCustomerName(customer) }}
+                    </a>
+                  </td>
+                  <td class="phone-number">{{ customer.phone_number }}</td>
+                  <td class="percent">{{ customer.percent.toFixed(2) }}</td>
+                </tr>
                 </tbody>
               </table>
             </div>
