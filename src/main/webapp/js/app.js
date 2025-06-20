@@ -7,12 +7,12 @@ let app = Vue.createApp(
         showFilter: false,
         isPasswordVisible: false,
 
-        selectedCategoryNumber:0,
+        selectedCategoryNumber: 0,
 
         token: '',
         isLoggedIn: false,
         user: {
-          userRole: 'MANAGER',
+          userRole: 'CASHIER',
           userName: ''
         },
         username: '',
@@ -116,10 +116,8 @@ let app = Vue.createApp(
         search_result: [],
 
         productSearchQuery: '',
-        allProducts: [],
         categoryFilter: '',
         customerSearchQuery: '',
-        allCustomers: [],
         discountFilter: null,
         employeeRoleFilter: null,
         sortByNameCust: false,
@@ -270,7 +268,7 @@ let app = Vue.createApp(
         } catch (error) {
           this.showError('Login error:')
           this.showError('Unexpected error during login')
-          alert('Login error:')
+          this.showError('Login error:')
         }
       },
 
@@ -520,9 +518,9 @@ let app = Vue.createApp(
               'Authorization': `Bearer ${this.token}`
             }
           })
-          if (!response.ok) this.showError("Fetch products error: ${response.status}")
+          if (!response.ok) this.showError("Fetch products error")
 
-          this.allProducts = await response.json()
+          this.products = await response.json()
         } catch (error) {
           this.showError("Error loading product:")
         }
@@ -537,7 +535,7 @@ let app = Vue.createApp(
             }
           })
           if (response.ok) {
-            this.allProducts = await response.json()
+            this.products = await response.json()
           } else {
             this.showError("Failed to load products. Status.", response.status)
           }
@@ -557,7 +555,7 @@ let app = Vue.createApp(
           })
           if (!response.ok) this.showError("Fetch customers error! Status: ${response.status}")
 
-          this.allCustomers = await response.json()
+          this.customers = await response.json()
         } catch (error) {
           this.showError("Could not load customers:")
         }
@@ -693,8 +691,8 @@ let app = Vue.createApp(
         }
       },
       setCategorySort(sortType) {
-      this.categorySortBy = sortType
-      this.sortCategories()
+        this.categorySortBy = sortType
+        this.sortCategories()
       },
       async sortCategories() {
         try {
@@ -735,7 +733,7 @@ let app = Vue.createApp(
 
         if (wholePart.length > 9) wholePart = wholePart.slice(0, 9)
         if (decimalPart.length > 4) decimalPart = decimalPart.slice(0, 4)
-        
+
         value = wholePart
         if (decimalPart) value += '.' + decimalPart
 
@@ -762,7 +760,7 @@ let app = Vue.createApp(
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.token}`
-              } 
+              }
             })
 
             if (response.ok) {
@@ -821,7 +819,7 @@ let app = Vue.createApp(
               products_number: 0,
               new_price: null,
             },
-            console.log("New product added successfully:")
+              console.log("New product added successfully:")
             window.location.href = `products.html`
           } else {
             this.showError("Adding product failed on the server. Status:", response.status)
@@ -861,37 +859,68 @@ let app = Vue.createApp(
         }
       },
 
-      applyProductFilters() {
-        const params = {};
+      async applyProductFilters() {
+        const params = {}
 
-        if (this.productTypeFilter === 'promotional') {
-          params.promotional = true;
-        } else if (this.productTypeFilter === 'non-promotional') {
-          params.promotional = false;
-        }
-
-        const categorySelect = document.getElementById('category-select');
+        const categorySelect = document.getElementById('category-select')
         if (categorySelect && categorySelect.options && categorySelect.selectedIndex !== -1) {
-          const categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name;
+          const categoryName = categorySelect.options[categorySelect.selectedIndex].dataset.name
           if (categoryName) {
-            params.category = categoryName;
+            params.category = categoryName
           }
         }
 
-        if (this.sortProductsParamsField?.length > 0) {
-          // Передаємо як рядок, розділений комами
-          params.sortBy = this.sortProductsParamsField.join(',');
+        if (this.productTypeFilter === 'promotional') {
+          params.promotional = true
+        } else if (this.productTypeFilter === 'non-promotional') {
+          params.promotional = false
         }
 
-        axios.get('http://localhost:8090/product/filter', { params })
-            .then(response => {
-              this.allProducts = response.data;
-              this.showFilter = false;
-            })
-            .catch(error => {
-              console.error("Filter failed", error);
-              alert("Failed to apply filters to products.");
-            });
+        if (this.sortProductsParamsField?.length > 0) {
+          params.sortBy = this.sortProductsParamsField.join(',')
+        }
+
+        try {
+          const response = await axios.get('http://localhost:8090/product/filter', {
+            params,
+            headers: {
+              'Authorization': `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          this.products = response.data.products || response.data
+          this.totalPieces = response.data.total_pieces || 0
+          this.filtersApplied = true
+          this.currentCategory = { category_name: params.category || '' }
+        } catch (error) {
+          console.error('Error applying filters to products:', error)
+          this.showError('Failed to apply filters to products. Please try again.')
+        } finally {
+          this.isLoading = false
+        }
+      },
+
+      clearProductFilters() {
+        const categorySelect = document.getElementById('category-select')
+        const fromDateInput = document.getElementById('from-date')
+        const toDateInput = document.getElementById('to-date')
+        const showPromotionalCheckbox = document.getElementById('show-promotional')
+        const showNonPromotionalCheckbox = document.getElementById('show-non-promotional')
+
+        if (categorySelect) categorySelect.value = ''
+        if (fromDateInput) fromDateInput.value = ''
+        if (toDateInput) toDateInput.value = ''
+        if (showPromotionalCheckbox) showPromotionalCheckbox.checked = false
+        if (showNonPromotionalCheckbox) showNonPromotionalCheckbox.checked = false
+        this.sortProductsParamsField = null
+        this.productTypeFilter = null
+
+        this.loadProducts()
+        this.filtersApplied = false
+        this.totalPieces = 0
+        this.currentProduct = null
+        this.isUPCFiltered = false
       },
 
       goToAddCustomer() {
@@ -970,20 +999,19 @@ let app = Vue.createApp(
       },
 
       async applyCustomerFilters() {
-        const params = {};
+        const params = {}
         if (this.discountFilter !== null) {
-          params.percentage = this.discountFilter;
+          params.percentage = this.discountFilter
         }
         if (this.sortByNameCust) {
-          params.sortBy = 'name';
+          params.sortBy = 'name'
         }
 
         try {
-          const response = await axios.get('http://localhost:8090/customer/filter', { params });
-          this.allCustomers = response.data;
+          const response = await axios.get('http://localhost:8090/customer/filter', { params })
+          this.customers = response.data
         } catch (error) {
-          console.error('Filter failed', error);
-          alert('Filtering customers failed.');
+          this.showError('Filtering customers failed.')
         }
       },
 
@@ -997,49 +1025,22 @@ let app = Vue.createApp(
         this.loadCustomers()
         this.filtersApplied = false
       },
-      searchEmployees() {
-        if (!this.search) {
-          this.fetchAllEmployees();
-          return;
-        }
-
-        axios.get('http://localhost:8090/employee/search', {
-          params: { query: this.search }
-        })
-            .then(response => {
-              this.employees = response.data;
-            })
-            .catch(error => {
-              console.error("Search failed", error);
-              alert("Employee search failed");
-            });
-      },
-
-      fetchAllEmployees() {
-        axios.get("/employee")
-            .then(response => {
-              this.employees = response.data;
-            })
-            .catch(error => {
-              console.error("Failed to fetch employees", error);
-            });
-      },
 
       async searchCustomers() {
         if (!this.customerSearchQuery || this.customerSearchQuery.trim() === '') {
-          await this.loadCustomers();
-          return;
+          await this.loadCustomers()
+          return
         }
-
         try {
           const response = await axios.get('http://localhost:8090/customer/search', {
-            params: { search: this.customerSearchQuery }
-          });
-
-          this.allCustomers = response.data;
+            params: { search: this.customerSearchQuery },
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
+          this.customers = response.data
         } catch (error) {
-          console.error('Customer search failed:', error);
-          alert('An error occurred while searching for customers.');
+          this.showError('An error occurred while searching for customers.')
         }
       },
 
@@ -1050,14 +1051,19 @@ let app = Vue.createApp(
         }
 
         try {
-          const response = await axios.get('http://localhost:8090/product/search', {
-            params: { query: this.productSearchQuery }
-          });
+          const response = await fetch(
+            `http://localhost:8090/product/search?query=${encodeURIComponent(this.productSearchQuery)}`, {
+            headers: {
+              'Authorization': `Bearer ${this.token}`
+            }
+          }
+          )
+          if (!response.ok) throw new Error("Search failed")
 
-          this.allProducts = response.data;
+          this.products = await response.json()
         } catch (error) {
-          console.error('Product search failed:', error);
-          alert('An error occurred while searching for products.');
+          console.error("Search error:", error)
+          this.showError("An error occurred during product search.")
         }
       },
 
@@ -1373,30 +1379,41 @@ let app = Vue.createApp(
       formatEmployeeName(employee) {
         return `${employee.empl_surname} ${employee.empl_name} ${employee.empl_patronymic || ''}`
       },
+      async applyEmployeeFilters() {
+        try {
+          const params = new URLSearchParams()
 
-      applyEmployeeFilters() {
-        const params = {};
-        if (this.employeeRoleFilter === 'cashier') {
-          params.cashier = true;
-        } else if (this.employeeRoleFilter === 'manager') {
-          params.manager = true;
+          if (this.employeeRoleFilter === 'cashier') {
+            params.append('cashier', true)
+          } else if (this.employeeRoleFilter === 'manager') {
+            params.append('manager', true)
+          }
+
+          const sortCheckbox = document.getElementById("sort-surname")
+          if (sortCheckbox?.checked) {
+            params.append('sortBy', 'name')
+          }
+
+          const response = await fetch(`http://localhost:8090/employee/filter?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error(`Filtering failed. Status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          this.employees = data
+          this.showFilter = false
+        } catch (error) {
+          console.error("Filter failed", error)
+          this.showError("Employee filtering failed.")
         }
-
-        const sortCheckbox = document.getElementById("sort-surname");
-        if (sortCheckbox && sortCheckbox.checked) {
-          params.sortBy = 'name';
-        }
-
-        axios.get('http://localhost:8090/employee/filter', { params })
-            .then(response => {
-              this.employees = response.data;
-              this.showFilter = false;
-            })
-            .catch(error => {
-              console.error("Filter failed", error);
-            });
       },
-
       clearEmployeeFilters() {
         const showCashiersCheckbox = document.getElementById('show-cashiers')
         const showManagersCheckbox = document.getElementById('show-managers')
@@ -1408,7 +1425,29 @@ let app = Vue.createApp(
 
         this.loadEmployees()
         this.filtersApplied = false
-      }
+      },
+      searchEmployees() {
+        if (!this.search) {
+          this.loadEmployees();
+          return;
+        }
+
+        axios.get('http://localhost:8090/employee/search', {
+          params: { query: this.search },
+          headers: {
+            'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+            .then(response => {
+              this.employees = response.data;
+            })
+            .catch(error => {
+              console.error("Search failed", error);
+              this.showError("Employee search failed");
+            });
+      },
+
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)
@@ -1681,7 +1720,6 @@ app.component('custom-error', {
     }
   },
   mounted() {
-    this.fetchAllEmployees();
     this.show = true
     if (this.duration > 0) {
       setTimeout(() => {
