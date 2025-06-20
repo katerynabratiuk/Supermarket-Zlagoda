@@ -3,6 +3,7 @@ package com.zlagoda.Zlagoda.repository.implementation;
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
+import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import org.springframework.stereotype.Repository;
 
@@ -50,6 +51,24 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "INNER JOIN Store_Product ON Sale.UPC = Store_Product.UPC\n" +
             "WHERE Sale.check_number = Receipt.check_number\n" +
             "AND Store_Product.promotional_product = True ))";
+
+    private final String GET_LOYAL_CUSTOMERS =
+            "SELECT cc.card_number, cc.cust_surname\n" +
+            "FROM customer_card cc\n" +
+            "WHERE NOT EXISTS (\n" +
+            "    SELECT cat.category_number\n" +
+            "    FROM category cat\n" +
+            "    WHERE NOT EXISTS (\n" +
+            "        SELECT *\n" +
+            "        FROM receipt ch\n" +
+            "        INNER JOIN sale s ON ch.check_number = s.check_number\n" +
+            "        INNER JOIN store_product sp ON s.upc = sp.upc\n" +
+            "        INNER JOIN product p ON sp.id_product = p.id_product\n" +
+            "        WHERE \n" +
+            "            ch.card_number = cc.card_number\n" +
+            "            AND p.category_number = cat.category_number\n" +
+            "    )\n" +
+            ");";
 
     private final DBConnection dbConnection;
 
@@ -127,4 +146,24 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
     }
 
 
+    public List<CustomerCard> getLoyalCustomers() {
+
+        List<CustomerCard> res = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             Statement stmt = connection.createStatement();
+        ) {
+            ResultSet rs = stmt.executeQuery(GET_LOYAL_CUSTOMERS);
+            while (rs.next()) {
+                CustomerCard customer = new CustomerCard();
+                customer.setSurname(rs.getString("cust_surname"));
+                customer.setName(rs.getString("cust_name"));
+                customer.setCardNumber(rs.getString("card_number"));
+                res.add(customer);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+
+    }
 }

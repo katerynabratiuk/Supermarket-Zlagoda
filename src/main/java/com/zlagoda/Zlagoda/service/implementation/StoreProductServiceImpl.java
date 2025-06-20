@@ -23,11 +23,6 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     @Override
-    public List<StoreProduct> findByCategory(String categoryName) {
-        return storeProductRepository.findByCategory(categoryName);
-    }
-
-    @Override
     public List<StoreProduct> findAll() {
         return storeProductRepository.findAll();
     }
