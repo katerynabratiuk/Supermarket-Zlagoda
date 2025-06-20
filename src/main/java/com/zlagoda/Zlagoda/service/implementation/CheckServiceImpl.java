@@ -2,8 +2,13 @@ package com.zlagoda.Zlagoda.service.implementation;
 
 import com.zlagoda.Zlagoda.entity.Receipt;
 import com.zlagoda.Zlagoda.entity.Sale;
+import com.zlagoda.Zlagoda.entity.StoreProduct;
+import com.zlagoda.Zlagoda.exception.NotEnoughProductException;
 import com.zlagoda.Zlagoda.repository.CheckRepository;
 import com.zlagoda.Zlagoda.repository.SaleRepository;
+import com.zlagoda.Zlagoda.repository.StoreProductRepository;
+import com.zlagoda.Zlagoda.repository.implementation.CheckRepositoryImpl;
+import com.zlagoda.Zlagoda.repository.implementation.SaleRepositoryImpl;
 import com.zlagoda.Zlagoda.service.CheckService;
 import com.zlagoda.Zlagoda.util.IdGenerator;
 import org.springframework.stereotype.Repository;
@@ -16,13 +21,18 @@ import java.util.List;
 @Repository
 public class CheckServiceImpl implements CheckService {
 
-    private final CheckRepository checkRepository;
-    private final SaleRepository saleRepository;
+    private final CheckRepositoryImpl checkRepository;
+    private final SaleRepositoryImpl saleRepository;
+    private final StoreProductRepository productRepository;
     private final IdGenerator idGenerator;
 
-    public CheckServiceImpl(CheckRepository checkRepository, SaleRepository saleRepository, IdGenerator idGenerator) {
+    public CheckServiceImpl(CheckRepositoryImpl checkRepository,
+                            SaleRepositoryImpl saleRepository,
+                            StoreProductRepository productRepository,
+                            IdGenerator idGenerator) {
         this.checkRepository = checkRepository;
         this.saleRepository = saleRepository;
+        this.productRepository = productRepository;
         this.idGenerator = idGenerator;
     }
 
@@ -81,19 +91,31 @@ public class CheckServiceImpl implements CheckService {
 
     @Override
     public void create(Receipt receipt) {
-
         if (receipt.getCheckNumber() == null) {
             receipt.setCheckNumber(idGenerator.generate(IdGenerator.Option.Check));
         }
 
+        for (Sale sale : receipt.getProducts()) {
+            StoreProduct storeProduct = productRepository.findById(sale.getStoreProduct().getUPC());
+            if (storeProduct.getProductsNumber() < sale.getProductNum()) {
+                throw new NotEnoughProductException("Not enough stock for product " + storeProduct.getUPC());
+            }
+        }
+
         checkRepository.create(receipt);
 
-        for(Sale sale : receipt.getProducts())
-        {
+        for (Sale sale : receipt.getProducts()) {
             sale.setCheck(receipt);
             this.saleRepository.create(sale);
+
+            StoreProduct storeProduct = productRepository.findById(sale.getStoreProduct().getUPC());
+            int newStock = storeProduct.getProductsNumber() - sale.getProductNum();
+            storeProduct.setProductsNumber(newStock);
+            productRepository.update(storeProduct);
         }
     }
+
+
 
     @Override
     public void update(Receipt receipt) {
