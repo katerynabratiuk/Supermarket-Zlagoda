@@ -1,119 +1,145 @@
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" href="../styles/styles.css" />
-      <link rel="stylesheet" href="../styles/navbar.css" />
-      <link rel="stylesheet" href="../styles/footer.css" />
-      <link rel="stylesheet" href="../styles/buttons.css" />
-      <link rel="stylesheet" href="../styles/tables.css" />
-      <link rel="stylesheet" href="../styles/customers.css" />
-      <link rel="stylesheet" href="../styles/filters.css" />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-      />
-      <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
-      <title>Customers - Zlagoda</title>
-    </head>
-    <body>
-      <div id="app" v-cloak>
-        <header class="noPrint">
-          <navbar
-          :user="user"
-          :is-logged-in="isLoggedIn"
-          />
-        </header>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/navbar.css" />
+    <link rel="stylesheet" href="../styles/footer.css" />
+    <link rel="stylesheet" href="../styles/buttons.css" />
+    <link rel="stylesheet" href="../styles/tables.css" />
+    <link rel="stylesheet" href="../styles/customers.css" />
+    <link rel="stylesheet" href="../styles/filters.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    />
+    <link rel="icon" type="image/x-icon" href="../images/favicon.svg" />
+    <title>Customers - Zlagoda</title>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <header class="noPrint">
+        <navbar :user="user" :is-logged-in="isLoggedIn" />
+      </header>
 
-        <custom-error
+      <custom-error
         v-if="error"
         :message="error.message"
         @dismiss="dismissError"
       ></custom-error>
-    
-        <main>
-          <div class="customers-header noPrint" v-if="!isLoading">
-            <h2>Customers</h2>
-    
-            <div class="actions-container">
-              <form class="search-form" @submit.prevent="searchCustomers">
-                <label for="search">Search:</label>
-                <input
-                        type="search"
-                        id="search"
-                        v-model="customerSearchQuery"
-                        placeholder="Search"
-                        name="search"
-                />
-                <button type="submit">
-                  <span class="material-symbols-outlined">search</span>
-                </button>
-              </form>
-              <div class="buttons-container" v-if="isManager || isCashier">
-                <button type="button" class="add-new-btn" @click="goToAddCustomer" >
-                  Add New
-                </button>
-                <button type="button" class="filter-btn" @click="toggleFilterShow">
-                  Filter
-                </button>
-                <button type="button" class="print-btn" onclick="window.print()" v-if="isManager">
-                  Print
-                </button>
-              </div>
-            </div>
-    
-            <div class="filter-block" v-if="showFilter">
-              <form class="filter-form" @submit.prevent="applyCustomerFilters">
-                <div class="form-grid">
-             
-                  <div class="form-label">Discount:</div>
-                  <div class="form-field">
-                    <select id="discount-select" name="discount-select" class="edit-dropdown">
-                      <option selected disabled value="">Select percent</option>
-                      <option v-for="percent in [0, 5, 10, 15]" :value="percent">
-                        {{ percent }}%
-                      </option>
-                    </select>
-                  </div>
-                  <div class="form-label">Sort by:</div>
-                    <div class="form-field">
-                      <div class="checkbox-field">
-                        <input
-                          type="checkbox"
-                          id="sort-name"
-                          name="sortby"
-                          value="true"
-                        />
-                        <label for="sort-name">Name</label>
-                      </div>
-                    </div>
-                </div>
-    
-                <div class="filter-form-button">
-                  <button type="button" class="clear-filters-btn" @click="clearCustomerFilters">Clear</button>
-                  <button type="submit" class="filter-btn">Filter</button>
-                </div>
-              </form>
+
+      <main>
+        <div class="customers-header noPrint" v-if="!isLoading">
+          <h2>Customers</h2>
+
+          <div class="actions-container">
+            <form class="search-form" @submit.prevent="searchCustomers">
+              <label for="search">Search:</label>
+              <input
+                type="search"
+                id="search"
+                v-model="customerSearchQuery"
+                placeholder="Search"
+                name="search"
+              />
+              <button type="submit">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+            </form>
+            <div class="buttons-container" v-if="isManager || isCashier">
+              <button
+                type="button"
+                class="add-new-btn"
+                @click="goToAddCustomer"
+              >
+                Add New
+              </button>
+              <button
+                type="button"
+                class="filter-btn"
+                @click="toggleFilterShow"
+              >
+                Filter
+              </button>
+              <button
+                type="button"
+                class="print-btn"
+                onclick="window.print()"
+                v-if="isManager"
+              >
+                Print
+              </button>
             </div>
           </div>
-    
-          <section class="contents">
-            <div class="table-section" v-if="!isLoading">
-              <table>
-                <thead class="table-headers">
+
+          <div class="filter-block" v-if="showFilter">
+            <form class="filter-form" @submit.prevent="applyCustomerFilters">
+              <div class="form-grid">
+                <div class="form-label">Discount:</div>
+                <div class="form-field">
+                  <select
+                    id="discount-select"
+                    name="discount-select"
+                    class="edit-dropdown"
+                  >
+                    <option selected disabled value="">Select percent</option>
+                    <option v-for="percent in [0, 5, 10, 15]" :value="percent">
+                      {{ percent }}%
+                    </option>
+                  </select>
+                </div>
+                <div class="form-label">Sort by:</div>
+                <div class="form-field">
+                  <div class="checkbox-field">
+                    <input
+                      type="checkbox"
+                      id="sort-name"
+                      name="sortby"
+                      value="true"
+                    />
+                    <label for="sort-name">Name</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="filter-form-button">
+                <button
+                  type="button"
+                  class="clear-filters-btn"
+                  @click="clearCustomerFilters"
+                >
+                  Clear
+                </button>
+                <button type="submit" class="filter-btn">Filter</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <section class="contents">
+          <div
+            class="no-customers-message"
+            v-if="!isLoading && (customerSearchQuery.trim() !== '' || filtersApplied) && filteredCustomers.length === 0"
+          >
+            <p>No customers found.</p>
+          </div>
+
+          <div class="table-section" v-if="!isLoading">
+            <table>
+              <thead class="table-headers">
                 <tr class="table-row">
                   <th class="id">Сard number</th>
                   <th class="name">Full Name</th>
                   <th class="phone-number">Phone Number</th>
                   <th class="percent">Percent (%)</th>
                 </tr>
-                </thead>
-                <tbody>
+              </thead>
+              <tbody>
                 <tr
-                        class="table-row"
-                        v-for="customer in displayedItems('customers')(filteredCustomers)"
-                        :key="customer.card_number"
+                  class="table-row"
+                  v-for="customer in displayedItems('customers')(filteredCustomers)"
+                  :key="customer.card_number"
                 >
                   <td class="id">{{ customer.card_number }}</td>
                   <td class="name">
@@ -124,21 +150,24 @@
                   <td class="phone-number">{{ customer.phone_number }}</td>
                   <td class="percent">{{ customer.percent.toFixed(2) }}</td>
                 </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-    
-          <div class="button-container noPrint" v-if="!isLoading && hasMoreItems('customers')(customers)">
-            <button class="show-more-btn" @click="showMoreItems('customers')">
-              Show More
-            </button>
+              </tbody>
+            </table>
           </div>
-        </main>
-    
-        <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
-      </div>
-    </body>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="../js/app.js"></script>
-  </html>
+        </section>
+
+        <div
+          class="button-container noPrint"
+          v-if="!isLoading && hasMoreItems('customers')(customers)"
+        >
+          <button class="show-more-btn" @click="showMoreItems('customers')">
+            Show More
+          </button>
+        </div>
+      </main>
+
+      <custom-footer v-if="!isLoading" class="noPrint"></custom-footer>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="../js/app.js"></script>
+</html>

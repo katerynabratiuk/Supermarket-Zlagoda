@@ -123,6 +123,12 @@
         </div>
 
         <section class="contents">
+          <div
+            class="no-employees-message"
+            v-if="!isLoading && (search.trim() !== '' || filtersApplied) && filteredEmployees.length === 0"
+          >
+            <p>No employees found.</p>
+          </div>
           <div class="table-section" v-if="!isLoading">
             <table>
               <thead class="table-headers">
