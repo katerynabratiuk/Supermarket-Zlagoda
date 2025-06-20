@@ -1050,7 +1050,12 @@ let app = Vue.createApp(
         }
 
         try {
-          const response = await axios.get('http://localhost:8090/customer/filter', { params })
+          const response = await axios.get('http://localhost:8090/customer/filter', {
+            params,
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+              }
+           })
           this.customers = response.data
         } catch (error) {
           this.showError('Filtering customers failed.')
