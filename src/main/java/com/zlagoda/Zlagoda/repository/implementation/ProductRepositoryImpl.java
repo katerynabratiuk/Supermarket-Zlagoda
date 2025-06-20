@@ -14,10 +14,9 @@ import java.util.List;
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
 
-
     private final String CREATE = "INSERT INTO Product (category_number, product_name, characteristics) VALUES (?, ?, ?)";
     private final String FIND_BY_NAME = "SELECT Product.* FROM Product WHERE product_name ILIKE ?";
-
+    private final String UPDATE = "UPDATE Product SET product_name=?, characteristics=?, category_number=? WHERE id_product=?";
 
     private final DBConnection dbConnection;
 
@@ -77,8 +76,19 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public void update(Product k) {
+    public void update(Product p) {
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(UPDATE)) {
 
+            stmt.setString(1, p.getName());
+            stmt.setString(2, p.getCharacteristics());
+            stmt.setInt(3, p.getCategory().getNumber());
+            stmt.setInt(4, p.getId());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to update StoreProduct", e);
+        }
     }
 
     @Override

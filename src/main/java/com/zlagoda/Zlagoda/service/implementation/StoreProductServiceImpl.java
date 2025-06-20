@@ -60,6 +60,7 @@ public class StoreProductServiceImpl implements StoreProductService {
     @Override
     public void update(StoreProduct storeProduct) {
         storeProductRepository.update(storeProduct);
+        productRepository.update(storeProduct.getProduct());
     }
 
     @Override

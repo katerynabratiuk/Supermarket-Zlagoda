@@ -1,9 +1,10 @@
 package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
-import com.zlagoda.Zlagoda.dto.stats.EmployeeCategorySalesDTO;
+import com.zlagoda.Zlagoda.dto.stats.EmployeeDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
+import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.service.implementation.StatisticsServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class StatisticsController {
 
 
     @GetMapping("/productsSoldByEmployee/{categoryID}")
-    public List<EmployeeCategorySalesDTO> productsSoldByEmployee(@PathVariable Integer categoryID)
+    public List<EmployeeDTO> productsSoldByEmployee(@PathVariable Integer categoryID)
     {
         return statisticsService.productsSoldByEmployeeByCategory(categoryID);
     }
@@ -45,6 +46,12 @@ public class StatisticsController {
     public List<CustomerCard> getLoyalCustomers()
     {
         return statisticsService.getLoyalCustomers();
+    }
+
+    @GetMapping("/employeeNeverSoldCategory/{categoryID}")
+    public List<Employee> getEmployeesWhoNeverSoldCategory(@PathVariable Integer categoryID)
+    {
+        return statisticsService.getEmployeesWhoNeverSoldCategory(categoryID);
     }
 
 }
