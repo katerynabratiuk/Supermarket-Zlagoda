@@ -1462,6 +1462,7 @@ app.component("navbar", {
     },
     logout() {
       localStorage.removeItem('authToken')
+      localStorage.removeItem('userData')
       this.token = ''
       this.user = {
         userName: '',
