@@ -127,25 +127,25 @@ let app = Vue.createApp(
         statisticsQueries: [
           {
             label: "Total number of products by each employee sold in the category: ",
-            endpoint: "/stats/productSoldByEmployee/",
+            endpoint: "/stats/productsSoldByEmployee",
             paramName: "category"
           },
           {
             label: "The most loyal customers (those who have prodcuct of every categories)",
-            endpoint: "/api/queries/top-employees"
+            endpoint: "/stats/loyalCustomers/"
           },
           {
             label: "Total number of products by city purchased by buyers not from city:",
-            endpoint: "/api/queries/customer-purchase-history",
+            endpoint: "/productSalesCities/",
             paramName: "city"
           },
           {
             label: "Customers without a single non-promotional item in their check",
-            endpoint: "/api/queries/category-sales-overview"
+            endpoint: "/promoCustomers"
           },
           {
             label: "Employee Sales Performance",
-            endpoint: "/api/queries/employee-sales-performance"
+            endpoint: "/loyalCustomers"
           }
         ],
         queryParams: {
@@ -1168,7 +1168,7 @@ let app = Vue.createApp(
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
           }
-          else{
+          else {
             const errorData = await response.json();
             if (errorData.error) {
               this.showError(errorData.error);
@@ -1571,14 +1571,19 @@ let app = Vue.createApp(
 
           const response = await fetch(url, {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${this.token}` }
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
           })
 
-          if (!response.ok) throw new Error("Error fetching statistics.")
+          if (!response.ok) {
+            this.showError("Error fetching statistics.")
+            return
+          }
 
           const data = await response.json()
-          this.queryResults = data.results || data
-          this.resultHeaders = data.headers || (this.queryResults[0] ? Object.keys(this.queryResults[0]) : [])
+          this.queryResults = data
         } catch (error) {
           console.error("Error executing query:", error)
           this.showError("An unexpected error occurred. Please try again later.")
@@ -1702,7 +1707,7 @@ app.component("navbar", {
           return this.navItems
         case 'CASHIER':
           return this.navItems.filter(item =>
-            ['categories.html', 'products.html', 'checks.html', 'customers.html', 'statistics.html'].includes(item.path))
+            ['categories.html', 'products.html', 'checks.html', 'customers.html'].includes(item.path))
         default:
           return this.navItems.filter(item =>
             ['categories.html', 'products.html'].includes(item.path))
