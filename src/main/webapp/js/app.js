@@ -1763,7 +1763,6 @@ app.component('custom-error', {
     }
   },
   mounted() {
-    this.fetchAllEmployees()
     this.show = true
     if (this.duration > 0) {
       setTimeout(() => {
