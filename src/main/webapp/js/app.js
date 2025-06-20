@@ -140,16 +140,16 @@ let app = Vue.createApp(
         return this.currentCustomer?.percent || 0
       },
 
-      vatAmount() {
-        return this.subtotal * 0.2 
+      discountAmount() {
+        return this.subtotal * (this.discountPercent / 100)
       },
 
-      discountAmount() {
-        return (this.subtotal + this.vatAmount) * (this.discountPercent / 100)
+      vatAmount() {
+        return (this.subtotal - this.discountAmount) * 0.2
       },
 
       totalAfterDiscount() {
-        return (this.subtotal + this.vatAmount) - this.discountAmount
+        return (this.subtotal - this.discountAmount) + this.vatAmount
       },
       filteredEmployees() {
         if (!this.search) {
@@ -1071,6 +1071,8 @@ let app = Vue.createApp(
         window.location.href = 'new-check-page.html'
       },
       async addNewCheck() {
+        this.newCheck.sum_total = this.totalAfterDiscount;
+        this.newCheck.vat = this.vatAmount;
         try {
           const response = await fetch('http://localhost:8090/check', {
             method: 'POST',

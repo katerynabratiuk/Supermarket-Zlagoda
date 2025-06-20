@@ -175,13 +175,13 @@
                         class="check-discount"
                         v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
                       >
-                        Discount:
+                        Discount ({{ discountPercent }}%):
                       </dt>
                       <dd
                         class="check-discount-value"
                         v-if="this.currentCustomer && this.currentCustomer?.percent != 0 "
                       >
-                        {{ discountPercent }}%
+                        - {{discountAmount.toFixed(2)}}
                       </dd>
                       <dt class="check-total">Total:</dt>
                       <dd class="check-total-value">
@@ -189,7 +189,7 @@
                       </dd>
                       <dt class="check-vat">VAT:</dt>
                       <dd class="check-vat-value">
-                        {{ vatAmount.toFixed(2) }}
+                        + {{ vatAmount.toFixed(2) }}
                       </dd>
                     </dl>
                   </div>
