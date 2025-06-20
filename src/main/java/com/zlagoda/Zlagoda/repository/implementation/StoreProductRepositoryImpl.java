@@ -29,18 +29,6 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                     "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
                     "ORDER BY pr.id_product, sp.promotional_product DESC";
 
-    private static final String FIND_BY_CATEGORY =
-            "SELECT DISTINCT ON (pr.id_product) " +
-                    "sp.upc, sp.upc_prom, sp.id_product, sp.selling_price, sp.products_number, sp.promotional_product, " +
-                    "pr.product_name, pr.characteristics, " +
-                    "c.category_number, c.category_name, " +
-                    "base.selling_price AS new_price " +
-                    "FROM store_product sp " +
-                    "JOIN product pr ON sp.id_product = pr.id_product " +
-                    "JOIN category c ON pr.category_number = c.category_number " +
-                    "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
-                    "WHERE c.category_name = ? " +
-                    "ORDER BY pr.id_product, sp.promotional_product DESC;";
 
     private static final String FIND_BY_ID =
             "SELECT sp.*, pr.*, c.*, base.selling_price AS new_price " +
@@ -119,24 +107,6 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             return res;
         } catch (SQLException e) {
             throw new DataAccessException("Failed to find all StoreProducts", e);
-        }
-    }
-
-    @Override
-    public List<StoreProduct> findByCategory(String categoryName) {
-        try (Connection connection = dbConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(FIND_BY_CATEGORY)) {
-
-            stmt.setString(1, categoryName);
-            ResultSet rs = stmt.executeQuery();
-
-            List<StoreProduct> res = new ArrayList<>();
-            while (rs.next()) {
-                res.add(extractStoreProductProm(rs));
-            }
-            return res;
-        } catch (SQLException e) {
-            throw new DataAccessException("Failed to find StoreProduct by category", e);
         }
     }
 

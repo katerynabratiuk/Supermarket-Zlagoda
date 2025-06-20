@@ -554,7 +554,7 @@ let app = Vue.createApp(
       async loadProductsByCategory(category_name) {
         this.isLoading = true
         try {
-          const response = await fetch(`http://localhost:8090/product/by-category/${category_name}`, {
+          const response = await fetch(`http://localhost:8090/product/filter?category_name=${category_name}`, {
             headers: {
               'Authorization': `Bearer ${this.token}`,
               'Content-Type': 'application/json'
