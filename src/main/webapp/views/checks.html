@@ -88,12 +88,12 @@
                 >
                   <option selected disabled value="">Select Employee</option>
                   <option
-                    v-for="employee in employees"
-                    :key="employee.id_employee"
-                    :value="employee.id_employee"
-                    :data-name="formatEmployeeName(employee)"
+                    v-for="cashier in cashiers"
+                    :key="cashier.id_employee"
+                    :value="cashier.id_employee"
+                    :data-name="formatEmployeeName(cashier)"
                   >
-                    {{ formatEmployeeName(employee) }}
+                    {{ formatEmployeeName(cashier) }}
                   </option>
                 </select>
               </div>
