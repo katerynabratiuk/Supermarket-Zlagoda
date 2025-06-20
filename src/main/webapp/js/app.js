@@ -7,6 +7,8 @@ let app = Vue.createApp(
         showFilter: false,
         isPasswordVisible: false,
 
+        selectedCategoryNumber:0,
+
         token: '',
         isLoggedIn: false,
         user: {
@@ -785,6 +787,18 @@ let app = Vue.createApp(
         }
       },
       async addNewProduct() {
+
+        const selectedCategory = this.productsCategories.find(
+          cat => cat.category_number == this.selectedCategoryNumber
+        )
+
+        if (selectedCategory) {
+          this.newProduct.product.category = {
+            category_number: selectedCategory.category_number,
+            category_name: selectedCategory.category_name
+          }
+        }
+
         try {
           const response = await fetch('http://localhost:8090/product', {
             method: 'POST',
