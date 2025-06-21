@@ -91,13 +91,12 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             ");";
 
     private final String GET_TOTAL_UNITS_SOLD_FOR_PRODUCT_IN_PERIOD =
-            "SELECT SUM(product_number) AS total_sum\n" +
-                    "FROM Sale\n" +
-                    "JOIN Receipt ON Sale.check_number = Receipt.check_number\n" +
-                    "WHERE UPC = ?\n" +
-                    "  AND print_date >= ?\n" +
-                    "  AND print_date <= ?\n" +
-                    "GROUP BY UPC;";
+            "SELECT COALESCE(SUM(product_number), 0) AS total_sum " +
+                    "FROM Sale " +
+                    "JOIN Receipt ON Sale.check_number = Receipt.check_number " +
+                    "WHERE UPC = ? " +
+                    "AND print_date >= ? " +
+                    "AND print_date <= ?;";
 
     private final DBConnection dbConnection;
 

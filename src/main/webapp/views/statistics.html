@@ -48,7 +48,7 @@
                 <div class="query-label" for="category-select">
                   {{ query.label }}
                   <select
-                    v-if="index == 0"
+                    v-if="index === 0"
                     id="category-select"
                     v-model="queryParams.category"
                     class="edit-dropdown"
@@ -63,8 +63,9 @@
                       {{ category.category_name }}
                     </option>
                   </select>
+
                   <input
-                    v-if="index == 2"
+                    v-if="index === 2"
                     type="text"
                     id="city-input"
                     v-model="queryParams.city"
@@ -72,6 +73,54 @@
                     placeholder="Enter City"
                     class="edit-input"
                   />
+
+                  <select
+                    v-if="index === 4"
+                    id="never-sold-category-select"
+                    v-model="queryParams.neverSoldCategory"
+                    class="edit-dropdown"
+                    @change="executeQuery(index)"
+                  >
+                    <option value="" disabled>Select Category</option>
+                    <option
+                      v-for="category in productsCategories"
+                      :key="category.category_number"
+                      :value="category.category_number"
+                    >
+                      {{ category.category_name }}
+                    </option>
+                  </select>
+
+                  <div v-if="index === 5" class="filter-group">
+                    <select
+                      id="product-select"
+                      v-model="queryParams.UPC"
+                      class="edit-dropdown"
+                    >
+                      <option value="" disabled>Select Product</option>
+                      <option
+                        v-for="product in products"
+                        :key="product.UPC"
+                        :value="product.UPC"
+                      >
+                        {{ product.product.product_name }}
+                      </option>
+                    </select>
+                    <label for="date-from">From:</label>
+                    <input
+                      id="date-from"
+                      type="date"
+                      v-model="queryParams.from"
+                      class="edit-input"
+                    />
+                    <label for="date-to">To:</label>
+                    <input
+                      id="date-to"
+                      type="date"
+                      v-model="queryParams.to"
+                      class="edit-input"
+                    />
+                  </div>
                 </div>
                 <div class="button-container">
                   <button
