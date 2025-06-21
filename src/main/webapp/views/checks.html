@@ -32,10 +32,7 @@
       <main>
         <div class="checks-header noPrint" v-if="!isLoading">
           <h2>Checks</h2>
-        </div>
 
-        <div class="actions-container noPrint">
-          
           <div class="buttons-container">
             <button
               v-if="isCashier"
@@ -63,7 +60,7 @@
             </button>
           </div>
         </div>
-
+        
         <div class="filter-block noPrint" v-if="showFilter">
           <form class="filter-form" @submit.prevent="applyCheckFilters">
             <div class="form-grid">
