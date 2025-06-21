@@ -42,18 +42,26 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "GROUP BY Customer_Card.city " +
             "ORDER BY total_amount DESC; ";
 
-    private final String GET_PROMO_ONLY_CUSTOMERS = "SELECT DISTINCT Customer_Card.card_number, Customer_Card.cust_surname, Customer_Card.cust_name\n" +
-            "FROM Customer_Card\n" +
-            "WHERE NOT EXISTS (\n" +
-            "SELECT 1\n" +
-            "FROM Receipt\n" +
-            "WHERE Receipt.card_number = Customer_Card.card_number\n" +
-            "AND NOT EXISTS (\n" +
-            "SELECT 1\n" +
-            "FROM Sale\n" +
-            "INNER JOIN Store_Product ON Sale.UPC = Store_Product.UPC\n" +
-            "WHERE Sale.check_number = Receipt.check_number\n" +
-            "AND Store_Product.promotional_product = True ))";
+    private final String GET_PROMO_ONLY_CUSTOMERS = "SELECT c.card_number, c.cust_surname, c.cust_name\n" +
+            "FROM customer_card c\n" +
+            "WHERE \n" +
+            "  NOT EXISTS (\n" +
+            "    SELECT 1\n" +
+            "    FROM receipt r\n" +
+            "    WHERE r.card_number = c.card_number\n" +
+            "      AND NOT EXISTS (\n" +
+            "        SELECT 1\n" +
+            "        FROM sale s\n" +
+            "        JOIN store_product sp ON s.upc = sp.upc\n" +
+            "        WHERE s.check_number = r.check_number\n" +
+            "          AND sp.promotional_product = TRUE\n" +
+            "      )\n" +
+            "  )\n" +
+            "  AND EXISTS (\n" +
+            "    SELECT 1\n" +
+            "    FROM receipt r2\n" +
+            "    WHERE r2.card_number = c.card_number\n" +
+            "  );\n";
 
     private final String GET_LOYAL_CUSTOMERS =
             "SELECT cc.card_number, cc.cust_surname, cc.cust_name\n" +
