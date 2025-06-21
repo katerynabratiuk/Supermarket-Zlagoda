@@ -2,15 +2,14 @@ package com.zlagoda.Zlagoda.controller;
 
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeDTO;
+import com.zlagoda.Zlagoda.dto.stats.ProductSaleDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.service.implementation.StatisticsServiceImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -52,6 +51,16 @@ public class StatisticsController {
     public List<Employee> getEmployeesWhoNeverSoldCategory(@PathVariable Integer categoryID)
     {
         return statisticsService.getEmployeesWhoNeverSoldCategory(categoryID);
+    }
+
+    @GetMapping("/sold-units")
+    public ProductSaleDTO getTotalUnitsSoldForProductInPeriod(
+            @RequestParam() LocalDate from,
+            @RequestParam() LocalDate to,
+            @RequestParam() String UPC
+    )
+    {
+        return statisticsService.getTotalUnitsSoldForProductInPeriod(UPC, from, to);
     }
 
 }
