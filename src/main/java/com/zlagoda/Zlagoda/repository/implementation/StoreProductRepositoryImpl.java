@@ -56,7 +56,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
             "SELECT sp.upc, pr.product_name, sp.selling_price " +
                     "FROM store_product sp " +
                     "JOIN product pr ON sp.id_product = pr.id_product " +
-                    "WHERE pr.product_name ILIKE ?";
+                    "WHERE pr.product_name ILIKE ? OR sp.UPC ILIKE ?";
 
     private static final String CREATE = "INSERT INTO store_product VALUES (?,?,?,?,?,?)";
 
@@ -77,7 +77,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                     "JOIN product pr ON sp.id_product = pr.id_product " +
                     "JOIN category c ON pr.category_number = c.category_number " +
                     "LEFT JOIN store_product base ON sp.upc_prom = base.upc " +
-                    "WHERE pr.product_name ILIKE ? " +
+                    "WHERE pr.product_name ILIKE ? OR sp.UPC ILIKE ? " +
                     "ORDER BY pr.id_product, sp.promotional_product DESC";
 
     private final DBConnection dbConnection;
@@ -310,6 +310,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
             String likeQuery = "%" + query + "%";
             stmt.setString(1, likeQuery);
+            stmt.setString(2, likeQuery);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {

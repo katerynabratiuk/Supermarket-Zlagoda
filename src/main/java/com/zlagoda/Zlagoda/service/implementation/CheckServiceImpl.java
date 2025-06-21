@@ -132,4 +132,8 @@ public class CheckServiceImpl implements CheckService {
     public List<Receipt> filter(String cashierId, String sortBy, LocalDate from, LocalDate to) {
         return checkRepository.filter(cashierId, sortBy, from, to);
     }
+
+    public List<Receipt> search(String query) {
+        return checkRepository.search(query);
+    }
 }

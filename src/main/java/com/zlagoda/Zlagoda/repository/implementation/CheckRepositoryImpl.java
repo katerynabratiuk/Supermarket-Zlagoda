@@ -3,6 +3,7 @@ package com.zlagoda.Zlagoda.repository.implementation;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.entity.Employee;
 import com.zlagoda.Zlagoda.entity.Receipt;
+import com.zlagoda.Zlagoda.entity.StoreProduct;
 import com.zlagoda.Zlagoda.exception.DataAccessException;
 import com.zlagoda.Zlagoda.repository.CheckRepository;
 import jakarta.transaction.Transactional;
@@ -64,6 +65,8 @@ public class CheckRepositoryImpl implements CheckRepository {
             "FROM Employee INNER JOIN Receipt ON Employee.id_employee = Receipt.id_employee " +
             "WHERE id_employee=? AND print_date>? AND print_date<?";
 
+
+    private static final String SEARCH_QUERY = "SELECT * FROM Receipt WHERE check_number ILIKE ?" ;
 
     private final DBConnection dbConnection;
 
@@ -414,4 +417,23 @@ public class CheckRepositoryImpl implements CheckRepository {
     }
 
 
+    public List<Receipt> search(String query) {
+
+        List<Receipt> result = new ArrayList<>();
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(SEARCH_QUERY)) {
+
+            String likeQuery = "%" + query + "%";
+            stmt.setString(1, likeQuery);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                result.add(extractCheckFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to search store products", e);
+        }
+        return result;
+
+    }
 }

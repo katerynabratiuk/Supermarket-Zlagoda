@@ -20,7 +20,7 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
     private static final String DELETE = "DELETE FROM Customer_card WHERE card_number=?";
     private static final String FIND_BY_ID = "SELECT * FROM Customer_card WHERE card_number=?";
     private static final String FIND_BY_PERCENTAGE = "SELECT * FROM Customer_card WHERE percent=?";
-    private static final String FIND_BY_SURNAME = "SELECT * FROM Customer_card WHERE cust_surname ILIKE ?";
+    private static final String FIND_BY_SURNAME = "SELECT * FROM Customer_card WHERE cust_surname ILIKE ? OR cust_name ILIKE ? OR cust_patronymic ILIKE ?";
 
     private final DBConnection dbConnection;
 
@@ -67,6 +67,8 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
              PreparedStatement stmt = connection.prepareStatement(FIND_BY_SURNAME)) {
 
             stmt.setString(1, name + '%');  // Prefix match
+            stmt.setString(2, name + '%');
+            stmt.setString(3, name + '%');
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

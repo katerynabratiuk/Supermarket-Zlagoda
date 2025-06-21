@@ -92,5 +92,12 @@ public class CheckController {
         return checkService.filter(cashierId, sortBy, from, to);
     }
 
+    @GetMapping("/search")
+    public List<Receipt> filterReceipts(@RequestParam(required = false) String query)
+
+    {
+        return checkService.search(query);
+    }
+
 
 }
