@@ -1434,6 +1434,8 @@ let app = Vue.createApp(
           if (response.ok) {
             window.location.href = `employees.html`
           } else {
+            const errorData = await response.json();
+            this.validationErrors = errorData;
             this.showError("Failed to add employee. Please try again.")
           }
         } catch (error) {

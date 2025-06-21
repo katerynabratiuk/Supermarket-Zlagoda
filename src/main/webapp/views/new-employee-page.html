@@ -35,6 +35,15 @@
 
         <section class="contents">
           <form action="" class="edit-form" @submit.prevent="addNewEmployee">
+            
+            <div v-if="validationErrors && Object.keys(validationErrors).length" class="error-box">
+              <ul>
+                <li v-for="(msg, field, index) in validationErrors" :key="field">
+                  <strong>{{index+1}}. {{msg}}</strong>
+                </li>
+              </ul>
+            </div>
+
             <div class="employee-details-upper">
               <div
                 class="employee-details-upper-wrapper"
