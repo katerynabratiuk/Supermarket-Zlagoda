@@ -80,7 +80,7 @@ let app = Vue.createApp(
         newCheck: {
           check_number: null,
           print_date: null,
-          id_employee: null,
+          id_employee: '',
           card_number: null,
           sum_total: 0,
           vat: 0,
@@ -90,7 +90,7 @@ let app = Vue.createApp(
         showTotalSumChecked: false,
 
         newEmployee: {
-          id_employee: null,
+          id_employee: '',
           empl_surname: '',
           empl_name: '',
           empl_patronymic: '',
@@ -153,7 +153,7 @@ let app = Vue.createApp(
             label: "Employees who have never made a sale of a product in the category: ",
             endpoint: "/stats/employeeNeverSoldCategory/",
             paramName: 'category',
-            headers: ["Employee Surname", "Employee Name", "ID Employee"]
+            headers: ["ID Employee", "Employee Surname", "Employee Name" ]
           },
           {
             label: "Total units sold for product in a time period",
@@ -1825,7 +1825,7 @@ app.component("navbar", {
           return this.navItems
         case 'CASHIER':
           return this.navItems.filter(item =>
-            ['categories.html', 'products.html', 'checks.html', 'customers.html', 'statistics.html'].includes(item.path))
+            ['categories.html', 'products.html', 'checks.html', 'customers.html'].includes(item.path))
         default:
           return this.navItems.filter(item =>
             ['categories.html', 'products.html'].includes(item.path))
