@@ -11,6 +11,10 @@ import com.zlagoda.Zlagoda.entity.UserAuth;
 import java.util.Map;
 import com.zlagoda.Zlagoda.security.JwtUtil;
 
+@CrossOrigin(origins = {
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
+})
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
