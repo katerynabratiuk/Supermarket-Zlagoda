@@ -124,29 +124,36 @@ let app = Vue.createApp(
         sortByNameCust: false,
 
         error: null,
-
         statisticsQueries: [
           {
             label: "Total number of products by each employee sold in the category: ",
             endpoint: "/stats/productsSoldByEmployee/",
-            paramName: "category"
+            paramName: "category",
+            headers: ["Employee ID", "Employee Surname", "Category Number", "Category Name", "Total Products Sold"]
           },
           {
-            label: "The most loyal customers (those who have prodcuct of every categories)",
-            endpoint: "/api/queries/top-employees"
+            label: "The most loyal customers (those who have have bought product of every category)",
+            endpoint: "/stats/loyalCustomers",
+            paramName: '',
+            headers: ["Customer Card", "Customer Surname", "Customer Name"]
           },
           {
             label: "Total number of products by city purchased by buyers not from city:",
-            endpoint: "/api/queries/customer-purchase-history",
-            paramName: "city"
+            endpoint: "/stats/productSalesCities/",
+            paramName: "city",
+            headers: ["City", "Total Products Sold"],
           },
           {
             label: "Customers without a single non-promotional item in their check",
-            endpoint: "/api/queries/category-sales-overview"
+            endpoint: "/stats/promoCustomers",
+            paramName: '',
+            headers: ["Card Number", "Customer Surname", "Customer Name"],
           },
           {
             label: "Employee Sales Performance",
-            endpoint: "/api/queries/employee-sales-performance"
+            endpoint: "/stats/loyalCustomers",
+            paramName: '',
+            headers: ["Employee ID", "Employee Name", "Total Sales"]
           }
         ],
         queryParams: {
@@ -154,7 +161,7 @@ let app = Vue.createApp(
           city: ''
         },
         currentQuery: null,
-        queryResults: [],
+        queryResults: {},
         resultHeaders: [],
       }
     },
@@ -1194,7 +1201,7 @@ let app = Vue.createApp(
           else{
             const errorData = await response.json();
             if (errorData.error) {
-              this.showError(errorData.error);
+              this.showError(errorData.error)
             }
             return
           }
@@ -1566,50 +1573,74 @@ let app = Vue.createApp(
       },
 
       toggleQuery(index) {
-        this.currentQuery = this.currentQuery === index ? null : index;
-        if (this.currentQuery === index && this.queryResults.length == 0) {
-          this.executeQuery(index)
+        if (this.currentQuery === index) {
+          this.currentQuery = null
+          return
         }
+
+        if (index === 0 && !this.queryParams.category) {
+          this.showError("Please choose a category.")
+          return
+        }
+
+        if (index === 2 && !this.queryParams.city) {
+          this.showError("Please input the city value")
+          return
+        }
+
+        this.currentQuery = index
+        this.resultHeaders = this.statisticsQueries[index].headers
+        this.executeQuery(index)
       },
       async executeQuery(index) {
-        this.currentQuery = index
-
         try {
           const query = this.statisticsQueries[index]
           let url = `http://localhost:8090${query.endpoint}`
 
           if (index === 0) {
-            if (!this.queryParams.category) {
-              this.showError("Please choose a category.")
-              return
-            }
             url += `${encodeURIComponent(this.queryParams.category)}`
           }
           else if (index === 2) {
-            if (this.queryParams.city) {
-              url += `${encodeURIComponent(this.queryParams.city)}`
-            } else {
-              this.showError("Please enter a city.")
-              return
-            }
+            url += `${encodeURIComponent(this.queryParams.city)}`
           }
 
           const response = await fetch(url, {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${this.token}` }
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
           })
 
-          if (!response.ok) throw new Error("Error fetching statistics.")
+          if (!response.ok) {
+            throw new Error("Error fetching statistics.")
+          }
 
           const data = await response.json()
-          this.queryResults = data.results || data
-          this.resultHeaders = data.headers || (this.queryResults[0] ? Object.keys(this.queryResults[0]) : [])
+
+          if (index === 1) {
+            //Process Query 1
+            let extracted = Array.isArray(data) ? data.map(item => ({ "Customer ID": item.card_number ?? "Empty", "Customer Surname": item.cust_surname ?? "Empty", "Customer Name": item.cust_name ?? "Empty", })) : null
+
+            this.queryResults = {
+              ...this.queryResults,
+              [index]: extracted
+            };
+          }
+          else { //All Other
+
+            this.queryResults = {
+              ...this.queryResults,
+              [index]: Array.isArray(data) ? data : [data],
+            }
+          }
+
+
         } catch (error) {
           console.error("Error executing query:", error)
           this.showError("An unexpected error occurred. Please try again later.")
         }
       }
-
     },
     async mounted() {
       const urlParams = new URLSearchParams(window.location.search)

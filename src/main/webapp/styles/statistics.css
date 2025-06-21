@@ -44,6 +44,10 @@
     transition: transform 0.2s ease-in-out; 
 }
 
+table td, table th {
+    border-bottom: 1px solid #24333669;
+}
+
 .query-header .edit-dropdown, .query-header .edit-input {
     width: 30%;
 }
