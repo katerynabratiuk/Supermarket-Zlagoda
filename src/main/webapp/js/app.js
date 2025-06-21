@@ -86,8 +86,8 @@ let app = Vue.createApp(
           vat: 0,
           sales: []
         },
-        totalSum: 0,
-        showTotalSumChecked: false,
+        //totalSum: 0,
+        //showTotalSumChecked: false,
 
         newEmployee: {
           id_employee: '',
@@ -744,8 +744,8 @@ let app = Vue.createApp(
               this.newCategory = { category_name: '', category_number: null }
               await this.loadCategories()
             } else {
-              if (response.status === 500) {
-                this.showError("Failed to delete category linked to a product.")
+              if (response.status === 403) {
+                this.showError("Cannot delete category linked to a product.")
               } else {
                 this.showError("Failed to delete category. Please try again.")
               }
@@ -1238,6 +1238,32 @@ let app = Vue.createApp(
           this.showError("An unexpected error occurred. Please try again later.")
         }
       },
+
+      async searchChecks() {
+        if (!this.search) {
+          this.loadChecks()
+          return
+        }
+        try {
+          const response = await fetch(`http://localhost:8090/check/search?query=${encodeURIComponent(this.search)}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error(`Search failed. Status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          this.checks = data
+        } catch (error) {
+          console.error("Search failed", error)
+          this.showError("Check search failed")
+        }
+      },
       addSale() {
         this.newCheck.sales.push({
           product_id: '',
@@ -1291,17 +1317,17 @@ let app = Vue.createApp(
           const cashierSelect = document.getElementById('cashier-select')
           const fromDateInput = document.getElementById('from-date')
           const toDateInput = document.getElementById('to-date')
-          const showTotalSumCheckbox = document.getElementById('show-total-sum')
+          //const showTotalSumCheckbox = document.getElementById('show-total-sum')
           const sortByInput = document.querySelector('input[name="sortby"]:checked')
           const sortBy = sortByInput ? sortByInput.value : null
 
           const cashierId = cashierSelect?.value || null
           const fromDate = fromDateInput?.value || null
           const toDate = toDateInput?.value || null
-          const showTotalSum = showTotalSumCheckbox?.checked || false
+          //const showTotalSum = showTotalSumCheckbox?.checked || false
 
-          this.showTotalSumChecked = showTotalSum
-          this.totalSum = 0
+          //this.showTotalSumChecked = showTotalSum
+          //this.totalSum = 0
 
           const params = new URLSearchParams()
           if (cashierId) params.append('cashierId', cashierId)
@@ -1309,26 +1335,26 @@ let app = Vue.createApp(
           if (toDate) params.append('to', toDate)
           if (sortBy) params.append('sortBy', sortBy)
 
-          if (showTotalSum && fromDate && toDate) {
+          if (fromDate && toDate) {
             const baseUrl = 'http://localhost:8090/api/sales/total'
             const sumUrl = cashierId
               ? `${baseUrl}/cashier/${cashierId}?start=${fromDate}&end=${toDate}`
               : `${baseUrl}/all?start=${fromDate}&end=${toDate}`
 
-            const totalSumResponse = await fetch(sumUrl, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-              }
-            })
+            // const totalSumResponse = await fetch(sumUrl, {
+            //   method: 'GET',
+            //   headers: {
+            //     'Content-Type': 'application/json',
+            //     'Authorization': `Bearer ${this.token}`
+            //   }
+            // })
 
-            if (!totalSumResponse.ok) {
-              this.showError(`Failed to load total sum. Status: ${totalSumResponse.status}`)
-            } else {
-              const totalSumData = await totalSumResponse.json()
-              this.totalSum = totalSumData.total || 0
-            }
+            // if (!totalSumResponse.ok) {
+            //   this.showError(`Failed to load total sum. Status: ${totalSumResponse.status}`)
+            // } else {
+            //   const totalSumData = await totalSumResponse.json()
+            //   this.totalSum = totalSumData.total || 0
+            // }
           }
 
           if (params.size > 0) {
@@ -1362,14 +1388,14 @@ let app = Vue.createApp(
         const cashierSelect = document.getElementById('cashier-select')
         const fromDateInput = document.getElementById('from-date')
         const toDateInput = document.getElementById('to-date')
-        const showTotalSumCheckbox = document.getElementById('show-total-sum')
+        //const showTotalSumCheckbox = document.getElementById('show-total-sum')
         const sortCheckNumberCheckbox = document.getElementById('sort-check-number')
 
         if (cashierSelect) cashierSelect.value = ''
         if (fromDateInput) fromDateInput.value = ''
         if (toDateInput) toDateInput.value = ''
-        if (showTotalSumCheckbox) showTotalSumCheckbox.checked = false
-        this.showTotalSumChecked = false
+        //if (showTotalSumCheckbox) showTotalSumCheckbox.checked = false
+        //this.showTotalSumChecked = false
         if (sortCheckNumberCheckbox) sortCheckNumberCheckbox.checked = false
 
         this.loadChecks()
