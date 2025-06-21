@@ -48,60 +48,60 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/category/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/").permitAll()
-
-                        .requestMatchers("/auth/me").authenticated()
-
-                        .requestMatchers(HttpMethod.GET, "/customer/").hasAnyRole("CASHIER", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/check/").hasAnyRole("CASHIER", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/employee/").hasAnyRole( "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/stats/").hasRole("MANAGER")
-
-                      // Modification endpoints
-                        .requestMatchers(HttpMethod.POST, "/product/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/category/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/customer/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/employee/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/check/").hasRole("CASHIER")
-
-                        .requestMatchers(HttpMethod.PUT, "/product/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/category/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/customer/").hasAnyRole("CASHIER", "MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/employee/").hasRole("MANAGER")
-
-                        .requestMatchers(HttpMethod.DELETE, "/product/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/category/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/customer/").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/employee/").hasRole("MANAGER")
-
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable);
-        return http.build();
-    }
-
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .cors(Customizer.withDefaults())
 //                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().permitAll()
+//                        .requestMatchers("/auth/login").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/product/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/category/**").permitAll()
+//                        .requestMatchers(HttpMethod.OPTIONS, "/").permitAll()
+//
+//                        .requestMatchers("/auth/me").authenticated()
+//
+//                        .requestMatchers(HttpMethod.GET, "/customer/").hasAnyRole("CASHIER", "MANAGER")
+//                        .requestMatchers(HttpMethod.GET, "/check/").hasAnyRole("CASHIER", "MANAGER")
+//                        .requestMatchers(HttpMethod.GET, "/employee/").hasAnyRole( "MANAGER")
+//                        .requestMatchers(HttpMethod.GET, "/stats/").hasRole("MANAGER")
+//
+//                      // Modification endpoints
+//                        .requestMatchers(HttpMethod.POST, "/product/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.POST, "/category/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.POST, "/customer/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.POST, "/employee/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.POST, "/check/").hasRole("CASHIER")
+//
+//                        .requestMatchers(HttpMethod.PUT, "/product/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.PUT, "/category/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.PUT, "/customer/").hasAnyRole("CASHIER", "MANAGER")
+//                        .requestMatchers(HttpMethod.PUT, "/employee/").hasRole("MANAGER")
+//
+//                        .requestMatchers(HttpMethod.DELETE, "/product/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.DELETE, "/category/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.DELETE, "/customer/").hasRole("MANAGER")
+//                        .requestMatchers(HttpMethod.DELETE, "/employee/").hasRole("MANAGER")
+//
+//                        .anyRequest().authenticated()
 //                )
+//                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .httpBasic(AbstractHttpConfigurer::disable);
-//
 //        return http.build();
 //    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable);
+
+        return http.build();
+    }
 //
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -2,6 +2,7 @@ package com.zlagoda.Zlagoda.repository.implementation;
 
 import com.zlagoda.Zlagoda.dto.stats.CitySalesDTO;
 import com.zlagoda.Zlagoda.dto.stats.EmployeeDTO;
+import com.zlagoda.Zlagoda.dto.stats.ProductSaleDTO;
 import com.zlagoda.Zlagoda.dto.stats.PromoOnlyCustomerDTO;
 import com.zlagoda.Zlagoda.entity.CustomerCard;
 import com.zlagoda.Zlagoda.entity.Employee;
@@ -9,6 +10,7 @@ import com.zlagoda.Zlagoda.repository.StatisticsRepository;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +89,15 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             "          AND Product.category_number = ?\n" +
             "      )\n" +
             ");";
+
+    private final String GET_TOTAL_UNITS_SOLD_FOR_PRODUCT_IN_PERIOD =
+            "SELECT SUM(product_number) AS total_sum\n" +
+                    "FROM Sale\n" +
+                    "JOIN Receipt ON Sale.check_number = Receipt.check_number\n" +
+                    "WHERE UPC = ?\n" +
+                    "  AND print_date >= ?\n" +
+                    "  AND print_date <= ?\n" +
+                    "GROUP BY UPC;";
 
     private final DBConnection dbConnection;
 
@@ -183,6 +194,31 @@ public class StatisticsRepositoryImpl implements StatisticsRepository {
             throw new RuntimeException(e);
         }
         return res;
+    }
+
+    @Override
+    public ProductSaleDTO getTotalUnitsSoldForProductInPeriod(String upc, LocalDate from, LocalDate to) {
+        try(Connection connection = dbConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(GET_TOTAL_UNITS_SOLD_FOR_PRODUCT_IN_PERIOD)
+        ){
+
+
+            stmt.setString(1, upc);
+            stmt.setDate(2, Date.valueOf(from));
+            stmt.setDate(3, Date.valueOf(to));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                   return new ProductSaleDTO(rs.getInt("total_sum"));
+                }
+
+            }
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
 
