@@ -1470,8 +1470,8 @@ let app = Vue.createApp(
           if (response.ok) {
             window.location.href = `employees.html`
           } else {
-            const errorData = await response.json();
-            this.validationErrors = errorData;
+            const errorData = await response.json()
+            this.validationErrors = errorData
             this.showError("Failed to add employee. Please try again.")
           }
         } catch (error) {
@@ -1869,31 +1869,27 @@ app.component("navbar", {
       event.preventDefault()
 
       try {
-        const response = await fetch('http://localhost:8090/employee/me ', {
+        const response = await fetch('http://localhost:8090/employee/me', {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`,
+            'Content-Type': 'application/json'
           }
-        })
+        })  
 
         if (!response.ok) {
-          const errorText = await response.text()
-          console.warn("Server responded with error:", response.status, errorText)
-          this.$emit('showError', `Error ${response.status}: Failed to load profile.`)
-          return
+          if (response.status === 403) {
+            console.error("You don't have permission to access your profile")
+            return
+          }
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
 
         const userData = await response.json()
 
-        if (userData.id_employee) {
-          window.location.href = `employee-page.html?id=${userData.id_employee}`
-        } else {
-          console.warn("User data missing employeeId")
-          this.$emit('showError', "Failed to load profile. Please try again.")
-        }
+        window.location.href = `employee-page.html?id=${userData.id_employee}`
+
       } catch (error) {
-        console.error("Fetch error:", error)
-        this.$emit('showError', "Failed to load profile. Please try again.")
+        console.error("Profile access error:", error)
       }
     }
 
@@ -1945,6 +1941,10 @@ app.component("product-card", {
           <span v-else>
             {{ product.selling_price.toFixed(2) }} &#x20B4
           </span>
+        </div>
+
+        <div class="product-number">
+          <span> {{product.products_number}} pcs </span>
         </div>
       </div>
     </div>
