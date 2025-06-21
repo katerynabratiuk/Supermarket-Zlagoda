@@ -35,3 +35,8 @@
 .customer a {
   text-decoration: underline;
 }
+
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+}
