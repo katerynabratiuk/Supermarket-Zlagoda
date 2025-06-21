@@ -190,6 +190,7 @@
               :product="product"
             >
             </product-card>
+
           </div>
 
           <div
@@ -210,6 +211,7 @@
               <th>Category</th>
               <th>Count</th>
               <th>Price (₴)</th>
+              <th>Quantity</th>
             </tr>
           </thead>
           <tbody>
@@ -219,6 +221,7 @@
               <td>{{ product.product.category?.category_name }}</td>
               <td>{{ product.products_number }}</td>
               <td>{{ product.selling_price.toFixed(2) }}</td>
+              <td>{{ product.products_number}}</td>
             </tr>
           </tbody>
         </table>
