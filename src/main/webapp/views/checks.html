@@ -60,6 +60,27 @@
             </button>
           </div>
         </div>
+
+        <div class="actions-container noPrint">
+          
+          <form class="search-form" @submit.prevent="searchChecks">
+            <label for="search">Search:</label>
+            <input
+              type="search"
+              id="search"
+              name="search"
+              placeholder="Search"
+            />
+            <button type="submit">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+          </form>
+        </div>
+              <!-- <button type="submit">
+                <span class="material-symbols-outlined">search</span>
+              </button> -->
+            
+
         
         <div class="filter-block noPrint" v-if="showFilter">
           <form class="filter-form" @submit.prevent="applyCheckFilters">
@@ -105,9 +126,8 @@
                 </div>
               </div>
 
-              <div class="form-label">Show:</div>
-              <div class="form-field">
-                <div class="checkbox-field">
+              <!-- <div class="form-label">Show:</div> -->
+                <!-- <div class="checkbox-field">
                   <input
                     id="show-total-sum"
                     name="show-total-sum"
@@ -115,8 +135,7 @@
                     value="Total sum"
                   />
                   <label for="show-total-sum">Total sum</label>
-                </div>
-              </div>
+                </div> -->
               <div class="form-label">Sort by:</div>
               <div class="radio-field">
                 <input
