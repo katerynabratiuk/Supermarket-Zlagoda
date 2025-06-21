@@ -1,3 +1,8 @@
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .checks-header {
   display: flex;
   justify-content: space-between;

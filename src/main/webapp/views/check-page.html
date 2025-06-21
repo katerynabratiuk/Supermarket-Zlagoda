@@ -18,7 +18,7 @@
 
   <body>
     <div id="app" v-cloak>
-      <header>
+      <header class="noPrint">
         <navbar :user="user" :is-logged-in="isLoggedIn" />
       </header>
 
@@ -30,8 +30,11 @@
 
       <main v-if="!isLoading && currentCheck">
         <section class="check-details">
-          <div class="check-header">
+          <div class="check-header noPrint">
             <h2>Check #{{ currentCheck.check_number }}</h2>
+            <button type="button" class="print-btn" onclick="window.print()" v-if="isManager || isCashier">
+              Print
+            </button>
           </div>
 
           <section class="contents">
@@ -74,7 +77,7 @@
             </div>
 
             <div class="check-details-lower">
-              <h3>Products</h3>
+              <h3 class="noPrint">Products</h3>
 
               <div class="table-and-summary">
                 <table class="table-section">
