@@ -50,7 +50,12 @@
               </button>
             </form>
             <div class="buttons-container">
-              <button v-if="isManager || isCashier" class="add-new-btn" @click="goToAddProduct" v-if="isManager">
+              <button
+                v-if="isManager || isCashier"
+                class="add-new-btn"
+                @click="goToAddProduct"
+                v-if="isManager"
+              >
                 Add New
               </button>
               <button
@@ -60,7 +65,12 @@
               >
                 Filter
               </button>
-              <button type="button" class="print-btn" onclick="window.print()" v-if="isManager">
+              <button
+                type="button"
+                class="print-btn"
+                onclick="window.print()"
+                v-if="isManager"
+              >
                 Print
               </button>
             </div>
@@ -148,7 +158,6 @@
               </div>
             </form>
           </div>
-
         </div>
 
         <section class="contents noPrint">
@@ -160,17 +169,16 @@
           </div>
           <div class="products-grid" v-if="!isLoading">
             <product-card
-                    v-for="product in displayedItems('products')(products)"
+              v-for="product in displayedItems('products')(products)"
               :key="product.UPC"
               :product="product"
             >
             </product-card>
-
           </div>
 
           <div
-                  class="button-container"
-                  v-if="!isLoading && hasMoreItems('products')(products)"
+            class="button-container"
+            v-if="!isLoading && hasMoreItems('products')(products)"
           >
             <button class="show-more-btn" @click="showMoreItems('products')">
               Show More
@@ -190,7 +198,7 @@
             </tr>
           </thead>
           <tbody>
-          <tr v-for="product in products" :key="product.UPC">
+            <tr v-for="product in products" :key="product.UPC">
               <td>{{ product.UPC }}</td>
               <td>{{ product.product.product_name }}</td>
               <td>{{ product.product.category?.category_name }}</td>

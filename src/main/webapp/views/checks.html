@@ -32,6 +32,21 @@
       <main>
         <div class="checks-header noPrint" v-if="!isLoading">
           <h2>Checks</h2>
+        </div>
+
+        <div class="actions-container noPrint" v-if="!isLoading">
+          <form class="search-form" @submit.prevent="searchChecks">
+            <label for="search">Search:</label>
+            <input
+              type="search"
+              id="search"
+              name="search"
+              placeholder="Search"
+            />
+            <button type="submit">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+          </form>
 
           <div class="buttons-container">
             <button
@@ -60,28 +75,7 @@
             </button>
           </div>
         </div>
-
-        <div class="actions-container noPrint">
-          
-          <form class="search-form" @submit.prevent="searchChecks">
-            <label for="search">Search:</label>
-            <input
-              type="search"
-              id="search"
-              name="search"
-              placeholder="Search"
-            />
-            <button type="submit">
-              <span class="material-symbols-outlined">search</span>
-            </button>
-          </form>
-        </div>
-              <!-- <button type="submit">
-                <span class="material-symbols-outlined">search</span>
-              </button> -->
             
-
-        
         <div class="filter-block noPrint" v-if="showFilter">
           <form class="filter-form" @submit.prevent="applyCheckFilters">
             <div class="form-grid">
