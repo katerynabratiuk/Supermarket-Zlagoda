@@ -150,15 +150,25 @@ let app = Vue.createApp(
             headers: ["Card Number", "Customer Surname", "Customer Name"],
           },
           {
-            label: "Employee Sales Performance",
-            endpoint: "/stats/loyalCustomers",
-            paramName: '',
-            headers: ["Employee ID", "Employee Name", "Total Sales"]
+            label: "Employees who have never made a sale of a product in the category: ",
+            endpoint: "/stats/employeeNeverSoldCategory/",
+            paramName: 'category',
+            headers: ["Employee Surname", "Employee Name", "ID Employee"]
+          },
+          {
+            label: "Total units sold for product in a time period",
+            endpoint: "/stats/sold-units",
+            paramName: ['upc', 'from', 'to'],
+            headers: ["Total units"]
           }
         ],
         queryParams: {
           category: '',
-          city: ''
+          city: '',
+          neverSoldCategory: '',
+          UPC: '',
+          from: '',
+          to: ''
         },
         currentQuery: null,
         queryResults: {},
@@ -226,6 +236,11 @@ let app = Vue.createApp(
         }
         return filtered
       },
+
+      queryParamGroup() {
+        return [this.queryParams.UPC, this.queryParams.from, this.queryParams.to]
+      }
+      
     },
     watch: {
       currentProduct(newVal) {
@@ -266,6 +281,12 @@ let app = Vue.createApp(
           } else if (this.newProduct.status === 'Out Of Stock') {
             this.newProduct.status = 'In Stock'
           }
+        }
+      },
+      queryParamGroup(newVals) {
+        const [upc, from, to] = newVals
+        if (this.currentQuery === 5 && upc && from && to) {
+          this.executeQuery(5)
         }
       }
     },
@@ -556,7 +577,10 @@ let app = Vue.createApp(
               }
               break
             case 'statistics.html':
-              await this.loadCategories()
+              await Promise.all([
+                this.loadCategories(),
+                this.loadProducts()
+              ])
           }
         } catch (error) {
           this.showError('Error loading data for page:', page)
@@ -1593,6 +1617,16 @@ let app = Vue.createApp(
           return
         }
 
+        if (index === 4 && !this.queryParams.neverSoldCategory) {
+          this.showError("Please choose a category.")
+          return
+        }
+
+        if (index === 5 && (!this.queryParams.UPC || !this.queryParams.from || !this.queryParams.to)) {
+          this.showError("Please provide UPC, start date, and end date")
+          return
+        }
+
         this.currentQuery = index
         this.resultHeaders = this.statisticsQueries[index].headers
         this.executeQuery(index)
@@ -1608,6 +1642,16 @@ let app = Vue.createApp(
           else if (index === 2) {
             url += `${encodeURIComponent(this.queryParams.city)}`
           }
+          else if (index === 4) {
+            url += `${encodeURIComponent(this.queryParams.neverSoldCategory)}`
+          }
+          else if (index === 5) {
+            const params = new URLSearchParams()
+            if (this.queryParams.UPC) params.append('UPC', this.queryParams.UPC)
+            if (this.queryParams.from) params.append('from', this.queryParams.from)
+            if (this.queryParams.to) params.append('to', this.queryParams.to)
+            url += `?${params.toString()}`
+          }
 
           const response = await fetch(url, {
             method: 'GET',
@@ -1616,7 +1660,7 @@ let app = Vue.createApp(
               'Authorization': `Bearer ${this.token}`
             }
           })
-
+            
           if (!response.ok) {
             throw new Error("Error fetching statistics.")
           }
@@ -1624,22 +1668,40 @@ let app = Vue.createApp(
           const data = await response.json()
 
           if (index === 1) {
-            let extracted = Array.isArray(data) ? data.map(item => ({ "Customer ID": item.card_number ?? "Empty", "Customer Surname": item.cust_surname ?? "Empty", "Customer Name": item.cust_name ?? "Empty", })) : null
+            let extracted = Array.isArray(data) ?
+              data.map(item => ({ "Customer ID": item.card_number ?? "Empty", "Customer Surname": item.cust_surname ?? "Empty", "Customer Name": item.cust_name ?? "Empty", })) : null
 
             this.queryResults = {
               ...this.queryResults,
               [index]: extracted
             }
           }
+          else if (index === 4) {
+          let extracted = Array.isArray(data)
+            ? data.map(item => ({
+              "id_employee": item.id_employee,
+              "empl_name": item.empl_name,
+              "empl_surname": item.empl_surname,
+            }))
+            : []
+    
+          this.queryResults = {
+            ...this.queryResults,
+            [index]: extracted
+          }
+        }
+          else if (index === 5) {
+            this.queryResults = {
+              ...this.queryResults,
+              [index]: [{ "Total units": data.amount }] 
+            }
+          }
           else {
-
             this.queryResults = {
               ...this.queryResults,
               [index]: Array.isArray(data) ? data : [data],
             }
-          }
-
-
+        }
         } catch (error) {
           console.error("Error executing query:", error)
           this.showError("An unexpected error occurred. Please try again later.")
