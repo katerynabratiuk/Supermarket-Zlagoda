@@ -23,7 +23,7 @@ let app = Vue.createApp(
         products: [],
         customers: [],
         employees: [],
-        cashiers:[],
+        cashiers: [],
         checks: [],
 
         selectedFilter: '',
@@ -1119,7 +1119,12 @@ let app = Vue.createApp(
         }
 
         try {
-          const response = await axios.get('http://localhost:8090/customer/filter', { params })
+          const response = await axios.get('http://localhost:8090/customer/filter', {
+            params,
+            headers: {
+              'Authorization' : `Bearer ${this.token}`
+            }
+           })
           this.customers = response.data
         } catch (error) {
           this.showError('Filtering customers failed.')
@@ -1198,8 +1203,8 @@ let app = Vue.createApp(
             console.log("New check added successfully:")
             window.location.href = 'checks.html'
           }
-          else{
-            const errorData = await response.json();
+          else {
+            const errorData = await response.json()
             if (errorData.error) {
               this.showError(errorData.error)
             }
@@ -1555,8 +1560,8 @@ let app = Vue.createApp(
           const response = await fetch(`http://localhost:8090/employee/search?query=${encodeURIComponent(this.search)}`, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${this.token}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.token}`
             }
           })
 
@@ -1619,15 +1624,14 @@ let app = Vue.createApp(
           const data = await response.json()
 
           if (index === 1) {
-            //Process Query 1
             let extracted = Array.isArray(data) ? data.map(item => ({ "Customer ID": item.card_number ?? "Empty", "Customer Surname": item.cust_surname ?? "Empty", "Customer Name": item.cust_name ?? "Empty", })) : null
 
             this.queryResults = {
               ...this.queryResults,
               [index]: extracted
-            };
+            }
           }
-          else { //All Other
+          else {
 
             this.queryResults = {
               ...this.queryResults,
@@ -1728,7 +1732,7 @@ app.component("navbar", {
                </span>
             </div>
           </li>
-          <li><a href="">My Profile</a></li>
+          <li><a href="" @click="goToMyProfile" title="Go to my profile page">My Profile</a></li>
           <li><a href="index.html" @click="logout" >Logout</a></li>
         </ul>
     </div>
@@ -1745,6 +1749,7 @@ app.component("navbar", {
       ],
       currentPath: window.location.pathname,
       showLoginPopup: false,
+      token: '',
     }
   },
   computed: {
@@ -1798,10 +1803,11 @@ app.component("navbar", {
       this.isLoggedIn = false
       window.location.href = 'index.html'
     },
-    async goToMyProfile() {
+    async goToMyProfile(event) {
+      event.preventDefault()
+
       try {
-        const response = await fetch('http://localhost:8090/auth/me', {
-          method: 'GET',
+        const response = await fetch('http://localhost:8090/employee/me ', {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token}`,
@@ -1809,20 +1815,29 @@ app.component("navbar", {
         })
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+          const errorText = await response.text()
+          console.warn("Server responded with error:", response.status, errorText)
+          this.$emit('showError', `Error ${response.status}: Failed to load profile.`)
+          return
         }
 
         const userData = await response.json()
 
-        if (userData.employeeId) {
-          window.location.href = `employee-page.html?id=${userData.employeeId}`
+        if (userData.id_employee) {
+          window.location.href = `employee-page.html?id=${userData.id_employee}`
+        } else {
+          console.warn("User data missing employeeId")
+          this.$emit('showError', "Failed to load profile. Please try again.")
         }
       } catch (error) {
-        this.showError("Failed to load profile. Please try again.")
+        console.error("Fetch error:", error)
+        this.$emit('showError', "Failed to load profile. Please try again.")
       }
     }
+
   },
   mounted() {
+    this.token = localStorage.getItem('authToken')
     document.addEventListener('click', this.handleClickOutside)
   }
 })
